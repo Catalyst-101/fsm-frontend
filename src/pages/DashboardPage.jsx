@@ -49,29 +49,33 @@ const DashboardPage = () => {
       </div>
 
       <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 space-y-4">
-        <h3 className="text-lg font-semibold text-white">Quick Actions</h3>
+        <h3 className="text-lg font-semibold text-white">Quick Management Links</h3>
         <div className="flex flex-wrap gap-3">
+          <Link
+            to="/parents"
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-indigo-600/20 transition-all"
+          >
+            Manage Parents
+          </Link>
+          <Link
+            to="/students"
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-emerald-600/20 transition-all"
+          >
+            Manage Students
+          </Link>
           <Link
             to="/profile"
             className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-medium rounded-lg transition-all"
           >
             Manage Profile
           </Link>
-          {user?.role === 'SUPER_ADMIN' && (
-            <>
-              <Link
-                to="/users"
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-indigo-600/20 transition-all"
-              >
-                View All Users
-              </Link>
-              <Link
-                to="/users/create"
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-emerald-600/20 transition-all"
-              >
-                + Create User (OTP Flow)
-              </Link>
-            </>
+          {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
+            <Link
+              to="/users"
+              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-medium rounded-lg transition-all"
+            >
+              User Accounts
+            </Link>
           )}
         </div>
       </div>

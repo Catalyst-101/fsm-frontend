@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
 const UsersPage = () => {
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -56,7 +58,9 @@ const UsersPage = () => {
       <div className="flex items-center justify-between bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
         <div>
           <h2 className="text-2xl font-bold text-white tracking-tight">User Management</h2>
-          <p className="text-sm text-slate-400">System user accounts and access controls</p>
+          <p className="text-sm text-slate-400">
+            {currentUser?.role === 'ADMIN' ? 'Manage Accountant accounts' : 'System user accounts and access controls'}
+          </p>
         </div>
         <Link
           to="/users/create"
@@ -80,50 +84,59 @@ const UsersPage = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700/60 text-sm">
-            {users.map((u) => (
-              <tr key={u._id} className="hover:bg-slate-700/30 transition-colors">
-                <td className="py-3.5 px-4">
-                  <div className="font-semibold text-white">{u.name}</div>
-                  <div className="text-xs text-slate-400">{u.email}</div>
-                </td>
-                <td className="py-3.5 px-4">
-                  <span className="px-2 py-0.5 text-xs font-bold uppercase rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                    {u.role}
-                  </span>
-                </td>
-                <td className="py-3.5 px-4">
-                  <span
-                    className={`px-2 py-0.5 text-xs font-bold uppercase rounded ${
-                      u.isActive
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                        : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                    }`}
-                  >
-                    {u.isActive ? 'Active' : 'Inactive'}
-                  </span>
-                </td>
-                <td className="py-3.5 px-4 text-right space-x-2">
-                  <Link
-                    to={`/users/${u._id}`}
-                    className="px-2.5 py-1 text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded transition-all inline-block"
-                  >
-                    View / Edit
-                  </Link>
-                  <button
-                    onClick={() => handleToggleStatus(u._id, u.isActive)}
-                    className="px-2.5 py-1 text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded transition-all cursor-pointer"
-                  >
-                    {u.isActive ? 'Deactivate' : 'Activate'}
-                  </button>
-                  <button
-                    onClick={() => handleDeleteUser(u._id, u.email)}
-                    className="px-2.5 py-1 text-xs font-medium bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded border border-rose-500/30 transition-all cursor-pointer"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {users.map((u) => {
+              const isSelf = u._id === currentUser?.id;
+              return (
+                <tr key={u._id} className="hover:bg-slate-700/30 transition-colors">
+                  <td className="py-3.5 px-4">
+                    <div className="font-semibold text-white">{u.name} {isSelf && <span className="text-xs text-indigo-400 font-normal">(You)</span>}</div>
+                    <div className="text-xs text-slate-400">{u.email}</div>
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <span className="px-2 py-0.5 text-xs font-bold uppercase rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                      {u.role}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <span
+                      className={`px-2 py-0.5 text-xs font-bold uppercase rounded ${
+                        u.isActive
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                          : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                      }`}
+                    >
+                      {u.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4 text-right space-x-2">
+                    {!isSelf ? (
+                      <>
+                        <Link
+                          to={`/users/${u._id}`}
+                          className="px-2.5 py-1 text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded transition-all inline-block"
+                        >
+                          View / Edit
+                        </Link>
+                        <button
+                          onClick={() => handleToggleStatus(u._id, u.isActive)}
+                          className="px-2.5 py-1 text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded transition-all cursor-pointer"
+                        >
+                          {u.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(u._id, u.email)}
+                          className="px-2.5 py-1 text-xs font-medium bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded border border-rose-500/30 transition-all cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    ) : (
+                      <span className="text-xs text-slate-500 italic">Manage via Profile page</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

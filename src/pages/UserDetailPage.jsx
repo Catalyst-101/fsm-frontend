@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
 const UserDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,6 +20,9 @@ const UserDetailPage = () => {
 
   // Change password field
   const [newPassword, setNewPassword] = useState('');
+
+  const isSelf = currentUser?.id === id;
+  const isAdmin = currentUser?.role === 'ADMIN';
 
   const fetchUser = async () => {
     setLoading(true);
@@ -94,6 +99,18 @@ const UserDetailPage = () => {
   if (loading) return <div className="text-slate-400 text-sm">Loading user details...</div>;
   if (error && !user) return <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm p-3 rounded-lg">{error}</div>;
 
+  if (isSelf) {
+    return (
+      <div className="max-w-md mx-auto bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl text-center space-y-4">
+        <h2 className="text-lg font-bold text-white">Self Edit Restricted</h2>
+        <p className="text-sm text-slate-400">You cannot edit your own details or change your password from the user list.</p>
+        <Link to="/profile" className="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-lg">
+          Go to My Profile
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center justify-between bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
@@ -137,13 +154,14 @@ const UserDetailPage = () => {
             <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Role</label>
             <select
               value={role}
+              disabled={isAdmin}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500 disabled:opacity-50"
             >
-              <option value="SUPER_ADMIN">SUPER_ADMIN</option>
               <option value="ADMIN">ADMIN</option>
               <option value="ACCOUNTANT">ACCOUNTANT</option>
             </select>
+            {isAdmin && <span className="text-[11px] text-slate-400 block mt-1">Admins cannot change user roles.</span>}
           </div>
           <button
             type="submit"
@@ -156,7 +174,7 @@ const UserDetailPage = () => {
 
       {/* Section 2: Admin Password Override */}
       <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-4">
-        <h3 className="text-base font-semibold text-white">Reset User Password (Super Admin Override)</h3>
+        <h3 className="text-base font-semibold text-white">Reset User Password (Admin Override)</h3>
         <form onSubmit={handleChangePassword} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">New Password</label>

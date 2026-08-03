@@ -14,6 +14,16 @@ import UsersPage from './pages/UsersPage';
 import CreateUserPage from './pages/CreateUserPage';
 import UserDetailPage from './pages/UserDetailPage';
 
+// Parent pages
+import ParentsPage from './pages/parents/ParentsPage';
+import CreateEditParentPage from './pages/parents/CreateEditParentPage';
+import ParentDetailPage from './pages/parents/ParentDetailPage';
+
+// Student pages
+import StudentsPage from './pages/students/StudentsPage';
+import CreateEditStudentPage from './pages/students/CreateEditStudentPage';
+import StudentDetailPage from './pages/students/StudentDetailPage';
+
 function App() {
   return (
     <Routes>
@@ -28,8 +38,20 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/profile" element={<ProfilePage />} />
 
-          {/* SUPER_ADMIN Only Routes */}
-          <Route element={<RoleRoute allowedRoles={['SUPER_ADMIN']} />}>
+          {/* Parent Management Routes */}
+          <Route path="/parents" element={<ParentsPage />} />
+          <Route path="/parents/create" element={<CreateEditParentPage />} />
+          <Route path="/parents/edit/:id" element={<CreateEditParentPage />} />
+          <Route path="/parents/:id" element={<ParentDetailPage />} />
+
+          {/* Student Management Routes */}
+          <Route path="/students" element={<StudentsPage />} />
+          <Route path="/students/create" element={<CreateEditStudentPage />} />
+          <Route path="/students/edit/:id" element={<CreateEditStudentPage />} />
+          <Route path="/students/:id" element={<StudentDetailPage />} />
+
+          {/* SUPER_ADMIN and ADMIN Routes */}
+          <Route element={<RoleRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']} />}>
             <Route path="/users" element={<UsersPage />} />
             <Route path="/users/create" element={<CreateUserPage />} />
             <Route path="/users/:id" element={<UserDetailPage />} />

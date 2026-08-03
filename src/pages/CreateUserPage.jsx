@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
 const CreateUserPage = () => {
   const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
 
   // Wizard Step: 1 = Initiate, 2 = Verify OTP, 3 = Complete
   const [step, setStep] = useState(1);
@@ -11,7 +13,8 @@ const CreateUserPage = () => {
   // Step 1 Form fields
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState('ADMIN');
+  // Admin can ONLY create ACCOUNTANT
+  const [role, setRole] = useState(currentUser?.role === 'ADMIN' ? 'ACCOUNTANT' : 'ADMIN');
 
   // Step 2 Form fields
   const [otp, setOtp] = useState('');
@@ -145,7 +148,7 @@ const CreateUserPage = () => {
                 onChange={(e) => setRole(e.target.value)}
                 className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
               >
-                <option value="ADMIN">ADMIN</option>
+                {currentUser?.role === 'SUPER_ADMIN' && <option value="ADMIN">ADMIN</option>}
                 <option value="ACCOUNTANT">ACCOUNTANT</option>
               </select>
             </div>

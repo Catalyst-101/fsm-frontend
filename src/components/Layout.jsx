@@ -12,7 +12,8 @@ const Layout = () => {
     navigate('/login');
   };
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
+  const canManageUsers = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN';
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col font-sans">
@@ -29,7 +30,7 @@ const Layout = () => {
               <Link
                 to="/dashboard"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/dashboard')
+                  location.pathname === '/dashboard'
                     ? 'bg-slate-900 text-white shadow-inner'
                     : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                 }`}
@@ -37,38 +38,46 @@ const Layout = () => {
                 Dashboard
               </Link>
               <Link
+                to="/parents"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/parents')
+                    ? 'bg-slate-900 text-white shadow-inner'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                Parents
+              </Link>
+              <Link
+                to="/students"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/students')
+                    ? 'bg-slate-900 text-white shadow-inner'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                Students
+              </Link>
+              <Link
                 to="/profile"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/profile')
+                  location.pathname === '/profile'
                     ? 'bg-slate-900 text-white shadow-inner'
                     : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                 }`}
               >
                 Profile
               </Link>
-              {user?.role === 'SUPER_ADMIN' && (
-                <>
-                  <Link
-                    to="/users"
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      isActive('/users')
-                        ? 'bg-slate-900 text-white shadow-inner'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                    }`}
-                  >
-                    Users List
-                  </Link>
-                  <Link
-                    to="/users/create"
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      isActive('/users/create')
-                        ? 'bg-indigo-600 text-white'
-                        : 'text-indigo-400 hover:text-indigo-300 hover:bg-slate-700/50'
-                    }`}
-                  >
-                    + Create User
-                  </Link>
-                </>
+              {canManageUsers && (
+                <Link
+                  to="/users"
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive('/users')
+                      ? 'bg-slate-900 text-white shadow-inner'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  Users List
+                </Link>
               )}
             </nav>
           </div>
