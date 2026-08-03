@@ -39,30 +39,80 @@ const CreateEditStudentPage = () => {
   const [parents, setParents] = useState([]);
   const [parentSearch, setParentSearch] = useState('');
 
+  // Fee Assignment states
+  const [years, setYears] = useState([]);
+  const [academicYearId, setAcademicYearId] = useState('');
+  const [feeAssignmentId, setFeeAssignmentId] = useState(null);
+  const [monthlyTuition, setMonthlyTuition] = useState(0);
+  const [admissionFee, setAdmissionFee] = useState(0);
+  const [registrationFee, setRegistrationFee] = useState(0);
+  const [miscellaneousFee, setMiscellaneousFee] = useState(0);
+  const [annualCharges, setAnnualCharges] = useState(0);
+  const [feeNotice, setFeeNotice] = useState('');
+
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Fetch Parents list for selection
+  // Fetch Parents and Academic Years
   useEffect(() => {
-    const fetchParents = async () => {
+    const fetchInit = async () => {
       try {
-        const res = await api.get('/parents');
-        setParents(res.data.data);
+        const [parentsRes, yearsRes] = await Promise.all([
+          api.get('/parents'),
+          api.get('/academic-years'),
+        ]);
+        setParents(parentsRes.data.data);
+        setYears(yearsRes.data.data);
+        const currentYear = yearsRes.data.data.find((y) => y.is_current);
+        if (currentYear && !academicYearId) {
+          setAcademicYearId(currentYear._id);
+        }
       } catch (err) {
-        setError('Failed to load parent options.');
+        setError('Failed to load initial data options.');
       }
     };
-    fetchParents();
+    fetchInit();
   }, []);
 
-  // Fetch Student data if edit mode
+  // Dynamically load default FeeStructure when academicYearId or grade changes in Creation Mode
+  useEffect(() => {
+    if (!academicYearId || !grade || isEdit) return;
+
+    const loadFeeStructure = async () => {
+      setFeeNotice('');
+      try {
+        const res = await api.get(`/fee-structures/year/${academicYearId}/grade/${grade}`);
+        const fs = res.data.data;
+        setMonthlyTuition(fs.monthlyTuition || 0);
+        setAdmissionFee(fs.admissionFee || 0);
+        setRegistrationFee(fs.registrationFee || 0);
+        setMiscellaneousFee(fs.miscellaneousFee || 0);
+        setAnnualCharges(fs.annualCharges || 0);
+        setFeeNotice('Pre-filled default Fee Structure values for this Class & Academic Year.');
+      } catch (err) {
+        setMonthlyTuition(0);
+        setAdmissionFee(0);
+        setRegistrationFee(0);
+        setMiscellaneousFee(0);
+        setAnnualCharges(0);
+        setFeeNotice('No default Fee Structure found for this Class in selected Academic Year. You can enter custom fee values below.');
+      }
+    };
+
+    loadFeeStructure();
+  }, [academicYearId, grade, isEdit]);
+
+  // Fetch Student data + existing Fee Assignment if edit mode
   useEffect(() => {
     const initData = async () => {
       if (isEdit) {
         try {
-          const res = await api.get(`/students/${id}`);
-          const s = res.data.data;
+          const [sRes, feeRes] = await Promise.all([
+            api.get(`/students/${id}`),
+            api.get(`/student-fee-assignments/student/${id}`),
+          ]);
+          const s = sRes.data.data;
           setName(s.name || '');
           setParentId(s.parentId?._id || s.parentId || '');
           setGender(s.gender || 'Male');
@@ -71,6 +121,20 @@ const CreateEditStudentPage = () => {
           setSection(s.section || '');
           setRollNumber(s.rollNumber || '');
           setIsActive(s.isActive !== undefined ? s.isActive : true);
+
+          // Populate fee assignment if exists
+          if (feeRes.data.data && feeRes.data.data.length > 0) {
+            const fa = feeRes.data.data[0];
+            setFeeAssignmentId(fa._id);
+            if (fa.academicYearId) {
+              setAcademicYearId(fa.academicYearId._id || fa.academicYearId);
+            }
+            setMonthlyTuition(fa.monthlyTuition || 0);
+            setAdmissionFee(fa.admissionFee || 0);
+            setRegistrationFee(fa.registrationFee || 0);
+            setMiscellaneousFee(fa.miscellaneousFee || 0);
+            setAnnualCharges(fa.annualCharges || 0);
+          }
         } catch (err) {
           setError(err.response?.data?.message || 'Failed to fetch student data.');
         }
@@ -91,7 +155,7 @@ const CreateEditStudentPage = () => {
 
     setSubmitting(true);
 
-    const payload = {
+    const studentPayload = {
       name,
       parentId,
       gender,
@@ -100,13 +164,38 @@ const CreateEditStudentPage = () => {
       section,
       rollNumber,
       isActive,
+      // Fee assignment fields for creation mode
+      academicYearId,
+      monthlyTuition: Number(monthlyTuition),
+      admissionFee: Number(admissionFee),
+      registrationFee: Number(registrationFee),
+      miscellaneousFee: Number(miscellaneousFee),
+      annualCharges: Number(annualCharges),
     };
 
     try {
       if (isEdit) {
-        await api.put(`/students/${id}`, payload);
+        // 1. Update Student record
+        await api.put(`/students/${id}`, studentPayload);
+
+        // 2. Update Fee Assignment record if exists, or create one
+        const feePayload = {
+          studentId: id,
+          academicYearId,
+          monthlyTuition: Number(monthlyTuition),
+          admissionFee: Number(admissionFee),
+          registrationFee: Number(registrationFee),
+          miscellaneousFee: Number(miscellaneousFee),
+          annualCharges: Number(annualCharges),
+        };
+
+        if (feeAssignmentId) {
+          await api.put(`/student-fee-assignments/${feeAssignmentId}`, feePayload);
+        } else if (academicYearId) {
+          await api.post('/student-fee-assignments', feePayload);
+        }
       } else {
-        await api.post('/students', payload);
+        await api.post('/students', studentPayload);
       }
       navigate('/students');
     } catch (err) {
@@ -132,7 +221,7 @@ const CreateEditStudentPage = () => {
           <h2 className="text-xl font-bold text-white tracking-tight">
             {isEdit ? 'Edit Student Record' : 'Create New Student'}
           </h2>
-          <p className="text-xs text-slate-400">Student registration & parent assignment</p>
+          <p className="text-xs text-slate-400">Student registration & fee assignment</p>
         </div>
         <Link to="/students" className="text-xs text-indigo-400 hover:text-indigo-300 font-medium">
           ← Back to Students List
@@ -259,6 +348,90 @@ const CreateEditStudentPage = () => {
             </div>
           </div>
 
+          {/* FEE ASSIGNMENT SECTION (Editable in both Creation and Edit mode) */}
+          <div className="border-t border-slate-700 pt-4 space-y-3">
+            <h3 className="text-sm font-bold text-indigo-400 uppercase tracking-wider">
+              {isEdit ? 'Assigned Fee Structure' : 'Fee Structure Assignment'}
+            </h3>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Academic Year *</label>
+              <select
+                value={academicYearId}
+                onChange={(e) => setAcademicYearId(e.target.value)}
+                disabled={isEdit}
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500 disabled:opacity-60 cursor-not-allowed"
+                required
+              >
+                <option value="">-- Choose Academic Year --</option>
+                {years.map((y) => (
+                  <option key={y._id} value={y._id}>
+                    {y.name} {y.is_current ? '(Current Active)' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {feeNotice && <div className="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 p-2.5 rounded-lg">{feeNotice}</div>}
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Monthly Tuition (Rs.) *</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={monthlyTuition}
+                  onChange={(e) => setMonthlyTuition(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Admission Fee (Rs.)</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={admissionFee}
+                  onChange={(e) => setAdmissionFee(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Registration Fee</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={registrationFee}
+                  onChange={(e) => setRegistrationFee(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-xs focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Miscellaneous Fee</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={miscellaneousFee}
+                  onChange={(e) => setMiscellaneousFee(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-xs focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Annual Charges</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={annualCharges}
+                  onChange={(e) => setAnnualCharges(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-xs focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+            </div>
+          </div>
+
           {isEdit && (
             <div>
               <label className="flex items-center gap-2 text-slate-300 text-sm cursor-pointer select-none">
@@ -278,7 +451,7 @@ const CreateEditStudentPage = () => {
             disabled={submitting || parents.length === 0}
             className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-lg text-sm transition-all cursor-pointer disabled:opacity-50"
           >
-            {submitting ? 'Saving...' : isEdit ? 'Update Student Record' : 'Create Student'}
+            {submitting ? 'Saving...' : isEdit ? 'Update Student Record & Fee Assignment' : 'Create Student & Lock Fee Assignment'}
           </button>
         </form>
       </div>

@@ -24,6 +24,10 @@ import StudentsPage from './pages/students/StudentsPage';
 import CreateEditStudentPage from './pages/students/CreateEditStudentPage';
 import StudentDetailPage from './pages/students/StudentDetailPage';
 
+// Academic Year & Fee Structure pages
+import AcademicYearsPage from './pages/academicYears/AcademicYearsPage';
+import FeeStructuresPage from './pages/feeStructures/FeeStructuresPage';
+
 function App() {
   return (
     <Routes>
@@ -49,6 +53,10 @@ function App() {
           <Route path="/students/create" element={<CreateEditStudentPage />} />
           <Route path="/students/edit/:id" element={<CreateEditStudentPage />} />
           <Route path="/students/:id" element={<StudentDetailPage />} />
+
+          {/* Academic Year & Fee Structure Routes */}
+          <Route path="/academic-years" element={<AcademicYearsPage />} />
+          <Route path="/fee-structures" element={<FeeStructuresPage />} />
 
           {/* SUPER_ADMIN and ADMIN Routes */}
           <Route element={<RoleRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']} />}>

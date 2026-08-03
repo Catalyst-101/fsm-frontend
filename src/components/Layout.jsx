@@ -58,6 +58,26 @@ const Layout = () => {
                 Students
               </Link>
               <Link
+                to="/academic-years"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/academic-years')
+                    ? 'bg-slate-900 text-white shadow-inner'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                Academic Years
+              </Link>
+              <Link
+                to="/fee-structures"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/fee-structures')
+                    ? 'bg-slate-900 text-white shadow-inner'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                Fee Structures
+              </Link>
+              <Link
                 to="/profile"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   location.pathname === '/profile'

@@ -103,7 +103,13 @@ const ParentDetailPage = () => {
                         {s.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-right">
+                    <td className="py-3.5 px-4 text-right space-x-2">
+                      <Link
+                        to={`/students/${s._id}`}
+                        className="px-2.5 py-1 text-xs font-medium bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600 hover:text-white rounded transition-all inline-block"
+                      >
+                        View
+                      </Link>
                       <Link
                         to={`/students/edit/${s._id}`}
                         className="px-2.5 py-1 text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded transition-all inline-block"
