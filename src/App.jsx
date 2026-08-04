@@ -28,6 +28,11 @@ import StudentDetailPage from './pages/students/StudentDetailPage';
 import AcademicYearsPage from './pages/academicYears/AcademicYearsPage';
 import FeeStructuresPage from './pages/feeStructures/FeeStructuresPage';
 
+// Fee Payment pages
+import FeePaymentPage from './pages/feePayments/FeePaymentPage';
+import StudentFeeDetailsPage from './pages/feePayments/StudentFeeDetailsPage';
+import ReceiptViewPage from './pages/feePayments/ReceiptViewPage';
+
 function App() {
   return (
     <Routes>
@@ -57,6 +62,11 @@ function App() {
           {/* Academic Year & Fee Structure Routes */}
           <Route path="/academic-years" element={<AcademicYearsPage />} />
           <Route path="/fee-structures" element={<FeeStructuresPage />} />
+
+          {/* Fee Payment Routes */}
+          <Route path="/fee-payment" element={<FeePaymentPage />} />
+          <Route path="/fee-details" element={<StudentFeeDetailsPage />} />
+          <Route path="/receipt/:id" element={<ReceiptViewPage />} />
 
           {/* SUPER_ADMIN and ADMIN Routes */}
           <Route element={<RoleRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']} />}>

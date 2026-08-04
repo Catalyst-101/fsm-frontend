@@ -78,6 +78,26 @@ const Layout = () => {
                 Fee Structures
               </Link>
               <Link
+                to="/fee-payment"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/fee-payment')
+                    ? 'bg-slate-900 text-white shadow-inner'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                Pay Fee
+              </Link>
+              <Link
+                to="/fee-details"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/fee-details')
+                    ? 'bg-slate-900 text-white shadow-inner'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                Fee History
+              </Link>
+              <Link
                 to="/profile"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   location.pathname === '/profile'
