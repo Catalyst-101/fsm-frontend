@@ -88,14 +88,34 @@ const Layout = () => {
                 Pay Fee
               </Link>
               <Link
-                to="/fee-details"
+                to="/student-fee-details"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/fee-details')
+                  isActive('/student-fee-details')
                     ? 'bg-slate-900 text-white shadow-inner'
                     : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                 }`}
               >
-                Fee History
+                Student Fee Details
+              </Link>
+              <Link
+                to="/parent-fee-details"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/parent-fee-details')
+                    ? 'bg-slate-900 text-white shadow-inner'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                Parent Fee Details
+              </Link>
+              <Link
+                to="/fee-ledger"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/fee-ledger')
+                    ? 'bg-slate-900 text-white shadow-inner'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                Fee Ledger
               </Link>
               <Link
                 to="/profile"

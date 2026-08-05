@@ -2,47 +2,43 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 
-const StudentFeeDetailsPage = () => {
-  const [students, setStudents] = useState([]);
+const ParentFeeDetailsPage = () => {
+  const [parents, setParents] = useState([]);
   const [academicYears, setAcademicYears] = useState([]);
-  const [selectedStudent, setSelectedStudent] = useState('');
+  const [selectedParent, setSelectedParent] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
   
-  const [summary, setSummary] = useState(null);
+  const [childrenDetails, setChildrenDetails] = useState([]);
+  const [grandTotals, setGrandTotals] = useState(null);
   const [receipts, setReceipts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchStudentsAndYears();
+    fetchInitialData();
   }, []);
 
   useEffect(() => {
-    if (selectedStudent && selectedYear) {
+    if (selectedParent && selectedYear) {
       fetchData();
     } else {
-      setSummary(null);
+      setChildrenDetails([]);
+      setGrandTotals(null);
       setReceipts([]);
     }
     // eslint-disable-next-line
-  }, [selectedStudent, selectedYear]);
+  }, [selectedParent, selectedYear]);
 
-  const fetchStudentsAndYears = async () => {
+  const fetchInitialData = async () => {
     try {
-      const [stuRes, yearRes] = await Promise.all([
-        api.get('/students'),
+      const [parentRes, yearRes] = await Promise.all([
+        api.get('/parents'),
         api.get('/academic-years')
       ]);
+      const fetchedParents = Array.isArray(parentRes.data?.data) ? parentRes.data.data : parentRes.data?.data?.docs || [];
+      const fetchedYears = Array.isArray(yearRes.data?.data) ? yearRes.data.data : yearRes.data?.data?.docs || [];
 
-      const fetchedStudents = Array.isArray(stuRes.data?.data)
-        ? stuRes.data.data
-        : stuRes.data?.data?.docs || [];
-
-      const fetchedYears = Array.isArray(yearRes.data?.data)
-        ? yearRes.data.data
-        : yearRes.data?.data?.docs || [];
-
-      setStudents(fetchedStudents);
+      setParents(fetchedParents);
       setAcademicYears(fetchedYears);
       
       const current = fetchedYears.find(y => y.is_current);
@@ -57,17 +53,38 @@ const StudentFeeDetailsPage = () => {
     setLoading(true);
     setError('');
     try {
-      const [sumRes, recRes] = await Promise.all([
-        api.get(`/fee-payments/summary?studentId=${selectedStudent}&academicYearId=${selectedYear}`),
-        api.get(`/fee-payments/student/${selectedStudent}?academicYearId=${selectedYear}`)
-      ]);
-      setSummary(sumRes.data);
-      setReceipts(recRes.data);
+      // Get all students for this parent
+      const stuRes = await api.get('/students');
+      const allStudents = Array.isArray(stuRes.data?.data) ? stuRes.data.data : stuRes.data?.data?.docs || [];
+      const parentStudents = allStudents.filter(s => s.parentId?._id === selectedParent || s.parentId === selectedParent);
+
+      const details = [];
+      let totalFees = 0;
+      let totalPaid = 0;
+      let totalRemaining = 0;
+
+      for (let stu of parentStudents) {
+        try {
+          const res = await api.get(`/fee-payments/summary?studentId=${stu._id}&academicYearId=${selectedYear}`);
+          details.push(res.data);
+          totalFees += res.data.totalAmount;
+          totalPaid += res.data.totalPaid;
+          totalRemaining += Math.max(0, res.data.remainingBalance - res.data.advanceBalance);
+        } catch (e) {
+          // skip if no assignment
+        }
+      }
+
+      setChildrenDetails(details);
+      setGrandTotals({ totalFees, totalPaid, totalRemaining });
+
+      // Fetch parent receipts
+      const recRes = await api.get(`/fee-payments/parent/${selectedParent}?academicYearId=${selectedYear}`);
+      setReceipts(recRes.data || []);
+
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || 'Failed to load fee details.');
-      setSummary(null);
-      setReceipts([]);
+      setError('Failed to load parent fee details.');
     } finally {
       setLoading(false);
     }
@@ -75,7 +92,7 @@ const StudentFeeDetailsPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">Student Fee Details & History</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">Parent Fee Details & History</h1>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -86,16 +103,16 @@ const StudentFeeDetailsPage = () => {
       <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Student</label>
+            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Parent</label>
             <select
               className="shadow border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-white"
-              value={selectedStudent}
-              onChange={(e) => setSelectedStudent(e.target.value)}
+              value={selectedParent}
+              onChange={(e) => setSelectedParent(e.target.value)}
             >
-              <option value="">-- Select Student --</option>
-              {(students || []).map(s => (
-                <option key={s._id} value={s._id}>
-                  {s.firstName} {s.lastName} ({s.grade})
+              <option value="">-- Select Parent --</option>
+              {parents.map(p => (
+                <option key={p._id} value={p._id}>
+                  {p.name} - {p.phone}
                 </option>
               ))}
             </select>
@@ -108,7 +125,7 @@ const StudentFeeDetailsPage = () => {
               onChange={(e) => setSelectedYear(e.target.value)}
             >
               <option value="">-- Select Year --</option>
-              {(academicYears || []).map(y => (
+              {academicYears.map(y => (
                 <option key={y._id} value={y._id}>
                   {y.name} {y.is_current ? '(Current)' : ''}
                 </option>
@@ -120,67 +137,59 @@ const StudentFeeDetailsPage = () => {
 
       {loading && <p className="text-gray-600 dark:text-gray-300">Loading data...</p>}
 
-      {!loading && summary && (
+      {!loading && grandTotals && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-blue-50 dark:bg-blue-900 shadow rounded p-4 text-center">
-            <h3 className="text-blue-800 dark:text-blue-100 font-semibold mb-1">Total Academic Year Fee</h3>
-            <p className="text-2xl font-bold text-blue-600 dark:text-blue-300">${summary.totalAmount}</p>
+            <h3 className="text-blue-800 dark:text-blue-100 font-semibold mb-1">Grand Total Academic Year Fee</h3>
+            <p className="text-2xl font-bold text-blue-600 dark:text-blue-300">${grandTotals.totalFees}</p>
           </div>
           <div className="bg-green-50 dark:bg-green-900 shadow rounded p-4 text-center">
-            <h3 className="text-green-800 dark:text-green-100 font-semibold mb-1">Total Paid</h3>
-            <p className="text-2xl font-bold text-green-600 dark:text-green-300">${summary.totalPaid}</p>
+            <h3 className="text-green-800 dark:text-green-100 font-semibold mb-1">Grand Total Paid</h3>
+            <p className="text-2xl font-bold text-green-600 dark:text-green-300">${grandTotals.totalPaid}</p>
           </div>
           <div className="bg-red-50 dark:bg-red-900 shadow rounded p-4 text-center">
-            <h3 className="text-red-800 dark:text-red-100 font-semibold mb-1">Remaining Balance</h3>
-            <p className="text-2xl font-bold text-red-600 dark:text-red-300">${summary.remainingBalance}</p>
-            {summary.advanceBalance > 0 && (
-              <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-1">Advance: ${summary.advanceBalance}</p>
-            )}
+            <h3 className="text-red-800 dark:text-red-100 font-semibold mb-1">Grand Remaining Balance</h3>
+            <p className="text-2xl font-bold text-red-600 dark:text-red-300">${grandTotals.totalRemaining}</p>
           </div>
         </div>
       )}
 
-      {!loading && summary && (
-        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Monthly Tuition Ledger</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {(summary.monthlyLedger || []).map((month, idx) => (
-              <div key={idx} className={`border rounded p-3 text-center ${
-                month.status === 'Paid' ? 'border-green-500 bg-green-50 dark:bg-green-900/30' :
-                month.status === 'Partial' ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/30' :
-                month.status === 'N/A' ? 'border-gray-300 bg-gray-100 dark:bg-gray-700 opacity-60' :
-                'border-red-500 bg-red-50 dark:bg-red-900/30'
-              }`}>
-                <p className="font-bold text-gray-800 dark:text-gray-200">{month.monthName} {month.year}</p>
-                <p className="text-sm font-semibold mt-1">
-                  {month.status === 'N/A' ? '-' : `$${month.paidAmount} / $${month.originalAmount}`}
-                </p>
-                <p className={`text-xs mt-1 font-bold ${
-                  month.status === 'Paid' ? 'text-green-600' :
-                  month.status === 'Partial' ? 'text-yellow-600' :
-                  month.status === 'N/A' ? 'text-gray-500' :
-                  'text-red-600'
-                }`}>{month.status}</p>
+      {!loading && childrenDetails.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {childrenDetails.map(child => (
+            <div key={child.assignmentId} className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-5">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-2">
+                {child.student.firstName} {child.student.lastName}
+              </h3>
+              <p className="text-sm text-gray-500 mb-4">Grade: {child.student.grade}</p>
+              
+              <div className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                <div className="flex justify-between">
+                  <span>Total Fee:</span>
+                  <span className="font-semibold">${child.totalAmount}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Paid:</span>
+                  <span className="font-semibold text-green-600">${child.totalPaid}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Advance:</span>
+                  <span className="font-semibold text-yellow-600">${child.advanceBalance}</span>
+                </div>
+                <div className="flex justify-between border-t mt-2 pt-2 font-bold">
+                  <span>Remaining:</span>
+                  <span className="text-red-600">${child.remainingBalance}</span>
+                </div>
               </div>
-            ))}
-          </div>
-          
-          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <h3 className="font-bold text-gray-800 dark:text-white mb-2">Other Yearly Fees (Remaining)</h3>
-            <div className="flex gap-4 text-sm text-gray-700 dark:text-gray-300">
-              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Admission: ${summary.remainingFees.admission}</span>
-              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Registration: ${summary.remainingFees.registration}</span>
-              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Miscellaneous: ${summary.remainingFees.miscellaneous}</span>
-              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Annual Charges: ${summary.remainingFees.annual}</span>
             </div>
-          </div>
+          ))}
         </div>
       )}
 
-      {!loading && summary && receipts.length > 0 && (
+      {!loading && grandTotals && receipts.length > 0 && (
         <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white">Payment History</h2>
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white">Parent Payment History</h2>
           </div>
           <table className="min-w-full leading-normal">
             <thead>
@@ -212,14 +221,14 @@ const StudentFeeDetailsPage = () => {
                     {receipt.receiptNumber}
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 text-sm text-green-600 font-bold">
-                    ${receipt.amountPaid}
+                    ${receipt.totalAmountPaid}
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-300">
                     {receipt.paymentMethod}
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 text-sm">
                     <Link
-                      to={`/receipt/${receipt._id}`}
+                      to={`/parent-receipt/${receipt._id}`}
                       className="text-blue-500 hover:text-blue-700 font-semibold"
                     >
                       View Receipt
@@ -232,13 +241,13 @@ const StudentFeeDetailsPage = () => {
         </div>
       )}
 
-      {!loading && summary && receipts.length === 0 && (
+      {!loading && grandTotals && receipts.length === 0 && (
         <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 text-center text-gray-500">
-          No payments recorded for this academic year.
+          No parent payments recorded for this academic year.
         </div>
       )}
     </div>
   );
 };
 
-export default StudentFeeDetailsPage;
+export default ParentFeeDetailsPage;

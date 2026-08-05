@@ -31,7 +31,10 @@ import FeeStructuresPage from './pages/feeStructures/FeeStructuresPage';
 // Fee Payment pages
 import FeePaymentPage from './pages/feePayments/FeePaymentPage';
 import StudentFeeDetailsPage from './pages/feePayments/StudentFeeDetailsPage';
+import ParentFeeDetailsPage from './pages/feePayments/ParentFeeDetailsPage';
+import FeeLedgerPage from './pages/feePayments/FeeLedgerPage';
 import ReceiptViewPage from './pages/feePayments/ReceiptViewPage';
+import ParentReceiptViewPage from './pages/feePayments/ParentReceiptViewPage';
 
 function App() {
   return (
@@ -62,11 +65,13 @@ function App() {
           {/* Academic Year & Fee Structure Routes */}
           <Route path="/academic-years" element={<AcademicYearsPage />} />
           <Route path="/fee-structures" element={<FeeStructuresPage />} />
-
-          {/* Fee Payment Routes */}
+          {/* Fee Payments Module */}
           <Route path="/fee-payment" element={<FeePaymentPage />} />
-          <Route path="/fee-details" element={<StudentFeeDetailsPage />} />
+          <Route path="/student-fee-details" element={<StudentFeeDetailsPage />} />
+          <Route path="/parent-fee-details" element={<ParentFeeDetailsPage />} />
+          <Route path="/fee-ledger" element={<FeeLedgerPage />} />
           <Route path="/receipt/:id" element={<ReceiptViewPage />} />
+          <Route path="/parent-receipt/:id" element={<ParentReceiptViewPage />} />
 
           {/* SUPER_ADMIN and ADMIN Routes */}
           <Route element={<RoleRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']} />}>
