@@ -37,7 +37,7 @@ const ReceiptViewPage = () => {
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       {/* Hide controls when printing */}
       <div className="mb-6 flex justify-between items-center print:hidden">
-        <Link to="/fee-details" className="text-blue-500 hover:text-blue-700 font-semibold">
+        <Link to="/student-fee-details" className="text-blue-500 hover:text-blue-700 font-semibold">
           &larr; Back to History
         </Link>
         <button
