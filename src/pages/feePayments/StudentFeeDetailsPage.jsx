@@ -95,7 +95,7 @@ const StudentFeeDetailsPage = () => {
               <option value="">-- Select Student --</option>
               {(students || []).map(s => (
                 <option key={s._id} value={s._id}>
-                  {s.firstName} {s.lastName} ({s.grade})
+                  {s.name} | Roll/Adm: {s.rollNumber || 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'}
                 </option>
               ))}
             </select>
@@ -119,6 +119,23 @@ const StudentFeeDetailsPage = () => {
       </div>
 
       {loading && <p className="text-gray-600 dark:text-gray-300">Loading data...</p>}
+
+      {!loading && summary && summary.student && (
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 mb-6 shadow-md flex flex-wrap justify-between items-center gap-4 text-sm text-slate-200">
+          <div>
+            <h2 className="text-lg font-bold text-white">{summary.student.name}</h2>
+            <p className="text-xs text-slate-400">Class: <span className="font-semibold text-slate-200">{summary.student.grade} {summary.student.section ? `(${summary.student.section})` : ''}</span></p>
+          </div>
+          <div>
+            <p className="text-xs text-slate-400">Roll / Admission No:</p>
+            <p className="font-mono font-semibold text-indigo-300">{summary.student.rollNumber || 'N/A'}</p>
+          </div>
+          <div>
+            <p className="text-xs text-slate-400">Parent / Guardian:</p>
+            <p className="font-semibold text-slate-200">{summary.student.parentId?.name || 'N/A'}</p>
+          </div>
+        </div>
+      )}
 
       {!loading && summary && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

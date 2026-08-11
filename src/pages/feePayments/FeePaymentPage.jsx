@@ -132,7 +132,7 @@ const FeePaymentPage = () => {
               <option value="">-- Select Student --</option>
               {(students || []).map(s => (
                 <option key={s._id} value={s._id}>
-                  {s.firstName} {s.lastName} ({s.grade})
+                  {s.name} | Roll/Adm: {s.rollNumber || 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'}
                 </option>
               ))}
             </select>
@@ -163,6 +163,15 @@ const FeePaymentPage = () => {
           <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Fee Summary</h2>
             
+            {summary.student && (
+              <div className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded p-3 mb-4 text-xs space-y-1 text-slate-800 dark:text-slate-200">
+                <p><strong>Student Name:</strong> {summary.student.name}</p>
+                <p><strong>Roll / Adm No:</strong> <span className="font-mono">{summary.student.rollNumber || 'N/A'}</span></p>
+                <p><strong>Class & Section:</strong> {summary.student.grade} {summary.student.section ? `(${summary.student.section})` : ''}</p>
+                <p><strong>Parent / Guardian:</strong> {summary.student.parentId?.name || 'N/A'}</p>
+              </div>
+            )}
+
             <div className="space-y-2 text-gray-700 dark:text-gray-300">
               <div className="flex justify-between border-b pb-1">
                 <span>Valid Tuition Months:</span>

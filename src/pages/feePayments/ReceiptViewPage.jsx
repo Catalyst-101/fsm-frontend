@@ -58,12 +58,13 @@ const ReceiptViewPage = () => {
         <div className="flex justify-between mb-8">
           <div>
             <h3 className="font-semibold text-lg text-gray-800">Student Details</h3>
-            <p><strong>Name:</strong> {receipt.studentId.firstName} {receipt.studentId.lastName}</p>
-            <p><strong>Grade:</strong> {receipt.studentId.grade}</p>
-            {receipt.studentId.parentId && (
-              <p><strong>Parent:</strong> {receipt.studentId.parentId.firstName} {receipt.studentId.parentId.lastName}</p>
+            <p><strong>Name:</strong> {receipt.studentId?.name || 'N/A'}</p>
+            <p><strong>Roll / Adm No:</strong> <span className="font-mono">{receipt.studentId?.rollNumber || 'N/A'}</span></p>
+            <p><strong>Class & Section:</strong> {receipt.studentId?.grade || 'N/A'} {receipt.studentId?.section ? `(${receipt.studentId.section})` : ''}</p>
+            {receipt.studentId?.parentId && (
+              <p><strong>Parent Name:</strong> {receipt.studentId.parentId.name || 'N/A'}</p>
             )}
-            <p><strong>Academic Year:</strong> {receipt.academicYearId.name}</p>
+            <p><strong>Academic Year:</strong> {receipt.academicYearId?.name || 'N/A'}</p>
           </div>
           <div className="text-right">
             <h3 className="font-semibold text-lg text-gray-800">Receipt Details</h3>

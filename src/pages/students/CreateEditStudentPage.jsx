@@ -345,6 +345,7 @@ const CreateEditStudentPage = () => {
                 placeholder="e.g. 15"
                 className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
               />
+              <p className="text-[10px] text-slate-400 mt-1">Unique per Class & Section</p>
             </div>
           </div>
 
