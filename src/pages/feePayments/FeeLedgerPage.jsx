@@ -275,9 +275,9 @@ const FeeLedgerPage = () => {
     const rows = filteredSortedData.map(item => {
       const months = (item.monthlyLedger || []).map(m => {
         if (m.status === 'N/A') return '-';
-        if (m.status === 'Paid') return `Paid (${m.paidAmount})`;
-        if (m.status === 'Partial') return `Partial (${m.paidAmount})`;
-        return `Due (${m.originalAmount - m.paidAmount})`;
+        if (m.status === 'Paid') return `Paid (Rs. {m.paidAmount})`;
+        if (m.status === 'Partial') return `Partial (Rs. {m.paidAmount})`;
+        return `Due (Rs. {m.originalAmount - m.paidAmount})`;
       });
 
       return [
@@ -365,22 +365,22 @@ const FeeLedgerPage = () => {
 
         <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-blue-500 shadow-md">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Expected Fee</p>
-          <p className="text-xl font-extrabold text-white mt-1">${metrics.expectedFee}</p>
+          <p className="text-xl font-extrabold text-white mt-1">Rs. {metrics.expectedFee}</p>
         </div>
 
         <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-emerald-500 shadow-md">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Collected Fee</p>
-          <p className="text-xl font-extrabold text-emerald-400 mt-1">${metrics.collectedFee}</p>
+          <p className="text-xl font-extrabold text-emerald-400 mt-1">Rs. {metrics.collectedFee}</p>
         </div>
 
         <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-rose-500 shadow-md">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Remaining Fee</p>
-          <p className="text-xl font-extrabold text-rose-400 mt-1">${metrics.remainingFee}</p>
+          <p className="text-xl font-extrabold text-rose-400 mt-1">Rs. {metrics.remainingFee}</p>
         </div>
 
         <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-amber-500 shadow-md">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Advance Balance</p>
-          <p className="text-xl font-extrabold text-amber-400 mt-1">${metrics.advanceBalance}</p>
+          <p className="text-xl font-extrabold text-amber-400 mt-1">Rs. {metrics.advanceBalance}</p>
         </div>
 
         <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-teal-500 shadow-md">
@@ -601,13 +601,13 @@ const FeeLedgerPage = () => {
                           </td>
 
                           <td colSpan={3} className="py-3 px-3 text-right text-emerald-300 font-extrabold border-l border-slate-700">
-                            Paid: ${group.totalPaid}
+                            Paid: Rs. {group.totalPaid}
                           </td>
                           <td colSpan={2} className="py-3 px-3 text-right text-rose-300 font-extrabold">
-                            Rem: ${group.totalRemaining}
+                            Rem: Rs. {group.totalRemaining}
                           </td>
                           <td colSpan={2} className="py-3 px-3 text-center text-slate-400 text-[10px]">
-                            Other Rem: ${group.totalOtherFeesRemaining}
+                            Other Rem: Rs. {group.totalOtherFeesRemaining}
                           </td>
                         </tr>
 
@@ -680,12 +680,12 @@ const FeeLedgerPage = () => {
                                   </td>
 
                                   {/* 5. SUMMARY COLUMNS */}
-                                  <td className="py-2.5 px-3 text-right border-l border-slate-700/60 font-semibold text-slate-200">${student.monthlyTuitionTotal}</td>
-                                  <td className="py-2.5 px-3 text-right font-semibold text-rose-300">${student.otherFeesRemaining}</td>
-                                  <td className="py-2.5 px-3 text-right font-bold text-indigo-300">${student.totalAmount}</td>
-                                  <td className="py-2.5 px-3 text-right font-extrabold text-emerald-400">${student.totalPaid}</td>
-                                  <td className="py-2.5 px-3 text-right font-extrabold text-rose-400">${student.remainingBalance}</td>
-                                  <td className="py-2.5 px-3 text-right font-extrabold text-amber-400">${student.advanceBalance}</td>
+                                  <td className="py-2.5 px-3 text-right border-l border-slate-700/60 font-semibold text-slate-200">Rs. {student.monthlyTuitionTotal}</td>
+                                  <td className="py-2.5 px-3 text-right font-semibold text-rose-300">Rs. {student.otherFeesRemaining}</td>
+                                  <td className="py-2.5 px-3 text-right font-bold text-indigo-300">Rs. {student.totalAmount}</td>
+                                  <td className="py-2.5 px-3 text-right font-extrabold text-emerald-400">Rs. {student.totalPaid}</td>
+                                  <td className="py-2.5 px-3 text-right font-extrabold text-rose-400">Rs. {student.remainingBalance}</td>
+                                  <td className="py-2.5 px-3 text-right font-extrabold text-amber-400">Rs. {student.advanceBalance}</td>
 
                                   <td className="py-2.5 px-3 text-center text-[10px] text-slate-400 whitespace-nowrap">
                                     {student.lastPaymentDate ? new Date(student.lastPaymentDate).toLocaleDateString() : 'N/A'}
@@ -740,9 +740,9 @@ const FeeLedgerPage = () => {
                                                 <tr key={rec._id} className="hover:bg-slate-800/50">
                                                   <td className="py-2 px-3 font-mono font-bold text-indigo-300">{rec.receiptNumber}</td>
                                                   <td className="py-2 px-3 text-slate-400">{new Date(rec.createdAt).toLocaleString()}</td>
-                                                  <td className="py-2 px-3 text-right font-bold text-emerald-400">${rec.amountPaid}</td>
+                                                  <td className="py-2 px-3 text-right font-bold text-emerald-400">Rs. {rec.amountPaid}</td>
                                                   <td className="py-2 px-3 text-center text-slate-400">{rec.paymentMethod}</td>
-                                                  <td className="py-2 px-3 text-right font-semibold text-rose-300">${rec.remainingBalance}</td>
+                                                  <td className="py-2 px-3 text-right font-semibold text-rose-300">Rs. {rec.remainingBalance}</td>
                                                   <td className="py-2 px-3 text-right space-x-2">
                                                     <Link
                                                       to={`/receipt/${rec._id}`}

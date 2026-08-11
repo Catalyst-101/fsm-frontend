@@ -21,10 +21,8 @@ const Layout = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/30">
-                F
-              </div>
-              <span className="font-bold text-lg text-white tracking-tight">Fee Management</span>
+              <img src="/src/assets/images/logo.png" alt="Logo" className="w-8 h-8 rounded-lg object-contain bg-white shadow-lg shadow-indigo-500/30" />
+              <span className="font-bold text-lg text-white tracking-tight">Pen & Page Academia (School Section)</span>
             </div>
             <nav className="flex items-center gap-1">
               <Link
@@ -168,7 +166,7 @@ const Layout = () => {
       </main>
 
       <footer className="bg-slate-950 border-t border-slate-800 text-center py-4 text-xs text-slate-500">
-        Fee Management System &copy; {new Date().getFullYear()} — All rights reserved.
+        Pen & Page Academia (School Section) &copy; {new Date().getFullYear()} — All rights reserved.
       </footer>
     </div>
   );

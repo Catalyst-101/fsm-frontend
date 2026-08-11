@@ -106,7 +106,7 @@ const StudentsPage = () => {
                   <tr key={s._id} className="hover:bg-slate-700/30 transition-colors">
                     <td className="py-3.5 px-4">
                       <div className="font-semibold text-white">{s.name}</div>
-                      <div className="text-xs text-slate-400">{s.rollNumber && `Roll: ${s.rollNumber}`}</div>
+                      <div className="text-xs text-slate-400">{s.rollNumber && `Roll: Rs. {s.rollNumber}`}</div>
                     </td>
                     <td className="py-3.5 px-4">
                       {s.parentId ? (
@@ -118,7 +118,7 @@ const StudentsPage = () => {
                       )}
                     </td>
                     <td className="py-3.5 px-4 text-slate-300">
-                      {s.grade} {s.section && `(${s.section})`}
+                      {s.grade} {s.section && `(Rs. {s.section})`}
                     </td>
                     <td className="py-3.5 px-4 text-slate-400">{s.gender}</td>
                     <td className="py-3.5 px-4">

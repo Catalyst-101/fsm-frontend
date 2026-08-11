@@ -1,6 +1,154 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
+import logo from '../../assets/images/logo.png';
+
+function numberToWords(num) {
+  if (num === 0) return 'Zero Rupees Only';
+  const a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
+  const b = ['', '', 'Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety'];
+
+  if ((num = num.toString()).length > 9) return 'overflow';
+  let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+  if (!n) return ''; 
+  let str = '';
+  str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
+  str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
+  str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
+  str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
+  str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
+  return str.trim() + ' Rupees Only';
+}
+
+const ReceiptCopy = ({ receipt, copyType }) => {
+  return (
+    <div className="bg-white text-gray-900 shadow-sm rounded-lg p-6 border border-gray-300 mb-8 print:mb-8 print:shadow-none break-inside-avoid">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6 border-b-2 border-gray-800 pb-4">
+        <div className="flex items-center gap-4">
+          <img src={logo} alt="Logo" className="w-16 h-16 object-contain" />
+          <div>
+            <h1 className="text-2xl font-bold uppercase tracking-wide">Pen & Page Academia</h1>
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-gray-700">(School Section)</h2>
+            <p className="text-xs text-gray-500 italic mt-0.5">Innovating Tomorrow by Educating Today</p>
+          </div>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-gray-500 mb-1">Rehman Baba Street, University Town, Peshawar</p>
+          <div className="inline-block border-2 border-gray-800 px-3 py-1 font-bold uppercase text-sm">
+            {copyType}
+          </div>
+        </div>
+      </div>
+
+      {/* Details Grid */}
+      <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+        <div>
+          <p className="mb-1"><strong>Student Name:</strong> {receipt.studentId?.name || 'N/A'}</p>
+          <p className="mb-1"><strong>Roll / Adm No:</strong> <span className="font-mono">{receipt.studentId?.rollNumber || 'N/A'}</span></p>
+          <p className="mb-1"><strong>Class & Section:</strong> {receipt.studentId?.grade || 'N/A'} {receipt.studentId?.section ? `(${receipt.studentId.section})` : ''}</p>
+          {receipt.studentId?.parentId && (
+            <p className="mb-1"><strong>Parent Name:</strong> {receipt.studentId.parentId.name || 'N/A'}</p>
+          )}
+          <p><strong>Fee Month/AY:</strong> {receipt.academicYearId?.name || 'N/A'}</p>
+        </div>
+        <div className="text-right">
+          <p className="mb-1"><strong>Receipt No:</strong> <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">{receipt.receiptNumber}</span></p>
+          <p className="mb-1"><strong>Date:</strong> {new Date(receipt.createdAt).toLocaleDateString()} {new Date(receipt.createdAt).toLocaleTimeString()}</p>
+          <p className="mb-1"><strong>Payment Method:</strong> {receipt.paymentMethod}</p>
+          <p><strong>Cashier:</strong> {receipt.cashierId?.name || 'Admin'}</p>
+        </div>
+      </div>
+
+      {/* Fee Breakdown Table */}
+      <div className="mb-4 border border-gray-300 rounded overflow-hidden">
+        <table className="w-full text-left border-collapse text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="py-2 px-3 font-bold border-b border-gray-300">Fee Description</th>
+              <th className="py-2 px-3 font-bold border-b border-gray-300 text-right">Amount (PKR)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {receipt.allocatedToTuition > 0 && (
+              <tr className="border-b border-gray-200">
+                <td className="py-1.5 px-3">Tuition Fee</td>
+                <td className="py-1.5 px-3 text-right">Rs. {receipt.allocatedToTuition}</td>
+              </tr>
+            )}
+            {receipt.allocatedToAdmission > 0 && (
+              <tr className="border-b border-gray-200">
+                <td className="py-1.5 px-3">Admission Fee</td>
+                <td className="py-1.5 px-3 text-right">Rs. {receipt.allocatedToAdmission}</td>
+              </tr>
+            )}
+            {receipt.allocatedToRegistration > 0 && (
+              <tr className="border-b border-gray-200">
+                <td className="py-1.5 px-3">Registration Fee</td>
+                <td className="py-1.5 px-3 text-right">Rs. {receipt.allocatedToRegistration}</td>
+              </tr>
+            )}
+            {receipt.allocatedToMiscellaneous > 0 && (
+              <tr className="border-b border-gray-200">
+                <td className="py-1.5 px-3">Miscellaneous Fee</td>
+                <td className="py-1.5 px-3 text-right">Rs. {receipt.allocatedToMiscellaneous}</td>
+              </tr>
+            )}
+            {receipt.allocatedToAnnual > 0 && (
+              <tr className="border-b border-gray-200">
+                <td className="py-1.5 px-3">Annual Charges</td>
+                <td className="py-1.5 px-3 text-right">Rs. {receipt.allocatedToAnnual}</td>
+              </tr>
+            )}
+            {receipt.addedToAdvance > 0 && (
+              <tr className="border-b border-gray-200 bg-yellow-50">
+                <td className="py-1.5 px-3 font-semibold text-yellow-800">Added to Advance Balance</td>
+                <td className="py-1.5 px-3 text-right font-semibold text-yellow-800">Rs. {receipt.addedToAdvance}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      
+      {/* Balances and Total */}
+      <div className="flex justify-between items-end mb-4">
+        <div className="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-200 flex-1 mr-4">
+          <p className="mb-1"><strong>Previous Dues:</strong> Rs. {receipt.previousBalance}</p>
+          <p><strong>Remaining Dues:</strong> Rs. {receipt.remainingBalance}</p>
+          {receipt.lastPayment && (
+            <p className="mt-2 pt-2 border-t border-gray-200 text-blue-800">
+              <strong>Last Payment:</strong> Rs. {receipt.lastPayment.amountPaid} on {new Date(receipt.lastPayment.createdAt).toLocaleDateString()} (Receipt #{receipt.lastPayment.receiptNumber})
+            </p>
+          )}
+        </div>
+        
+        <div className="text-right flex-1">
+          <div className="inline-block border-2 border-gray-800 rounded p-3 bg-gray-50">
+            <p className="text-sm font-bold uppercase text-gray-600 mb-1">Total Paid</p>
+            <p className="text-2xl font-black text-gray-900">Rs. {receipt.amountPaid}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Amount in words */}
+      <div className="bg-gray-100 p-2 rounded text-sm font-semibold italic text-gray-800 mb-8 border border-gray-200">
+        Amount in Words: {numberToWords(receipt.amountPaid)}
+      </div>
+
+      {/* Signatures */}
+      <div className="mt-auto pt-6 border-t border-gray-300 flex justify-between px-8 text-gray-500 text-xs">
+        <div className="text-center">
+          <div className="w-40 border-b border-gray-400 mb-1"></div>
+          Cashier Signature
+        </div>
+        <div className="text-center">
+          <div className="w-40 border-b border-gray-400 mb-1"></div>
+          Parent/Guardian Signature
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ReceiptViewPage = () => {
   const { id } = useParams();
@@ -34,130 +182,46 @@ const ReceiptViewPage = () => {
   if (!receipt) return null;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl">
-      {/* Hide controls when printing */}
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      {/* Controls */}
       <div className="mb-6 flex justify-between items-center print:hidden">
         <Link to="/student-fee-details" className="text-blue-500 hover:text-blue-700 font-semibold">
           &larr; Back to History
         </Link>
         <button
           onClick={handlePrint}
-          className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded shadow"
+          className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded shadow flex items-center gap-2"
         >
-          Print / Save PDF
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clipRule="evenodd" />
+          </svg>
+          Print Receipt
         </button>
       </div>
 
-      {/* Receipt Paper */}
-      <div className="bg-white text-gray-900 shadow-lg rounded-lg p-8 border border-gray-200">
-        <div className="text-center mb-8 border-b-2 border-gray-200 pb-6">
-          <h1 className="text-3xl font-bold uppercase tracking-widest">FMS School</h1>
-          <p className="text-sm text-gray-500 mt-1">Official Fee Receipt</p>
+      {/* Receipts */}
+      <div className="print:m-0">
+        <ReceiptCopy receipt={receipt} copyType="School Copy" />
+        
+        {/* Cut line */}
+        <div className="flex items-center my-6 print:my-4 print:block text-gray-400 print:text-black">
+          <div className="border-t-2 border-dashed border-gray-400 flex-grow"></div>
+          <span className="px-4 text-xs font-mono uppercase tracking-widest hidden print:inline-block absolute left-1/2 -ml-8 bg-white" style={{marginTop: '-8px'}}>✂ Cut Here</span>
+          <span className="px-4 text-xs font-mono uppercase tracking-widest print:hidden">✂ Cut Here</span>
+          <div className="border-t-2 border-dashed border-gray-400 flex-grow"></div>
         </div>
-
-        <div className="flex justify-between mb-8">
-          <div>
-            <h3 className="font-semibold text-lg text-gray-800">Student Details</h3>
-            <p><strong>Name:</strong> {receipt.studentId?.name || 'N/A'}</p>
-            <p><strong>Roll / Adm No:</strong> <span className="font-mono">{receipt.studentId?.rollNumber || 'N/A'}</span></p>
-            <p><strong>Class & Section:</strong> {receipt.studentId?.grade || 'N/A'} {receipt.studentId?.section ? `(${receipt.studentId.section})` : ''}</p>
-            {receipt.studentId?.parentId && (
-              <p><strong>Parent Name:</strong> {receipt.studentId.parentId.name || 'N/A'}</p>
-            )}
-            <p><strong>Academic Year:</strong> {receipt.academicYearId?.name || 'N/A'}</p>
-          </div>
-          <div className="text-right">
-            <h3 className="font-semibold text-lg text-gray-800">Receipt Details</h3>
-            <p><strong>Receipt No:</strong> <span className="font-mono bg-gray-100 px-2 py-1 rounded">{receipt.receiptNumber}</span></p>
-            <p><strong>Date:</strong> {new Date(receipt.createdAt).toLocaleString()}</p>
-            <p><strong>Payment Method:</strong> {receipt.paymentMethod}</p>
-            <p><strong>Cashier:</strong> {receipt.cashierId.name}</p>
-          </div>
-        </div>
-
-        {/* Allocation Table */}
-        <div className="mb-8">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b-2 border-gray-800">
-                <th className="py-2 font-bold uppercase text-sm">Fee Description</th>
-                <th className="py-2 font-bold uppercase text-sm text-right">Amount Allocated</th>
-              </tr>
-            </thead>
-            <tbody>
-              {receipt.allocatedToTuition > 0 && (
-                <tr className="border-b border-gray-200">
-                  <td className="py-2">Tuition Fee</td>
-                  <td className="py-2 text-right">${receipt.allocatedToTuition}</td>
-                </tr>
-              )}
-              {receipt.allocatedToAdmission > 0 && (
-                <tr className="border-b border-gray-200">
-                  <td className="py-2">Admission Fee</td>
-                  <td className="py-2 text-right">${receipt.allocatedToAdmission}</td>
-                </tr>
-              )}
-              {receipt.allocatedToRegistration > 0 && (
-                <tr className="border-b border-gray-200">
-                  <td className="py-2">Registration Fee</td>
-                  <td className="py-2 text-right">${receipt.allocatedToRegistration}</td>
-                </tr>
-              )}
-              {receipt.allocatedToMiscellaneous > 0 && (
-                <tr className="border-b border-gray-200">
-                  <td className="py-2">Miscellaneous Fee</td>
-                  <td className="py-2 text-right">${receipt.allocatedToMiscellaneous}</td>
-                </tr>
-              )}
-              {receipt.allocatedToAnnual > 0 && (
-                <tr className="border-b border-gray-200">
-                  <td className="py-2">Annual Charges</td>
-                  <td className="py-2 text-right">${receipt.allocatedToAnnual}</td>
-                </tr>
-              )}
-              {receipt.addedToAdvance > 0 && (
-                <tr className="border-b border-gray-200 bg-yellow-50">
-                  <td className="py-2 font-semibold text-yellow-800">Added to Advance Balance</td>
-                  <td className="py-2 text-right font-semibold text-yellow-800">${receipt.addedToAdvance}</td>
-                </tr>
-              )}
-              <tr className="border-b-4 border-gray-800 bg-gray-50">
-                <td className="py-3 font-bold text-lg text-right">Total Amount Received:</td>
-                <td className="py-3 font-bold text-xl text-green-700 text-right">${receipt.amountPaid}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="flex justify-between text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
-          <div>
-            <p><strong>Previous Balance:</strong> ${receipt.previousBalance}</p>
-            <p><strong>Remaining Balance:</strong> ${receipt.remainingBalance}</p>
-          </div>
-          {receipt.remarks && (
-            <div className="max-w-xs text-right">
-              <p><strong>Remarks:</strong> {receipt.remarks}</p>
-            </div>
-          )}
-        </div>
-
-        <div className="mt-12 pt-8 border-t border-gray-300 flex justify-between px-8 text-gray-400 text-sm">
-          <div className="text-center">
-            <div className="w-40 border-b border-gray-400 mb-2"></div>
-            Cashier Signature
-          </div>
-          <div className="text-center">
-            <div className="w-40 border-b border-gray-400 mb-2"></div>
-            Parent/Guardian Signature
-          </div>
-        </div>
+        
+        <ReceiptCopy receipt={receipt} copyType="Parent Copy" />
       </div>
       
-      {/* Print styles injection */}
+      {/* Print styles */}
       <style>{`
         @media print {
+          @page { margin: 0.5cm; }
           body * {
             visibility: hidden;
+            background-color: white !important;
+            color: black !important;
           }
           .container * {
             visibility: visible;
@@ -169,6 +233,7 @@ const ReceiptViewPage = () => {
             width: 100%;
             margin: 0;
             padding: 0;
+            max-width: none !important;
           }
         }
       `}</style>

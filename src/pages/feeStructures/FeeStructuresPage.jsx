@@ -111,7 +111,7 @@ const FeeStructuresPage = () => {
   };
 
   const handleDelete = async (id, yearName, gradeName) => {
-    if (!window.confirm(`Are you sure you want to delete Fee Structure for ${gradeName} (${yearName})?`)) {
+    if (!window.confirm(`Are you sure you want to delete Fee Structure for ${gradeName} (Rs. {yearName})?`)) {
       return;
     }
     setMsg('');

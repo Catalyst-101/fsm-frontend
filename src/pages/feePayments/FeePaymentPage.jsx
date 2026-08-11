@@ -167,7 +167,7 @@ const FeePaymentPage = () => {
               <div className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded p-3 mb-4 text-xs space-y-1 text-slate-800 dark:text-slate-200">
                 <p><strong>Student Name:</strong> {summary.student.name}</p>
                 <p><strong>Roll / Adm No:</strong> <span className="font-mono">{summary.student.rollNumber || 'N/A'}</span></p>
-                <p><strong>Class & Section:</strong> {summary.student.grade} {summary.student.section ? `(${summary.student.section})` : ''}</p>
+                <p><strong>Class & Section:</strong> {summary.student.grade} {summary.student.section ? `(Rs. {summary.student.section})` : ''}</p>
                 <p><strong>Parent / Guardian:</strong> {summary.student.parentId?.name || 'N/A'}</p>
               </div>
             )}
@@ -179,26 +179,26 @@ const FeePaymentPage = () => {
               </div>
               <div className="flex justify-between border-b pb-1">
                 <span>Total Academic Year Fee:</span>
-                <span className="font-semibold text-blue-600">${summary.totalAmount}</span>
+                <span className="font-semibold text-blue-600">Rs. {summary.totalAmount}</span>
               </div>
               <div className="flex justify-between border-b pb-1">
                 <span>Total Paid So Far:</span>
-                <span className="font-semibold text-green-600">${summary.totalPaid}</span>
+                <span className="font-semibold text-green-600">Rs. {summary.totalPaid}</span>
               </div>
               <div className="flex justify-between border-b pb-1">
                 <span>Advance Balance:</span>
-                <span className="font-semibold text-yellow-600">${summary.advanceBalance}</span>
+                <span className="font-semibold text-yellow-600">Rs. {summary.advanceBalance}</span>
               </div>
               <div className="flex justify-between font-bold text-lg pt-2">
                 <span>Remaining Balance:</span>
-                <span className="text-red-600">${summary.remainingBalance}</span>
+                <span className="text-red-600">Rs. {summary.remainingBalance}</span>
               </div>
               <div className="mt-4 text-sm text-gray-500">
-                <p>Tuition: ${summary.remainingFees.tuition} left</p>
-                <p>Admission: ${summary.remainingFees.admission} left</p>
-                <p>Registration: ${summary.remainingFees.registration} left</p>
-                <p>Miscellaneous: ${summary.remainingFees.miscellaneous} left</p>
-                <p>Annual: ${summary.remainingFees.annual} left</p>
+                <p>Tuition: Rs. {summary.remainingFees.tuition} left</p>
+                <p>Admission: Rs. {summary.remainingFees.admission} left</p>
+                <p>Registration: Rs. {summary.remainingFees.registration} left</p>
+                <p>Miscellaneous: Rs. {summary.remainingFees.miscellaneous} left</p>
+                <p>Annual: Rs. {summary.remainingFees.annual} left</p>
               </div>
             </div>
           </div>
@@ -207,7 +207,7 @@ const FeePaymentPage = () => {
             <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Payment Details</h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Amount Received ($)</label>
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Amount Received (Rs. )</label>
                 <input
                   type="number"
                   name="amountPaid"

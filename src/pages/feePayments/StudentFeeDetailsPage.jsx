@@ -124,7 +124,7 @@ const StudentFeeDetailsPage = () => {
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 mb-6 shadow-md flex flex-wrap justify-between items-center gap-4 text-sm text-slate-200">
           <div>
             <h2 className="text-lg font-bold text-white">{summary.student.name}</h2>
-            <p className="text-xs text-slate-400">Class: <span className="font-semibold text-slate-200">{summary.student.grade} {summary.student.section ? `(${summary.student.section})` : ''}</span></p>
+            <p className="text-xs text-slate-400">Class: <span className="font-semibold text-slate-200">{summary.student.grade} {summary.student.section ? `(Rs. {summary.student.section})` : ''}</span></p>
           </div>
           <div>
             <p className="text-xs text-slate-400">Roll / Admission No:</p>
@@ -141,17 +141,17 @@ const StudentFeeDetailsPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-blue-50 dark:bg-blue-900 shadow rounded p-4 text-center">
             <h3 className="text-blue-800 dark:text-blue-100 font-semibold mb-1">Total Academic Year Fee</h3>
-            <p className="text-2xl font-bold text-blue-600 dark:text-blue-300">${summary.totalAmount}</p>
+            <p className="text-2xl font-bold text-blue-600 dark:text-blue-300">Rs. {summary.totalAmount}</p>
           </div>
           <div className="bg-green-50 dark:bg-green-900 shadow rounded p-4 text-center">
             <h3 className="text-green-800 dark:text-green-100 font-semibold mb-1">Total Paid</h3>
-            <p className="text-2xl font-bold text-green-600 dark:text-green-300">${summary.totalPaid}</p>
+            <p className="text-2xl font-bold text-green-600 dark:text-green-300">Rs. {summary.totalPaid}</p>
           </div>
           <div className="bg-red-50 dark:bg-red-900 shadow rounded p-4 text-center">
             <h3 className="text-red-800 dark:text-red-100 font-semibold mb-1">Remaining Balance</h3>
-            <p className="text-2xl font-bold text-red-600 dark:text-red-300">${summary.remainingBalance}</p>
+            <p className="text-2xl font-bold text-red-600 dark:text-red-300">Rs. {summary.remainingBalance}</p>
             {summary.advanceBalance > 0 && (
-              <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-1">Advance: ${summary.advanceBalance}</p>
+              <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-1">Advance: Rs. {summary.advanceBalance}</p>
             )}
           </div>
         </div>
@@ -185,10 +185,10 @@ const StudentFeeDetailsPage = () => {
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
             <h3 className="font-bold text-gray-800 dark:text-white mb-2">Other Yearly Fees (Remaining)</h3>
             <div className="flex gap-4 text-sm text-gray-700 dark:text-gray-300">
-              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Admission: ${summary.remainingFees.admission}</span>
-              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Registration: ${summary.remainingFees.registration}</span>
-              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Miscellaneous: ${summary.remainingFees.miscellaneous}</span>
-              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Annual Charges: ${summary.remainingFees.annual}</span>
+              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Admission: Rs. {summary.remainingFees.admission}</span>
+              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Registration: Rs. {summary.remainingFees.registration}</span>
+              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Miscellaneous: Rs. {summary.remainingFees.miscellaneous}</span>
+              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Annual Charges: Rs. {summary.remainingFees.annual}</span>
             </div>
           </div>
         </div>

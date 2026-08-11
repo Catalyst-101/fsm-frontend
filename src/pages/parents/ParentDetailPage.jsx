@@ -96,7 +96,7 @@ const ParentDetailPage = () => {
                 students.map((s) => (
                   <tr key={s._id} className="hover:bg-slate-700/30 transition-colors">
                     <td className="py-3.5 px-4 font-semibold text-white">{s.name}</td>
-                    <td className="py-3.5 px-4 text-slate-300">{s.grade} {s.section && `(${s.section})`}</td>
+                    <td className="py-3.5 px-4 text-slate-300">{s.grade} {s.section && `(Rs. {s.section})`}</td>
                     <td className="py-3.5 px-4 text-slate-400">{s.gender}</td>
                     <td className="py-3.5 px-4">
                       <span className={`px-2 py-0.5 text-xs font-bold uppercase rounded ${s.isActive ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}`}>
