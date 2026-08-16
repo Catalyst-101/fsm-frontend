@@ -33,6 +33,7 @@ const CreateEditStudentPage = () => {
   const [grade, setGrade] = useState('Grade 1');
   const [section, setSection] = useState('');
   const [rollNumber, setRollNumber] = useState('');
+  const [joiningDate, setJoiningDate] = useState(new Date().toISOString().split('T')[0]);
   const [isActive, setIsActive] = useState(true);
 
   // Searchable Parent dropdown states
@@ -103,31 +104,47 @@ const CreateEditStudentPage = () => {
     loadFeeStructure();
   }, [academicYearId, grade, isEdit]);
 
+  // Auto-fetch next roll number when grade or section changes in Creation Mode
+  useEffect(() => {
+    if (isEdit || !grade) return;
+    
+    const fetchNextRollNumber = async () => {
+      try {
+        const res = await api.get('/students/next-roll-number', { params: { grade, section } });
+        if (res.data && res.data.data) {
+          setRollNumber(String(res.data.data));
+        }
+      } catch (err) {
+        console.error('Failed to fetch next roll number', err);
+      }
+    };
+
+    fetchNextRollNumber();
+  }, [grade, section, isEdit]);
+
   // Fetch Student data + existing Fee Assignment if edit mode
   useEffect(() => {
     const initData = async () => {
       if (isEdit) {
         try {
-          const [sRes, feeRes] = await Promise.all([
-            api.get(`/students/${id}`),
-            api.get(`/student-fee-assignments/student/${id}`),
-          ]);
+          const sRes = await api.get(`/students/${id}`);
           const s = sRes.data.data;
           setName(s.name || '');
           setParentId(s.parentId?._id || s.parentId || '');
           setGender(s.gender || 'Male');
           setDob(s.dob ? new Date(s.dob).toISOString().split('T')[0] : '');
+          setJoiningDate(s.joiningDate ? new Date(s.joiningDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
           setGrade(s.grade || 'Grade 1');
           setSection(s.section || '');
           setRollNumber(s.rollNumber || '');
           setIsActive(s.isActive !== undefined ? s.isActive : true);
 
-          // Populate fee assignment if exists
-          if (feeRes.data.data && feeRes.data.data.length > 0) {
-            const fa = feeRes.data.data[0];
-            setFeeAssignmentId(fa._id);
-            if (fa.academicYearId) {
-              setAcademicYearId(fa.academicYearId._id || fa.academicYearId);
+          // Populate embedded fee assignment if exists
+          if (s.fee) {
+            const fa = s.fee;
+            setFeeAssignmentId(fa._id || 'embedded');
+            if (fa.feeStructureId?.academicYearId || academicYearId) {
+              // Leave academic year as it is or figure out if we want to display it
             }
             setMonthlyTuition(fa.monthlyTuition || 0);
             setAdmissionFee(fa.admissionFee || 0);
@@ -160,6 +177,7 @@ const CreateEditStudentPage = () => {
       parentId,
       gender,
       dob: dob || null,
+      joiningDate: joiningDate || null,
       grade,
       section,
       rollNumber,
@@ -175,25 +193,8 @@ const CreateEditStudentPage = () => {
 
     try {
       if (isEdit) {
-        // 1. Update Student record
+        // 1. Update Student record along with embedded fee
         await api.put(`/students/${id}`, studentPayload);
-
-        // 2. Update Fee Assignment record if exists, or create one
-        const feePayload = {
-          studentId: id,
-          academicYearId,
-          monthlyTuition: Number(monthlyTuition),
-          admissionFee: Number(admissionFee),
-          registrationFee: Number(registrationFee),
-          miscellaneousFee: Number(miscellaneousFee),
-          annualCharges: Number(annualCharges),
-        };
-
-        if (feeAssignmentId) {
-          await api.put(`/student-fee-assignments/${feeAssignmentId}`, feePayload);
-        } else if (academicYearId) {
-          await api.post('/student-fee-assignments', feePayload);
-        }
       } else {
         await api.post('/students', studentPayload);
       }
@@ -283,7 +284,7 @@ const CreateEditStudentPage = () => {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Gender</label>
               <select
@@ -303,6 +304,16 @@ const CreateEditStudentPage = () => {
                 type="date"
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Joining Date</label>
+              <input
+                type="date"
+                value={joiningDate}
+                onChange={(e) => setJoiningDate(e.target.value)}
                 className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
               />
             </div>

@@ -95,7 +95,7 @@ const StudentsPage = () => {
             }}
             className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-indigo-500 focus:ring-indigo-500/50 focus:ring-offset-slate-800"
           />
-          <span className="text-sm text-slate-300">Show Inactive</span>
+          <span className="text-sm text-slate-300">Show Only Inactive</span>
         </label>
         <button
           type="submit"

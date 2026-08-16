@@ -6,7 +6,6 @@ const StudentDetailPage = () => {
   const { id } = useParams();
 
   const [student, setStudent] = useState(null);
-  const [feeAssignments, setFeeAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -14,12 +13,8 @@ const StudentDetailPage = () => {
     const fetchStudentDetails = async () => {
       setLoading(true);
       try {
-        const [studentRes, feeRes] = await Promise.all([
-          api.get(`/students/${id}`),
-          api.get(`/student-fee-assignments/student/${id}`),
-        ]);
+        const studentRes = await api.get(`/students/${id}`);
         setStudent(studentRes.data.data);
-        setFeeAssignments(feeRes.data.data);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch student details.');
       } finally {
@@ -100,18 +95,17 @@ const StudentDetailPage = () => {
       <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-4">
         <h3 className="text-lg font-bold text-white tracking-tight">Assigned Fee Structure</h3>
 
-        {feeAssignments.length === 0 ? (
+        {!student?.fee ? (
           <p className="text-xs text-slate-500">No fee structure assignment found for this student.</p>
         ) : (
           <div className="space-y-4">
-            {feeAssignments.map((fa) => (
-              <div key={fa._id} className="bg-slate-900 border border-slate-700/80 rounded-lg p-4 space-y-3">
+              <div className="bg-slate-900 border border-slate-700/80 rounded-lg p-4 space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">
-                    Academic Year: {fa.academicYearId?.name || 'N/A'}
+                    Current Fee Assignment
                   </span>
                   <div>
-                    {fa.is_custom ? (
+                    {student.fee.is_custom ? (
                       <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
                         Custom Fee Override
                       </span>
@@ -126,27 +120,26 @@ const StudentDetailPage = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
                   <div>
                     <span className="text-[10px] uppercase text-slate-500 block">Monthly Tuition</span>
-                    <span className="font-mono font-bold text-slate-200">Rs. {fa.monthlyTuition}</span>
+                    <span className="font-mono font-bold text-slate-200">Rs. {student.fee.monthlyTuition}</span>
                   </div>
                   <div>
                     <span className="text-[10px] uppercase text-slate-500 block">Admission Fee</span>
-                    <span className="font-mono text-slate-200">Rs. {fa.admissionFee}</span>
+                    <span className="font-mono text-slate-200">Rs. {student.fee.admissionFee}</span>
                   </div>
                   <div>
                     <span className="text-[10px] uppercase text-slate-500 block">Registration Fee</span>
-                    <span className="font-mono text-slate-200">Rs. {fa.registrationFee}</span>
+                    <span className="font-mono text-slate-200">Rs. {student.fee.registrationFee}</span>
                   </div>
                   <div>
                     <span className="text-[10px] uppercase text-slate-500 block">Miscellaneous Fee</span>
-                    <span className="font-mono text-slate-200">Rs. {fa.miscellaneousFee}</span>
+                    <span className="font-mono text-slate-200">Rs. {student.fee.miscellaneousFee}</span>
                   </div>
                   <div>
                     <span className="text-[10px] uppercase text-slate-500 block">Annual Charges</span>
-                    <span className="font-mono text-slate-200">Rs. {fa.annualCharges}</span>
+                    <span className="font-mono text-slate-200">Rs. {student.fee.annualCharges}</span>
                   </div>
                 </div>
               </div>
-            ))}
           </div>
         )}
       </div>
