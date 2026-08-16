@@ -13,6 +13,7 @@ const CreateEditParentPage = () => {
   const [email, setEmail] = useState('');
   const [occupation, setOccupation] = useState('');
   const [address, setAddress] = useState('');
+  const [isActive, setIsActive] = useState(true);
 
   const [loading, setLoading] = useState(isEdit);
   const [submitting, setSubmitting] = useState(false);
@@ -30,6 +31,7 @@ const CreateEditParentPage = () => {
           setEmail(p.email || '');
           setOccupation(p.occupation || '');
           setAddress(p.address || '');
+          setIsActive(p.isActive !== undefined ? p.isActive : true);
         } catch (err) {
           setError(err.response?.data?.message || 'Failed to fetch parent data.');
         } finally {
@@ -45,7 +47,7 @@ const CreateEditParentPage = () => {
     setError('');
     setSubmitting(true);
 
-    const payload = { name, cnic, phone, email, occupation, address };
+    const payload = { name, cnic, phone, email, occupation, address, isActive };
 
     try {
       if (isEdit) {
@@ -149,6 +151,20 @@ const CreateEditParentPage = () => {
               className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
             />
           </div>
+
+          {isEdit && (
+            <div>
+              <label className="flex items-center gap-2 text-slate-300 text-sm cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={isActive}
+                  onChange={(e) => setIsActive(e.target.checked)}
+                  className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                />
+                Parent Active Status
+              </label>
+            </div>
+          )}
 
           <button
             type="submit"

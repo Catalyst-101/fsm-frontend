@@ -7,12 +7,13 @@ const StudentsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
+  const [showInactive, setShowInactive] = useState(false);
   const [msg, setMsg] = useState('');
 
-  const fetchStudents = async (searchQuery = '') => {
+  const fetchStudents = async (searchQuery = '', inactive = showInactive) => {
     setLoading(true);
     try {
-      const res = await api.get('/students', { params: { search: searchQuery } });
+      const res = await api.get('/students', { params: { search: searchQuery, showInactive: inactive } });
       setStudents(res.data.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch students.');
@@ -45,6 +46,19 @@ const StudentsPage = () => {
     }
   };
 
+  const handleToggleActive = async (s) => {
+    setMsg('');
+    setError('');
+    try {
+      const updatedStatus = !s.isActive;
+      await api.put(`/students/${s._id}`, { isActive: updatedStatus });
+      setMsg(`Student ${s.name} ${updatedStatus ? 'activated' : 'deactivated'} successfully.`);
+      fetchStudents(search, showInactive);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update student status.');
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
@@ -71,6 +85,18 @@ const StudentsPage = () => {
           onChange={(e) => setSearch(e.target.value)}
           className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
         />
+        <label className="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={showInactive}
+            onChange={(e) => {
+              setShowInactive(e.target.checked);
+              fetchStudents(search, e.target.checked);
+            }}
+            className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-indigo-500 focus:ring-indigo-500/50 focus:ring-offset-slate-800"
+          />
+          <span className="text-sm text-slate-300">Show Inactive</span>
+        </label>
         <button
           type="submit"
           className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium rounded-lg transition-all"
@@ -139,6 +165,16 @@ const StudentsPage = () => {
                       >
                         Edit
                       </Link>
+                      <button
+                        onClick={() => handleToggleActive(s)}
+                        className={`px-2.5 py-1 text-xs font-medium rounded border transition-all cursor-pointer ${
+                          s.isActive 
+                            ? 'bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white border-amber-500/30'
+                            : 'bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border-emerald-500/30'
+                        }`}
+                      >
+                        {s.isActive ? 'Disable' : 'Enable'}
+                      </button>
                       <button
                         onClick={() => handleDelete(s._id, s.name)}
                         className="px-2.5 py-1 text-xs font-medium bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded border border-rose-500/30 transition-all cursor-pointer"
