@@ -93,6 +93,8 @@ const FeeLedgerPage = () => {
     let studentsWithDue = 0;
 
     ledgerData.forEach(item => {
+      if (!item.studentId) return; // Skip empty parent rows
+      
       expectedFee += item.totalAmount || 0;
       collectedFee += item.totalPaid || 0;
       remainingFee += item.remainingBalance || 0;
@@ -215,7 +217,9 @@ const FeeLedgerPage = () => {
       group.totalPaid += item.totalPaid || 0;
       group.totalRemaining += item.remainingBalance || 0;
       group.totalOtherFeesRemaining += item.otherFeesRemaining || 0;
-      group.children.push(item);
+      if (item.studentId) {
+        group.children.push(item);
+      }
     });
 
     return Array.from(groupsMap.values());

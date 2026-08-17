@@ -23,6 +23,7 @@ import ParentDetailPage from './pages/parents/ParentDetailPage';
 import StudentsPage from './pages/students/StudentsPage';
 import CreateEditStudentPage from './pages/students/CreateEditStudentPage';
 import StudentDetailPage from './pages/students/StudentDetailPage';
+import StudentPromotionPage from './pages/students/StudentPromotionPage';
 
 // Academic Year & Fee Structure pages
 import AcademicYearsPage from './pages/academicYears/AcademicYearsPage';
@@ -58,6 +59,7 @@ function App() {
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/students/create" element={<CreateEditStudentPage />} />
           <Route path="/students/edit/:id" element={<CreateEditStudentPage />} />
+          <Route path="/students/promotion" element={<StudentPromotionPage />} />
           <Route path="/students/:id" element={<StudentDetailPage />} />
 
           {/* Academic Year & Fee Structure Routes */}

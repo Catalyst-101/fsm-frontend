@@ -79,6 +79,16 @@ const DashboardPage = () => {
             <p className="text-2xl font-bold text-white mt-2">Rs. {stats.expectedTuition}</p>
           </div>
 
+          <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl border-l-4 border-l-emerald-400">
+            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Collected Tuition (AY)</h2>
+            <p className="text-2xl font-bold text-white mt-2">Rs. {stats.collectedTuition}</p>
+          </div>
+
+          <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl border-l-4 border-l-rose-400">
+            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Remaining Tuition (AY)</h2>
+            <p className="text-2xl font-bold text-white mt-2">Rs. {stats.remainingTuition}</p>
+          </div>
+
           <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl border-l-4 border-l-green-500">
             <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Collected This Month</h2>
             <p className="text-2xl font-bold text-white mt-2">Rs. {stats.collectedThisMonth}</p>

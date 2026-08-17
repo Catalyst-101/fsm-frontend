@@ -66,12 +66,20 @@ const StudentsPage = () => {
           <h2 className="text-2xl font-bold text-white tracking-tight">Student Management</h2>
           <p className="text-sm text-slate-400">View and manage student records</p>
         </div>
-        <Link
-          to="/students/create"
-          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-lg shadow-lg shadow-indigo-600/30 transition-all text-center"
-        >
-          + Add New Student
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link
+            to="/students/promotion"
+            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg shadow-lg shadow-emerald-600/30 transition-all text-center"
+          >
+            Promote Students
+          </Link>
+          <Link
+            to="/students/create"
+            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-lg shadow-lg shadow-indigo-600/30 transition-all text-center"
+          >
+            + Add New Student
+          </Link>
+        </div>
       </div>
 
       {msg && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm p-3 rounded-lg">{msg}</div>}
