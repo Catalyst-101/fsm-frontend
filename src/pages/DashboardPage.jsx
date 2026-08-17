@@ -8,14 +8,38 @@ const DashboardPage = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [academicYears, setAcademicYears] = useState([]);
+  const [selectedYear, setSelectedYear] = useState('');
 
   useEffect(() => {
-    fetchStats();
+    fetchInitialData();
   }, []);
 
-  const fetchStats = async () => {
+  useEffect(() => {
+    if (selectedYear || academicYears.length > 0) {
+      fetchStats();
+    }
+  }, [selectedYear]);
+
+  const fetchInitialData = async () => {
     try {
-      const res = await api.get('/dashboard/stats');
+      const yearRes = await api.get('/academic-years');
+      const fetchedYears = Array.isArray(yearRes.data?.data) ? yearRes.data.data : yearRes.data?.data?.docs || [];
+      setAcademicYears(fetchedYears);
+      
+      const current = fetchedYears.find(y => y.is_current);
+      if (current) setSelectedYear(current._id);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to load academic years');
+    }
+  };
+
+  const fetchStats = async () => {
+    setLoading(true);
+    try {
+      const endpoint = selectedYear ? `/dashboard/stats?academicYearId=${selectedYear}` : '/dashboard/stats';
+      const res = await api.get(endpoint);
       setStats(res.data.data);
     } catch (err) {
       setError('Failed to load dashboard statistics');
@@ -27,7 +51,8 @@ const DashboardPage = () => {
 
   const handleExportExcel = async () => {
     try {
-      const response = await api.get('/dashboard/export-fee-data', {
+      const endpoint = selectedYear ? `/dashboard/export-fee-data?academicYearId=${selectedYear}` : '/dashboard/export-fee-data';
+      const response = await api.get(endpoint, {
         responseType: 'blob', // Important for file download
       });
       
@@ -45,27 +70,42 @@ const DashboardPage = () => {
     }
   };
 
-  if (loading) return <div className="p-8 text-center text-gray-600 dark:text-gray-300">Loading Dashboard...</div>;
+  if (loading && !stats) return <div className="p-8 text-center text-gray-600 dark:text-gray-300">Loading Dashboard...</div>;
   if (error) return <div className="p-8 text-center text-red-600">{error}</div>;
 
   return (
     <div className="space-y-6">
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl flex justify-between items-center">
+      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Fee Management Dashboard</h1>
           <p className="text-slate-400 text-sm mt-1">Welcome back, <span className="text-indigo-400 font-semibold">{user?.name}</span>!</p>
         </div>
-        {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
-          <button 
-            onClick={handleExportExcel}
-            className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-green-600/20 transition-all flex items-center gap-2"
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            className="bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 min-w-[200px]"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-            Export to Excel
-          </button>
-        )}
+            <option value="">-- Select Academic Year --</option>
+            {academicYears.map(y => (
+              <option key={y._id} value={y._id}>
+                {y.name} {y.is_current ? '(Current)' : ''}
+              </option>
+            ))}
+          </select>
+
+          {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
+            <button 
+              onClick={handleExportExcel}
+              className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-green-600/20 transition-all flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+              Export Excel
+            </button>
+          )}
+        </div>
       </div>
 
       {!stats ? (
