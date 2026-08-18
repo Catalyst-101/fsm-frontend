@@ -143,8 +143,8 @@ const CreateEditStudentPage = () => {
           if (s.fee) {
             const fa = s.fee;
             setFeeAssignmentId(fa._id || 'embedded');
-            if (fa.feeStructureId?.academicYearId || academicYearId) {
-              // Leave academic year as it is or figure out if we want to display it
+            if (fa.academicYearId) {
+              setAcademicYearId(fa.academicYearId);
             }
             setMonthlyTuition(fa.monthlyTuition || 0);
             setAdmissionFee(fa.admissionFee || 0);
