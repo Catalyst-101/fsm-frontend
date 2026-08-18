@@ -139,10 +139,6 @@ const DashboardPage = () => {
             <p className="text-2xl font-bold text-white mt-2">Rs. {stats.totalOutstanding}</p>
           </div>
 
-          <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl border-l-4 border-l-yellow-500">
-            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Total Advance Balance</h2>
-            <p className="text-2xl font-bold text-white mt-2">Rs. {stats.totalAdvance}</p>
-          </div>
 
           <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl border-l-4 border-l-indigo-500">
             <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Today's Collection</h2>

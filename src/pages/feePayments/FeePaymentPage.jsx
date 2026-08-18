@@ -65,7 +65,7 @@ const FeePaymentPage = () => {
       setSummary(res.data);
       setPaymentData(prev => ({
         ...prev,
-        amountPaid: res.data.remainingBalance > 0 ? (res.data.remainingBalance - res.data.advanceBalance > 0 ? res.data.remainingBalance - res.data.advanceBalance : 0).toString() : ''
+        amountPaid: res.data.remainingBalance > 0 ? res.data.remainingBalance.toString() : ''
       }));
     } catch (err) {
       console.error(err);
@@ -185,10 +185,6 @@ const FeePaymentPage = () => {
                 <span>Total Paid So Far:</span>
                 <span className="font-semibold text-green-600">Rs. {summary.totalPaid}</span>
               </div>
-              <div className="flex justify-between border-b pb-1">
-                <span>Advance Balance:</span>
-                <span className="font-semibold text-yellow-600">Rs. {summary.advanceBalance}</span>
-              </div>
               <div className="flex justify-between font-bold text-lg pt-2">
                 <span>Remaining Balance:</span>
                 <span className="text-red-600">Rs. {summary.remainingBalance}</span>
@@ -215,6 +211,8 @@ const FeePaymentPage = () => {
                   onChange={handleChange}
                   className="shadow border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-white"
                   min="1"
+                  max={summary.remainingBalance}
+                  disabled={summary.remainingBalance === 0}
                   required
                 />
               </div>

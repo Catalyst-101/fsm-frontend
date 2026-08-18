@@ -88,7 +88,6 @@ const FeeLedgerPage = () => {
     let expectedFee = 0;
     let collectedFee = 0;
     let remainingFee = 0;
-    let advanceBalance = 0;
     let studentsFullyPaid = 0;
     let studentsWithDue = 0;
 
@@ -98,7 +97,6 @@ const FeeLedgerPage = () => {
       expectedFee += item.totalAmount || 0;
       collectedFee += item.totalPaid || 0;
       remainingFee += item.remainingBalance || 0;
-      advanceBalance += item.advanceBalance || 0;
 
       if (item.paymentStatus === 'Fully Paid') {
         studentsFullyPaid++;
@@ -113,7 +111,6 @@ const FeeLedgerPage = () => {
       expectedFee,
       collectedFee,
       remainingFee,
-      advanceBalance,
       studentsFullyPaid,
       studentsWithDue
     };
@@ -271,7 +268,6 @@ const FeeLedgerPage = () => {
       'Total Fee',
       'Total Paid',
       'Remaining Balance',
-      'Advance Balance',
       'Last Payment Date',
       'Payment Status'
     ];
@@ -302,7 +298,6 @@ const FeeLedgerPage = () => {
         item.totalAmount,
         item.totalPaid,
         item.remainingBalance,
-        item.advanceBalance,
         item.lastPaymentDate ? new Date(item.lastPaymentDate).toLocaleDateString() : 'N/A',
         `"${item.paymentStatus}"`
       ];
@@ -380,11 +375,6 @@ const FeeLedgerPage = () => {
         <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-rose-500 shadow-md">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Remaining Fee</p>
           <p className="text-xl font-extrabold text-rose-400 mt-1">Rs. {metrics.remainingFee}</p>
-        </div>
-
-        <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-amber-500 shadow-md">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Advance Balance</p>
-          <p className="text-xl font-extrabold text-amber-400 mt-1">Rs. {metrics.advanceBalance}</p>
         </div>
 
         <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-teal-500 shadow-md">
@@ -482,7 +472,6 @@ const FeeLedgerPage = () => {
               <option value="Only Fully Paid">Only Fully Paid</option>
               <option value="Only Partial">Only Partial</option>
               <option value="Due">Due Only</option>
-              <option value="Advance">Advance Only</option>
             </select>
           </div>
         </div>
@@ -561,7 +550,6 @@ const FeeLedgerPage = () => {
                   <th className="py-3 px-3 text-right font-bold text-indigo-300">Grand Total</th>
                   <th className="py-3 px-3 text-right font-bold text-emerald-400">Total Paid</th>
                   <th className="py-3 px-3 text-right font-bold text-rose-400">Rem Balance</th>
-                  <th className="py-3 px-3 text-right font-bold text-amber-400">Advance</th>
                   <th className="py-3 px-3 text-center">Last Paid Date</th>
                   <th className="py-3 px-3 text-center">Status</th>
                 </tr>
@@ -689,7 +677,6 @@ const FeeLedgerPage = () => {
                                   <td className="py-2.5 px-3 text-right font-bold text-indigo-300">Rs. {student.totalAmount}</td>
                                   <td className="py-2.5 px-3 text-right font-extrabold text-emerald-400">Rs. {student.totalPaid}</td>
                                   <td className="py-2.5 px-3 text-right font-extrabold text-rose-400">Rs. {student.remainingBalance}</td>
-                                  <td className="py-2.5 px-3 text-right font-extrabold text-amber-400">Rs. {student.advanceBalance}</td>
 
                                   <td className="py-2.5 px-3 text-center text-[10px] text-slate-400 whitespace-nowrap">
                                     {student.lastPaymentDate ? new Date(student.lastPaymentDate).toLocaleDateString() : 'N/A'}

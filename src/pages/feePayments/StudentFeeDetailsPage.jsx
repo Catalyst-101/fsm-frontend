@@ -150,9 +150,6 @@ const StudentFeeDetailsPage = () => {
           <div className="bg-red-50 dark:bg-red-900 shadow rounded p-4 text-center">
             <h3 className="text-red-800 dark:text-red-100 font-semibold mb-1">Remaining Balance</h3>
             <p className="text-2xl font-bold text-red-600 dark:text-red-300">Rs. {summary.remainingBalance}</p>
-            {summary.advanceBalance > 0 && (
-              <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-1">Advance: Rs. {summary.advanceBalance}</p>
-            )}
           </div>
         </div>
       )}

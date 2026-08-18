@@ -61,35 +61,7 @@ const AcademicYearsPage = () => {
     }
   };
 
-  const handleRollover = async () => {
-    if (!name || !startDate || !endDate) {
-      setError('Please fill in Year Name, Start Date, and End Date.');
-      return;
-    }
-    if (!window.confirm('Are you sure you want to perform a rollover? This will set this year as active, migrate all active students, and freeze their dues from the previous year.')) {
-      return;
-    }
-    setMsg('');
-    setError('');
-    setSubmitting(true);
 
-    const payload = {
-      name,
-      startDate,
-      endDate
-    };
-
-    try {
-      await api.post('/academic-years/rollover', payload);
-      setMsg('Academic Year created and students rolled over successfully.');
-      resetForm();
-      fetchYears();
-    } catch (err) {
-      setError(err.response?.data?.message || 'Rollover failed.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   const handleEdit = (y) => {
     setEditId(y._id);
@@ -100,7 +72,7 @@ const AcademicYearsPage = () => {
   };
 
   const handleDelete = async (id, yearName) => {
-    if (!window.confirm(`Are you sure you want to delete Academic Year ${yearName}?`)) {
+    if (!window.confirm(`WARNING: Deleting Academic Year ${yearName} will PERMANENTLY delete all related fee structures and payment receipts! You cannot do this if there are students currently enrolled in this year.\n\nAre you sure you want to proceed?`)) {
       return;
     }
     setMsg('');
@@ -191,20 +163,9 @@ const AcademicYearsPage = () => {
                 disabled={submitting}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-lg text-sm transition-all cursor-pointer disabled:opacity-50"
               >
-                {submitting ? 'Saving...' : editId ? 'Update' : 'Create Empty Year'}
+                {submitting ? 'Saving...' : editId ? 'Update' : 'Create'}
               </button>
               
-              {!editId && (
-                <button
-                  type="button"
-                  onClick={handleRollover}
-                  disabled={submitting}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded-lg text-sm transition-all cursor-pointer disabled:opacity-50"
-                  title="Creates a new academic year and rolls over all active students from the current year"
-                >
-                  Create & Rollover
-                </button>
-              )}
               {editId && (
                 <button
                   type="button"
