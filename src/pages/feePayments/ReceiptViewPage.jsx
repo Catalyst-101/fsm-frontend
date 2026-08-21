@@ -138,12 +138,13 @@ const ReceiptCopy = ({ receipt, copyType }) => {
       {/* Signatures */}
       <div className="mt-auto pt-6 border-t border-gray-300 flex justify-between px-8 text-gray-500 text-xs">
         <div className="text-center">
-          <div className="w-40 border-b border-gray-400 mb-1"></div>
+          <div className="w-32 border-b border-gray-400 mb-1"></div>
           Cashier Signature
         </div>
         <div className="text-center">
-          <div className="w-40 border-b border-gray-400 mb-1"></div>
-          Parent/Guardian Signature
+          <div className="w-32 h-16 border-2 border-dashed border-gray-300 mb-1 flex items-center justify-center text-gray-300 text-xs">
+            STAMP
+          </div>
         </div>
       </div>
     </div>
@@ -200,24 +201,26 @@ const ReceiptViewPage = () => {
       </div>
 
       {/* Receipts */}
-      <div className="print:m-0">
-        <ReceiptCopy receipt={receipt} copyType="School Copy" />
-        
-        {/* Cut line */}
-        <div className="flex items-center my-6 print:my-4 print:block text-gray-400 print:text-black">
-          <div className="border-t-2 border-dashed border-gray-400 flex-grow"></div>
-          <span className="px-4 text-xs font-mono uppercase tracking-widest hidden print:inline-block absolute left-1/2 -ml-8 bg-white" style={{marginTop: '-8px'}}>✂ Cut Here</span>
-          <span className="px-4 text-xs font-mono uppercase tracking-widest print:hidden">✂ Cut Here</span>
-          <div className="border-t-2 border-dashed border-gray-400 flex-grow"></div>
+      <div className="print:m-0 flex flex-col md:flex-row gap-6">
+        <div className="flex-1">
+          <ReceiptCopy receipt={receipt} copyType="School Copy" />
         </div>
         
-        <ReceiptCopy receipt={receipt} copyType="Parent Copy" />
+        {/* Cut line (vertical) */}
+        <div className="hidden md:flex flex-col items-center justify-center text-gray-400 print:text-black self-stretch">
+          <div className="border-l-2 border-dashed border-gray-400 h-full"></div>
+          <span className="py-4 text-xs font-mono uppercase tracking-widest print:inline-block absolute bg-white" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>✂ Cut Here</span>
+        </div>
+        
+        <div className="flex-1">
+          <ReceiptCopy receipt={receipt} copyType="Parent Copy" />
+        </div>
       </div>
       
       {/* Print styles */}
       <style>{`
         @media print {
-          @page { margin: 0.5cm; }
+          @page { margin: 0.5cm; size: A4 landscape; }
           body * {
             visibility: hidden;
             background-color: white !important;

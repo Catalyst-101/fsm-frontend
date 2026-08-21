@@ -100,10 +100,12 @@ const CreateEditParentPage = () => {
             <input
               type="text"
               value={cnic}
-              onChange={(e) => setCnic(e.target.value)}
-              placeholder="e.g. 35202-1234567-1"
+              onChange={(e) => setCnic(e.target.value.replace(/\D/g, '').slice(0, 13))}
+              placeholder="e.g. 3520212345671 (13 digits)"
               className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500 font-mono"
               required
+              maxLength={13}
+              minLength={13}
             />
           </div>
 
@@ -112,10 +114,12 @@ const CreateEditParentPage = () => {
             <input
               type="text"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="e.g. 0300-1234567"
+              onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
+              placeholder="e.g. 03369341134 (11 digits)"
               className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
               required
+              maxLength={11}
+              minLength={11}
             />
           </div>
 

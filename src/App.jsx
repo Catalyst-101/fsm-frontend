@@ -33,6 +33,7 @@ import FeeStructuresPage from './pages/feeStructures/FeeStructuresPage';
 import FeePaymentPage from './pages/feePayments/FeePaymentPage';
 import StudentFeeDetailsPage from './pages/feePayments/StudentFeeDetailsPage';
 import FeeLedgerPage from './pages/feePayments/FeeLedgerPage';
+import ParentFeeBillPage from './pages/feePayments/ParentFeeBillPage';
 import ReceiptViewPage from './pages/feePayments/ReceiptViewPage';
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
           <Route path="/fee-payment" element={<FeePaymentPage />} />
           <Route path="/student-fee-details" element={<StudentFeeDetailsPage />} />
           <Route path="/fee-ledger" element={<FeeLedgerPage />} />
+          <Route path="/parent-fee-bill" element={<ParentFeeBillPage />} />
           <Route path="/receipt/:id" element={<ReceiptViewPage />} />
 
           {/* SUPER_ADMIN and ADMIN Routes */}

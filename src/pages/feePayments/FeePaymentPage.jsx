@@ -211,8 +211,8 @@ const FeePaymentPage = () => {
                   onChange={handleChange}
                   className="shadow border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-white"
                   min="1"
-                  max={summary.remainingBalance}
-                  disabled={summary.remainingBalance === 0}
+                  max={paymentData.isTuitionOnly ? summary.remainingFees.tuition : summary.remainingBalance}
+                  disabled={paymentData.isTuitionOnly ? summary.remainingFees.tuition === 0 : summary.remainingBalance === 0}
                   required
                 />
               </div>

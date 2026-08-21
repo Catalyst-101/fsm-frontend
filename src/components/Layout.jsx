@@ -106,6 +106,16 @@ const Layout = () => {
                 Fee Ledger
               </Link>
               <Link
+                to="/parent-fee-bill"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/parent-fee-bill')
+                    ? 'bg-slate-900 text-white shadow-inner'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                Generate Fee Bill
+              </Link>
+              <Link
                 to="/profile"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   location.pathname === '/profile'

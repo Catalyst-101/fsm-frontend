@@ -81,7 +81,7 @@ const FeeLedgerPage = () => {
 
   // Overall Dashboard Metrics Calculation
   const metrics = useMemo(() => {
-    const totalStudents = ledgerData.length;
+    const totalStudents = ledgerData.filter(i => i.studentId).length;
     const parentSet = new Set(ledgerData.map(i => i.parentId));
     const totalParents = parentSet.size;
 
