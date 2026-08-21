@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 
+
 const FeeLedgerPage = () => {
   const [academicYears, setAcademicYears] = useState([]);
   const [selectedYear, setSelectedYear] = useState('');
@@ -43,7 +44,7 @@ const FeeLedgerPage = () => {
       const yearRes = await api.get('/academic-years');
       const fetchedYears = Array.isArray(yearRes.data?.data) ? yearRes.data.data : yearRes.data?.data?.docs || [];
       setAcademicYears(fetchedYears);
-      
+
       const current = fetchedYears.find(y => y.is_current);
       if (current) setSelectedYear(current._id);
     } catch (err) {
@@ -93,7 +94,7 @@ const FeeLedgerPage = () => {
 
     ledgerData.forEach(item => {
       if (!item.studentId) return; // Skip empty parent rows
-      
+
       expectedFee += item.totalAmount || 0;
       collectedFee += item.totalPaid || 0;
       remainingFee += item.remainingBalance || 0;
@@ -123,7 +124,7 @@ const FeeLedgerPage = () => {
     // Search filter
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      result = result.filter(item => 
+      result = result.filter(item =>
         (item.studentName && item.studentName.toLowerCase().includes(term)) ||
         (item.admissionNo && item.admissionNo.toLowerCase().includes(term)) ||
         (item.parentName && item.parentName.toLowerCase().includes(term))
@@ -614,9 +615,8 @@ const FeeLedgerPage = () => {
                                   <td className="py-2.5 px-3 text-center">
                                     <button
                                       onClick={() => toggleStudentExpand(student.assignmentId)}
-                                      className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold transition-all cursor-pointer ${
-                                        isExpanded ? 'bg-indigo-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
-                                      }`}
+                                      className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold transition-all cursor-pointer ${isExpanded ? 'bg-indigo-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+                                        }`}
                                       title="Toggle Payment Receipt History"
                                     >
                                       {isExpanded ? '▲' : '▼'}
@@ -685,15 +685,14 @@ const FeeLedgerPage = () => {
                                   {/* 6. PAYMENT STATUS BADGE */}
                                   <td className="py-2.5 px-3 text-center">
                                     <span
-                                      className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider inline-block ${
-                                        student.paymentStatus === 'Fully Paid'
+                                      className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider inline-block ${student.paymentStatus === 'Fully Paid'
                                           ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                                           : student.paymentStatus === 'Partially Paid'
-                                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                                          : student.paymentStatus === 'Advance'
-                                          ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                                          : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                                      }`}
+                                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                            : student.paymentStatus === 'Advance'
+                                              ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+                                              : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                                        }`}
                                     >
                                       {student.paymentStatus}
                                     </span>
