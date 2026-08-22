@@ -4,12 +4,12 @@ import logo from '../../assets/images/logo.png';
 
 function numberToWords(num) {
   if (num === 0) return 'Zero Rupees Only';
-  const a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
-  const b = ['', '', 'Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety'];
+  const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+  const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
 
   if ((num = num.toString()).length > 9) return 'overflow';
   let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-  if (!n) return ''; 
+  if (!n) return '';
   let str = '';
   str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
   str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
@@ -24,7 +24,7 @@ const ParentFeeBillPage = () => {
   const [parents, setParents] = useState([]);
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedParent, setSelectedParent] = useState('');
-  
+
   const [billData, setBillData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -89,7 +89,7 @@ const ParentFeeBillPage = () => {
             api.get(`/fee-payments/summary?studentId=${student._id}&academicYearId=${selectedYear}`),
             api.get(`/fee-payments/student/${student._id}?academicYearId=${selectedYear}`)
           ]);
-          
+
           const summary = summaryRes.data;
           const receipts = receiptRes.data.data || [];
           const lastReceipt = receipts.length > 0 ? receipts[0] : null;
@@ -210,7 +210,7 @@ const ParentFeeBillPage = () => {
       {/* Bill View */}
       {!loading && billData && (
         <div className="print:m-0 bg-white text-gray-900 shadow-sm rounded-lg p-6 border border-gray-300 print:shadow-none print:border-none break-inside-avoid">
-          
+
           {/* Header matching Receipt Design */}
           <div className="flex justify-between items-center mb-6 border-b-2 border-gray-800 pb-4">
             <div className="flex items-center gap-4">
@@ -249,7 +249,7 @@ const ParentFeeBillPage = () => {
                       <p className="text-sm text-gray-600">Student ID: <span className="font-mono">{item.student.studentId || 'N/A'}</span> | Class: {item.student.grade} {item.student.section ? `(${item.student.section})` : ''}</p>
                     </div>
                   </div>
-                  
+
                   {item.totalRemaining === 0 ? (
                     <div className="p-8 flex items-center justify-center bg-green-50 text-green-700 font-bold text-lg border-t border-green-200">
                       ✓ All dues paid for this student.
@@ -287,7 +287,7 @@ const ParentFeeBillPage = () => {
                             </tr>
                           </tbody>
                         </table>
-                        
+
                         <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 border-b pb-1">Previous Payment</h4>
                         {item.lastReceipt ? (
                           <div className="text-sm">
@@ -300,13 +300,13 @@ const ParentFeeBillPage = () => {
                           <p className="text-sm text-gray-500 italic">No previous payments found for this academic year.</p>
                         )}
                       </div>
-                      
+
                       {/* Part 2: Current Month's Payable Amount */}
                       <div className="bg-gray-50 border border-gray-200 rounded p-4">
                         <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-3 pb-1 border-b border-gray-300">
                           Payable for {billData.currentMonthName}
                         </h4>
-                        
+
                         {item.currentMonthPayable === 0 ? (
                           <div className="flex items-center justify-center h-24 text-green-600 font-bold border-2 border-green-200 bg-green-50 rounded">
                             ✓ DUES CLEARED
@@ -339,7 +339,7 @@ const ParentFeeBillPage = () => {
                   )}
                 </div>
               ))}
-              
+
               <div className="mt-8 bg-gray-900 text-white p-6 rounded-lg flex justify-between items-center shadow-lg">
                 <div>
                   <h3 className="text-xl font-bold uppercase tracking-widest text-gray-300">Grand Total Payable</h3>

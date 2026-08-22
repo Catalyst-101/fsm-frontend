@@ -526,8 +526,7 @@ const FeeLedgerPage = () => {
               <thead>
                 <tr className="bg-slate-950 text-slate-300 uppercase font-bold text-[10px] tracking-wider border-b border-slate-700">
                   <th className="py-3 px-3 text-center w-8">History</th>
-                  <th className="py-3 px-3">Adm No</th>
-                  <th className="py-3 px-3">Roll No</th>
+                  <th className="py-3 px-3 text-center">Student ID</th>
                   <th className="py-3 px-3 font-extrabold text-white">Student Name</th>
                   <th className="py-3 px-3">Parent Name</th>
                   <th className="py-3 px-3 text-center">Class</th>
@@ -624,7 +623,6 @@ const FeeLedgerPage = () => {
                                   </td>
 
                                   {/* 2. STUDENT INFORMATION COLUMNS */}
-                                  <td className="py-2.5 px-3 font-mono text-slate-300">{student.admissionNo}</td>
                                   <td className="py-2.5 px-3 font-mono text-slate-400">{student.studentId}</td>
                                   <td className="py-2.5 px-3 font-bold text-white whitespace-nowrap">{student.studentName}</td>
                                   <td className="py-2.5 px-3 text-slate-300 whitespace-nowrap">{student.parentName}</td>
