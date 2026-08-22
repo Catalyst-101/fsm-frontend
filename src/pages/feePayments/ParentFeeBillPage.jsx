@@ -98,27 +98,8 @@ const ParentFeeBillPage = () => {
           const remainingOther = summary.remainingFees.admission + summary.remainingFees.registration + summary.remainingFees.miscellaneous + summary.remainingFees.annual;
           const totalRemaining = summary.remainingBalance;
 
-          // Calculate current month's dues
-          let currentMonthTuition = 0;
-          let previousTuitionDues = 0;
-          
-          let passedCurrentMonth = false;
-
-          for (const item of summary.monthlyLedger) {
-            const isUnpaidOrPartial = item.status === 'Unpaid' || item.status === 'Partial';
-            const amountDue = Math.max(0, item.originalAmount - (item.paidAmount || 0));
-
-            if (item.month === currentMonthName) {
-              if (isUnpaidOrPartial) {
-                currentMonthTuition += amountDue;
-              }
-              passedCurrentMonth = true;
-            } else if (!passedCurrentMonth) {
-              if (isUnpaidOrPartial) {
-                previousTuitionDues += amountDue;
-              }
-            }
-          }
+          const currentMonthTuition = summary.currentMonthTuition || 0;
+          const previousTuitionDues = summary.previousUnpaidTuition || 0;
 
           // Total payable for the current month section
           // It consists of current month's tuition + any unpaid previous tuition + unpaid other fees
@@ -269,87 +250,93 @@ const ParentFeeBillPage = () => {
                     </div>
                   </div>
                   
-                  <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Part 1: Overall Remaining Dues & Previous Payment */}
-                    <div>
-                      <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 border-b pb-1">Remaining Fees Breakdown</h4>
-                      <table className="w-full text-sm mb-4">
-                        <tbody>
-                          <tr className="border-b border-gray-100">
-                            <td className="py-1">Tuition Fee</td>
-                            <td className="py-1 text-right">Rs. {item.remainingTuition}</td>
-                          </tr>
-                          <tr className="border-b border-gray-100">
-                            <td className="py-1">Admission Fee</td>
-                            <td className="py-1 text-right">Rs. {item.summary.remainingFees.admission}</td>
-                          </tr>
-                          <tr className="border-b border-gray-100">
-                            <td className="py-1">Registration Fee</td>
-                            <td className="py-1 text-right">Rs. {item.summary.remainingFees.registration}</td>
-                          </tr>
-                          <tr className="border-b border-gray-100">
-                            <td className="py-1">Miscellaneous Fee</td>
-                            <td className="py-1 text-right">Rs. {item.summary.remainingFees.miscellaneous}</td>
-                          </tr>
-                          <tr className="border-b border-gray-100">
-                            <td className="py-1">Annual Fee</td>
-                            <td className="py-1 text-right">Rs. {item.summary.remainingFees.annual}</td>
-                          </tr>
-                          <tr className="font-bold text-gray-800 bg-gray-50">
-                            <td className="py-1.5 px-1">Total Remaining</td>
-                            <td className="py-1.5 px-1 text-right">Rs. {item.totalRemaining}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      
-                      <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 border-b pb-1">Previous Payment</h4>
-                      {item.lastReceipt ? (
-                        <div className="text-sm">
-                          <p><strong>Receipt #:</strong> <span className="font-mono">{item.lastReceipt.receiptNumber}</span></p>
-                          <p><strong>Date:</strong> {new Date(item.lastReceipt.createdAt).toLocaleDateString()}</p>
-                          <p><strong>Amount Paid:</strong> Rs. {item.lastReceipt.amountPaid}</p>
-                          <p className="italic text-xs text-gray-600 mt-1">{numberToWords(item.lastReceipt.amountPaid)}</p>
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500 italic">No previous payments found for this academic year.</p>
-                      )}
+                  {item.totalRemaining === 0 ? (
+                    <div className="p-8 flex items-center justify-center bg-green-50 text-green-700 font-bold text-lg border-t border-green-200">
+                      ✓ All dues paid for this student.
                     </div>
-                    
-                    {/* Part 2: Current Month's Payable Amount */}
-                    <div className="bg-gray-50 border border-gray-200 rounded p-4">
-                      <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-3 pb-1 border-b border-gray-300">
-                        Payable for {billData.currentMonthName}
-                      </h4>
+                  ) : (
+                    <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Part 1: Overall Remaining Dues & Previous Payment */}
+                      <div>
+                        <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 border-b pb-1">Remaining Fees Breakdown</h4>
+                        <table className="w-full text-sm mb-4">
+                          <tbody>
+                            <tr className="border-b border-gray-100">
+                              <td className="py-1">Tuition Fee</td>
+                              <td className="py-1 text-right">Rs. {item.remainingTuition}</td>
+                            </tr>
+                            <tr className="border-b border-gray-100">
+                              <td className="py-1">Admission Fee</td>
+                              <td className="py-1 text-right">Rs. {item.summary.remainingFees.admission}</td>
+                            </tr>
+                            <tr className="border-b border-gray-100">
+                              <td className="py-1">Registration Fee</td>
+                              <td className="py-1 text-right">Rs. {item.summary.remainingFees.registration}</td>
+                            </tr>
+                            <tr className="border-b border-gray-100">
+                              <td className="py-1">Miscellaneous Fee</td>
+                              <td className="py-1 text-right">Rs. {item.summary.remainingFees.miscellaneous}</td>
+                            </tr>
+                            <tr className="border-b border-gray-100">
+                              <td className="py-1">Annual Fee</td>
+                              <td className="py-1 text-right">Rs. {item.summary.remainingFees.annual}</td>
+                            </tr>
+                            <tr className="font-bold text-gray-800 bg-gray-50">
+                              <td className="py-1.5 px-1">Total Remaining</td>
+                              <td className="py-1.5 px-1 text-right">Rs. {item.totalRemaining}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        
+                        <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 border-b pb-1">Previous Payment</h4>
+                        {item.lastReceipt ? (
+                          <div className="text-sm">
+                            <p><strong>Receipt #:</strong> <span className="font-mono">{item.lastReceipt.receiptNumber}</span></p>
+                            <p><strong>Date:</strong> {new Date(item.lastReceipt.createdAt).toLocaleDateString()}</p>
+                            <p><strong>Amount Paid:</strong> Rs. {item.lastReceipt.amountPaid}</p>
+                            <p className="italic text-xs text-gray-600 mt-1">{numberToWords(item.lastReceipt.amountPaid)}</p>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-500 italic">No previous payments found for this academic year.</p>
+                        )}
+                      </div>
                       
-                      {item.currentMonthPayable === 0 ? (
-                        <div className="flex items-center justify-center h-24 text-green-600 font-bold border-2 border-green-200 bg-green-50 rounded">
-                          ✓ DUES CLEARED
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
-                          <div className="flex justify-between text-sm">
-                            <span>Current Month Tuition:</span>
-                            <span className="font-mono">Rs. {item.currentMonthTuition}</span>
+                      {/* Part 2: Current Month's Payable Amount */}
+                      <div className="bg-gray-50 border border-gray-200 rounded p-4">
+                        <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-3 pb-1 border-b border-gray-300">
+                          Payable for {billData.currentMonthName}
+                        </h4>
+                        
+                        {item.currentMonthPayable === 0 ? (
+                          <div className="flex items-center justify-center h-24 text-green-600 font-bold border-2 border-green-200 bg-green-50 rounded">
+                            ✓ DUES CLEARED
                           </div>
-                          <div className="flex justify-between text-sm">
-                            <span>Previous Unpaid Tuition:</span>
-                            <span className="font-mono text-red-600">Rs. {item.previousTuitionDues}</span>
+                        ) : (
+                          <div className="space-y-3">
+                            <div className="flex justify-between text-sm">
+                              <span>Current Month Tuition:</span>
+                              <span className="font-mono">Rs. {item.currentMonthTuition}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span>Previous Unpaid Tuition:</span>
+                              <span className="font-mono text-red-600">Rs. {item.previousTuitionDues}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span>Other Unpaid Fees:</span>
+                              <span className="font-mono">Rs. {item.remainingOther}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-lg font-black border-t-2 border-gray-800 pt-2 mt-2">
+                              <span>Total Payable:</span>
+                              <span>Rs. {item.currentMonthPayable}</span>
+                            </div>
+                            <div className="text-xs font-semibold italic text-gray-700 bg-white p-2 rounded border mt-2">
+                              {numberToWords(item.currentMonthPayable)}
+                            </div>
                           </div>
-                          <div className="flex justify-between text-sm">
-                            <span>Other Unpaid Fees:</span>
-                            <span className="font-mono">Rs. {item.remainingOther}</span>
-                          </div>
-                          <div className="flex justify-between items-center text-lg font-black border-t-2 border-gray-800 pt-2 mt-2">
-                            <span>Total Payable:</span>
-                            <span>Rs. {item.currentMonthPayable}</span>
-                          </div>
-                          <div className="text-xs font-semibold italic text-gray-700 bg-white p-2 rounded border mt-2">
-                            {numberToWords(item.currentMonthPayable)}
-                          </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               ))}
               
