@@ -53,7 +53,7 @@ const StudentDetailPage = () => {
           <span className="text-xs uppercase font-bold tracking-wider text-slate-400 block border-b border-slate-700 pb-2">Academic Info</span>
           <p className="text-sm text-slate-200"><strong>Grade / Class:</strong> {student?.grade}</p>
           <p className="text-sm text-slate-200"><strong>Section:</strong> {student?.section || 'N/A'}</p>
-          <p className="text-sm text-slate-200"><strong>Roll Number:</strong> {student?.rollNumber || 'N/A'}</p>
+          <p className="text-sm text-slate-200"><strong>Student ID:</strong> {student?.studentId || 'N/A'}</p>
           <p className="text-sm text-slate-200"><strong>Gender:</strong> {student?.gender}</p>
           <p className="text-sm text-slate-200">
             <strong>Date of Birth:</strong> {student?.dob ? new Date(student.dob).toLocaleDateString() : 'N/A'}

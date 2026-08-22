@@ -45,7 +45,7 @@ const ReceiptCopy = ({ receipt, copyType }) => {
       <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
         <div>
           <p className="mb-1"><strong>Student Name:</strong> {receipt.studentId?.name || 'N/A'}</p>
-          <p className="mb-1"><strong>Roll / Adm No:</strong> <span className="font-mono">{receipt.studentId?.rollNumber || 'N/A'}</span></p>
+          <p className="mb-1"><strong>Student ID:</strong> <span className="font-mono">{receipt.studentId?.studentId || 'N/A'}</span></p>
           <p className="mb-1"><strong>Class & Section:</strong> {receipt.studentId?.grade || 'N/A'} {receipt.studentId?.section ? `(${receipt.studentId.section})` : ''}</p>
           {receipt.studentId?.parentId && (
             <p className="mb-1"><strong>Parent Name:</strong> {receipt.studentId.parentId.name || 'N/A'}</p>
@@ -201,15 +201,15 @@ const ReceiptViewPage = () => {
       </div>
 
       {/* Receipts */}
-      <div className="print:m-0 flex flex-col md:flex-row gap-6">
+      <div className="print:m-0 flex flex-col gap-6 h-[100vh] w-[100vw] justify-between">
         <div className="flex-1">
           <ReceiptCopy receipt={receipt} copyType="School Copy" />
         </div>
         
-        {/* Cut line (vertical) */}
-        <div className="hidden md:flex flex-col items-center justify-center text-gray-400 print:text-black self-stretch">
-          <div className="border-l-2 border-dashed border-gray-400 h-full"></div>
-          <span className="py-4 text-xs font-mono uppercase tracking-widest print:inline-block absolute bg-white" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>✂ Cut Here</span>
+        {/* Cut line (horizontal) */}
+        <div className="hidden md:flex flex-row items-center justify-center text-gray-400 print:text-black self-stretch relative w-full">
+          <div className="border-t-2 border-dashed border-gray-400 w-full"></div>
+          <span className="px-4 text-xs font-mono uppercase tracking-widest print:inline-block absolute bg-white">✂ Cut Here</span>
         </div>
         
         <div className="flex-1">

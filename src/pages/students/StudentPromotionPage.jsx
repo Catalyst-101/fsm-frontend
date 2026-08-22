@@ -92,7 +92,7 @@ const StudentPromotionPage = () => {
     result.sort((a, b) => {
       if (a.grade !== b.grade) return (a.grade || '').localeCompare(b.grade || '');
       if (a.section !== b.section) return (a.section || '').localeCompare(b.section || '');
-      return (a.rollNumber || '').localeCompare(b.rollNumber || '');
+      return (a.studentId || '').localeCompare(b.studentId || '');
     });
     return result;
   }, [students, classFilter]);
@@ -203,7 +203,7 @@ const StudentPromotionPage = () => {
                       />
                     </td>
                     <td className="p-3 font-semibold text-white">{student.name}</td>
-                    <td className="p-3 font-mono text-slate-400 text-sm">{student.rollNumber || 'N/A'}</td>
+                    <td className="p-3 font-mono text-slate-400 text-sm">{student.studentId || 'N/A'}</td>
                     <td className="p-3 text-center text-indigo-300 font-medium">{student.grade || 'N/A'}</td>
                     <td className="p-3 text-center text-slate-400">{student.section || '-'}</td>
                   </tr>

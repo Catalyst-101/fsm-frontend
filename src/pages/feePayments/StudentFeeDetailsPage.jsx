@@ -95,7 +95,7 @@ const StudentFeeDetailsPage = () => {
               <option value="">-- Select Student --</option>
               {(students || []).map(s => (
                 <option key={s._id} value={s._id}>
-                  {s.name} | Roll/Adm: {s.rollNumber || 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'}
+                  {s.name} | Student ID: {s.studentId || 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'}
                 </option>
               ))}
             </select>
@@ -127,8 +127,8 @@ const StudentFeeDetailsPage = () => {
             <p className="text-xs text-slate-400">Class: <span className="font-semibold text-slate-200">{summary.student.grade} {summary.student.section ? `(Rs. {summary.student.section})` : ''}</span></p>
           </div>
           <div>
-            <p className="text-xs text-slate-400">Roll / Admission No:</p>
-            <p className="font-mono font-semibold text-indigo-300">{summary.student.rollNumber || 'N/A'}</p>
+            <p className="text-xs text-slate-400">Student ID:</p>
+            <p className="font-mono font-semibold text-indigo-300">{summary.student.studentId || 'N/A'}</p>
           </div>
           <div>
             <p className="text-xs text-slate-400">Parent / Guardian:</p>

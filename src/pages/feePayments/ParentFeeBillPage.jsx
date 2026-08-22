@@ -246,7 +246,7 @@ const ParentFeeBillPage = () => {
                   <div className="bg-gray-100 px-4 py-3 border-b border-gray-300 flex justify-between items-center">
                     <div>
                       <h3 className="font-bold text-lg">{item.student.name}</h3>
-                      <p className="text-sm text-gray-600">Roll/Adm: <span className="font-mono">{item.student.rollNumber || 'N/A'}</span> | Class: {item.student.grade} {item.student.section ? `(${item.student.section})` : ''}</p>
+                      <p className="text-sm text-gray-600">Student ID: <span className="font-mono">{item.student.studentId || 'N/A'}</span> | Class: {item.student.grade} {item.student.section ? `(${item.student.section})` : ''}</p>
                     </div>
                   </div>
                   
@@ -358,7 +358,7 @@ const ParentFeeBillPage = () => {
       {/* Print styles */}
       <style>{`
         @media print {
-          @page { margin: 1cm; size: A4 landscape; }
+          @page { margin: 1cm; size: A4 portrait; }
           body * {
             visibility: hidden;
             background-color: white !important;

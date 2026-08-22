@@ -32,7 +32,7 @@ const CreateEditStudentPage = () => {
   const [dob, setDob] = useState('');
   const [grade, setGrade] = useState('Grade 1');
   const [section, setSection] = useState('');
-  const [rollNumber, setRollNumber] = useState('');
+  const [studentId, setStudentId] = useState('');
   const [joiningDate, setJoiningDate] = useState(new Date().toISOString().split('T')[0]);
   const [isActive, setIsActive] = useState(true);
 
@@ -106,20 +106,6 @@ const CreateEditStudentPage = () => {
 
   // Auto-fetch next roll number when grade or section changes in Creation Mode
   useEffect(() => {
-    if (isEdit || !grade) return;
-    
-    const fetchNextRollNumber = async () => {
-      try {
-        const res = await api.get('/students/next-roll-number', { params: { grade, section, academicYearId } });
-        if (res.data && res.data.data) {
-          setRollNumber(String(res.data.data));
-        }
-      } catch (err) {
-        console.error('Failed to fetch next roll number', err);
-      }
-    };
-
-    fetchNextRollNumber();
   }, [grade, section, isEdit, academicYearId]);
 
   // Fetch Student data + existing Fee Assignment if edit mode
@@ -136,7 +122,7 @@ const CreateEditStudentPage = () => {
           setJoiningDate(s.joiningDate ? new Date(s.joiningDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
           setGrade(s.grade || 'Grade 1');
           setSection(s.section || '');
-          setRollNumber(s.rollNumber || '');
+          setStudentId(s.studentId || '');
           setIsActive(s.isActive !== undefined ? s.isActive : true);
 
           // Populate embedded fee assignment if exists
@@ -180,7 +166,7 @@ const CreateEditStudentPage = () => {
       joiningDate: joiningDate || null,
       grade,
       section,
-      rollNumber,
+      // studentId is read-only and auto-generated on backend for new students
       isActive,
       // Fee assignment fields for creation mode
       academicYearId,
@@ -283,7 +269,18 @@ const CreateEditStudentPage = () => {
               required
             />
           </div>
-
+          {id && (
+            <div className="mb-4">
+              <label className="block text-slate-400 text-sm font-bold mb-2">Student ID (Auto-Generated)</label>
+              <input
+                type="text"
+                className="shadow appearance-none border border-slate-600 rounded w-full py-2 px-3 text-slate-300 leading-tight focus:outline-none focus:border-indigo-500 bg-slate-700 opacity-50 cursor-not-allowed"
+                value={studentId}
+                readOnly
+                disabled
+              />
+            </div>
+          )}
           <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Gender</label>
@@ -347,17 +344,6 @@ const CreateEditStudentPage = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Roll Number</label>
-              <input
-                type="text"
-                value={rollNumber}
-                onChange={(e) => setRollNumber(e.target.value)}
-                placeholder="e.g. 15"
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
-              />
-              <p className="text-[10px] text-slate-400 mt-1">Unique per Class & Section</p>
-            </div>
           </div>
 
           {/* FEE ASSIGNMENT SECTION (Editable in both Creation and Edit mode) */}

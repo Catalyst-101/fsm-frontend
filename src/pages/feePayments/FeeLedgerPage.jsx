@@ -625,7 +625,7 @@ const FeeLedgerPage = () => {
 
                                   {/* 2. STUDENT INFORMATION COLUMNS */}
                                   <td className="py-2.5 px-3 font-mono text-slate-300">{student.admissionNo}</td>
-                                  <td className="py-2.5 px-3 font-mono text-slate-400">{student.rollNumber}</td>
+                                  <td className="py-2.5 px-3 font-mono text-slate-400">{student.studentId}</td>
                                   <td className="py-2.5 px-3 font-bold text-white whitespace-nowrap">{student.studentName}</td>
                                   <td className="py-2.5 px-3 text-slate-300 whitespace-nowrap">{student.parentName}</td>
                                   <td className="py-2.5 px-3 text-center font-semibold">{student.class}</td>

@@ -132,7 +132,7 @@ const FeePaymentPage = () => {
               <option value="">-- Select Student --</option>
               {(students || []).map(s => (
                 <option key={s._id} value={s._id}>
-                  {s.name} | Roll/Adm: {s.rollNumber || 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'}
+                  {s.name} | Student ID: {s.studentId || 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'}
                 </option>
               ))}
             </select>
@@ -166,7 +166,7 @@ const FeePaymentPage = () => {
             {summary.student && (
               <div className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded p-3 mb-4 text-xs space-y-1 text-slate-800 dark:text-slate-200">
                 <p><strong>Student Name:</strong> {summary.student.name}</p>
-                <p><strong>Roll / Adm No:</strong> <span className="font-mono">{summary.student.rollNumber || 'N/A'}</span></p>
+                <p><strong>Student ID:</strong> <span className="font-mono">{summary.student.studentId || 'N/A'}</span></p>
                 <p><strong>Class & Section:</strong> {summary.student.grade} {summary.student.section ? `(Rs. {summary.student.section})` : ''}</p>
                 <p><strong>Parent / Guardian:</strong> {summary.student.parentId?.name || 'N/A'}</p>
               </div>
