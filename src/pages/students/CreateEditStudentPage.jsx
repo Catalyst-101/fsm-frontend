@@ -110,7 +110,7 @@ const CreateEditStudentPage = () => {
     
     const fetchNextRollNumber = async () => {
       try {
-        const res = await api.get('/students/next-roll-number', { params: { grade, section } });
+        const res = await api.get('/students/next-roll-number', { params: { grade, section, academicYearId } });
         if (res.data && res.data.data) {
           setRollNumber(String(res.data.data));
         }
@@ -120,7 +120,7 @@ const CreateEditStudentPage = () => {
     };
 
     fetchNextRollNumber();
-  }, [grade, section, isEdit]);
+  }, [grade, section, isEdit, academicYearId]);
 
   // Fetch Student data + existing Fee Assignment if edit mode
   useEffect(() => {
