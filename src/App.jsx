@@ -36,6 +36,9 @@ import FeeLedgerPage from './pages/feePayments/FeeLedgerPage';
 import ParentFeeBillPage from './pages/feePayments/ParentFeeBillPage';
 import ReceiptViewPage from './pages/feePayments/ReceiptViewPage';
 
+// Activity Log
+import ActivityLogPage from './pages/activityLog/ActivityLogPage';
+
 function App() {
   return (
     <Routes>
@@ -73,11 +76,12 @@ function App() {
           <Route path="/parent-fee-bill" element={<ParentFeeBillPage />} />
           <Route path="/receipt/:id" element={<ReceiptViewPage />} />
 
-          {/* SUPER_ADMIN and ADMIN Routes */}
+          {/* Admin / System Management */}
           <Route element={<RoleRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']} />}>
             <Route path="/users" element={<UsersPage />} />
             <Route path="/users/create" element={<CreateUserPage />} />
             <Route path="/users/:id" element={<UserDetailPage />} />
+            <Route path="/activity-log" element={<ActivityLogPage />} />
           </Route>
         </Route>
       </Route>

@@ -126,16 +126,28 @@ const Layout = () => {
                 Profile
               </Link>
               {canManageUsers && (
-                <Link
-                  to="/users"
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive('/users')
-                      ? 'bg-slate-900 text-white shadow-inner'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                  }`}
-                >
-                  Users List
-                </Link>
+                <>
+                  <Link
+                    to="/users"
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive('/users')
+                        ? 'bg-slate-900 text-white shadow-inner'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                  >
+                    Users List
+                  </Link>
+                  <Link
+                    to="/activity-log"
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive('/activity-log')
+                        ? 'bg-slate-900 text-white shadow-inner'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                  >
+                    Activity Log
+                  </Link>
+                </>
               )}
             </nav>
           </div>
