@@ -76,12 +76,14 @@ function App() {
           <Route path="/parent-fee-bill" element={<ParentFeeBillPage />} />
           <Route path="/receipt/:id" element={<ReceiptViewPage />} />
 
+          {/* Activity Log (Accessible by SUPER_ADMIN, ADMIN, ACCOUNTANT) */}
+          <Route path="/activity-log" element={<ActivityLogPage />} />
+
           {/* Admin / System Management */}
           <Route element={<RoleRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']} />}>
             <Route path="/users" element={<UsersPage />} />
             <Route path="/users/create" element={<CreateUserPage />} />
             <Route path="/users/:id" element={<UserDetailPage />} />
-            <Route path="/activity-log" element={<ActivityLogPage />} />
           </Route>
         </Route>
       </Route>

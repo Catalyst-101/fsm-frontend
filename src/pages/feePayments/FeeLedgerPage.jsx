@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import Button from '../../components/ui/Button';
+import * as XLSX from 'xlsx';
 
 const FeeLedgerPage = () => {
   const [academicYears, setAcademicYears] = useState([]);
@@ -247,78 +248,50 @@ const FeeLedgerPage = () => {
     }));
   };
 
-  // Export CSV
-  const exportLedgerToCSV = () => {
+  // Export Excel
+  const handleExportExcel = () => {
     if (filteredSortedData.length === 0) return;
 
-    const headers = [
-      'Parent Name',
-      'Parent CNIC',
-      'Student Name',
-      'Admission No',
-      'Class',
-      'Section',
-      'Academic Year',
-      ...monthColumns,
-      'Admission Rem',
-      'Registration Rem',
-      'Security Rem',
-      'Misc Rem',
-      'Annual Rem',
-      'Books Rem',
-      'Transport Rem',
-      'Monthly Total',
-      'Other Total',
-      'Total Fee',
-      'Total Paid',
-      'Remaining Balance',
-      'Last Payment Date',
-      'Payment Status'
-    ];
+    const exportData = filteredSortedData.map(item => {
+      const row = {
+        'Parent Name': item.parentName || '',
+        'Parent CNIC': item.parentCnic || '',
+        'Student Name': item.studentName || '',
+        'Admission No': item.admissionNo || '',
+        'Class': item.class || '',
+        'Section': item.section || '',
+        'Academic Year': item.academicYearName || '',
+      };
 
-    const rows = filteredSortedData.map(item => {
-      const months = (item.monthlyLedger || []).map(m => {
-        if (m.status === 'N/A') return '-';
-        if (m.status === 'Paid') return `Paid (Rs. {m.paidAmount})`;
-        if (m.status === 'Partial') return `Partial (Rs. {m.paidAmount})`;
-        return `Due (Rs. {m.originalAmount - m.paidAmount})`;
+      (item.monthlyLedger || []).forEach(m => {
+        let statusStr = '-';
+        if (m.status === 'Paid') statusStr = `Paid (Rs. ${m.paidAmount})`;
+        else if (m.status === 'Partial') statusStr = `Partial (Rs. ${m.paidAmount})`;
+        else if (m.status !== 'N/A') statusStr = `Due (Rs. ${m.originalAmount - m.paidAmount})`;
+        row[m.monthName] = statusStr;
       });
 
-      return [
-        `"${item.parentName}"`,
-        `"${item.parentCnic}"`,
-        `"${item.studentName}"`,
-        `"${item.admissionNo}"`,
-        `"${item.class}"`,
-        `"${item.section}"`,
-        `"${item.academicYearName}"`,
-        ...months.map(m => `"${m}"`),
-        item.admissionFeeRemaining,
-        item.registrationFeeRemaining,
-        item.securityFeeRemaining,
-        item.miscellaneousFeeRemaining,
-        item.annualChargesRemaining,
-        item.booksAndStationeryFeeRemaining,
-        item.transportFeeRemaining,
-        item.monthlyTuitionTotal,
-        item.otherFeesRemaining,
-        item.totalAmount,
-        item.totalPaid,
-        item.remainingBalance,
-        item.lastPaymentDate ? new Date(item.lastPaymentDate).toLocaleDateString() : 'N/A',
-        `"${item.paymentStatus}"`
-      ];
+      row['Admission Rem'] = item.admissionFeeRemaining || 0;
+      row['Registration Rem'] = item.registrationFeeRemaining || 0;
+      row['Security Rem'] = item.securityFeeRemaining || 0;
+      row['Misc Rem'] = item.miscellaneousFeeRemaining || 0;
+      row['Annual Rem'] = item.annualChargesRemaining || 0;
+      row['Books Rem'] = item.booksAndStationeryFeeRemaining || 0;
+      row['Transport Rem'] = item.transportFeeRemaining || 0;
+      row['Monthly Total'] = item.monthlyTuitionTotal || 0;
+      row['Other Total'] = item.otherFeesRemaining || 0;
+      row['Total Fee'] = item.totalAmount || 0;
+      row['Total Paid'] = item.totalPaid || 0;
+      row['Remaining Balance'] = item.remainingBalance || 0;
+      row['Last Payment Date'] = item.lastPaymentDate ? new Date(item.lastPaymentDate).toLocaleDateString() : 'N/A';
+      row['Payment Status'] = item.paymentStatus || '';
+      return row;
     });
 
-    const csvContent = [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `Fee_Ledger_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Fee Ledger");
+    XLSX.writeFile(wb, `Fee_Ledger_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
   const handlePrint = () => {
@@ -335,8 +308,8 @@ const FeeLedgerPage = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button onClick={exportLedgerToCSV} variant="secondary" className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]">download</span> Export CSV
+          <Button onClick={handleExportExcel} variant="secondary" className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px]">download</span> Export Excel
           </Button>
 
           <Button onClick={handlePrint} variant="primary" className="flex items-center gap-2">
@@ -523,7 +496,7 @@ const FeeLedgerPage = () => {
           <span className="material-symbols-outlined animate-spin align-middle mr-2">refresh</span> Loading fee ledger data...
         </div>
       ) : (
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden print:border-none print:shadow-none printable-ledger" id="ledger-table-container">
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden print:border-none print:shadow-none print-scale-down printable-ledger" id="ledger-table-container">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-max text-xs">
               <thead>

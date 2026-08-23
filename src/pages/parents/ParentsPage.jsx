@@ -4,8 +4,10 @@ import api from '../../api/axios';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import InputField from '../../components/ui/InputField';
+import { useAuth } from '../../context/AuthContext';
 
 const ParentsPage = () => {
+  const { user } = useAuth();
   const [parents, setParents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -175,12 +177,14 @@ const ParentsPage = () => {
                           >
                             {p.isActive ? 'Disable' : 'Enable'}
                           </button>
-                          <button
-                            onClick={() => requestDelete(p)}
-                            className="w-20 px-0 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer text-center"
-                          >
-                            Delete
-                          </button>
+                          {user?.role !== 'ACCOUNTANT' && (
+                            <button
+                              onClick={() => requestDelete(p)}
+                              className="w-20 px-0 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer text-center"
+                            >
+                              Delete
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

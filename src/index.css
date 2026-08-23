@@ -58,3 +58,27 @@ aside nav::-webkit-scrollbar-thumb {
 aside nav::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 10mm;
+  }
+  
+  body {
+    background-color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Scale down specific elements if needed to fit wide tables */
+  .print-scale-down {
+    zoom: 0.65; /* Works well in Chrome/Edge */
+  }
+
+  /* Ensure background colors print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

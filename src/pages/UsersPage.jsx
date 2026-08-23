@@ -132,9 +132,9 @@ const UsersPage = () => {
                         {u.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>
-                    <td className="py-4 px-6 text-right space-x-2 whitespace-nowrap">
+                    <td className="py-4 px-6 text-right">
                       {!isSelf ? (
-                        <>
+                        <div className="flex items-center justify-end gap-2">
                           <Link to={`/users/${u._id}`}>
                             <Button variant="secondary" className="px-3 py-1.5 text-xs">
                               View / Edit
@@ -142,7 +142,7 @@ const UsersPage = () => {
                           </Link>
                           <button
                             onClick={() => handleToggleStatus(u._id, u.isActive)}
-                            className={`px-3 py-1.5 text-xs font-bold rounded transition-all cursor-pointer border inline-block ${
+                            className={`px-3 py-1.5 text-xs font-bold rounded transition-all cursor-pointer border ${
                               u.isActive 
                                 ? 'bg-amber-50 text-amber-600 hover:bg-amber-100 border-amber-200'
                                 : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-200'
@@ -152,11 +152,11 @@ const UsersPage = () => {
                           </button>
                           <button
                             onClick={() => requestDelete(u)}
-                            className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer inline-block"
+                            className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer"
                           >
                             Delete
                           </button>
-                        </>
+                        </div>
                       ) : (
                         <span className="text-xs text-gray-500 font-medium italic">Manage via Profile page</span>
                       )}

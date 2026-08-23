@@ -27,8 +27,8 @@ const Layout = () => {
     { path: '/parent-fee-bill', icon: 'request_quote', label: 'Generate Fee Bill' },
     { path: '/student-fee-details', icon: 'person_search', label: 'Student Fee Details' },
     { path: '/fee-ledger', icon: 'account_balance_wallet', label: 'Fee Ledger' },
+    { path: '/activity-log', icon: 'history', label: 'Activity Log' },
     ...(canManageUsers ? [
-      { path: '/activity-log', icon: 'history', label: 'Activity Log' },
       { path: '/users', icon: 'group', label: 'Users List' }
     ] : []),
     { path: '/profile', icon: 'account_circle', label: 'Profile' },

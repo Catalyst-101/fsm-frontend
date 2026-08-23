@@ -3,8 +3,10 @@ import api from '../../api/axios';
 import InputField from '../../components/ui/InputField';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
+import { useAuth } from '../../context/AuthContext';
 
 const AcademicYearsPage = () => {
+  const { user } = useAuth();
   const [years, setYears] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -127,12 +129,13 @@ const AcademicYearsPage = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className={`grid grid-cols-1 ${user?.role !== 'ACCOUNTANT' ? 'lg:grid-cols-3' : ''} gap-6`}>
         {/* Form Card */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] h-fit">
-          <h3 className="text-lg font-bold text-[var(--color-primary)] mb-4 border-b border-gray-100 pb-2">
-            {editId ? 'Edit Academic Year' : 'Create Academic Year'}
-          </h3>
+        {user?.role !== 'ACCOUNTANT' && (
+          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] h-fit">
+            <h3 className="text-lg font-bold text-[var(--color-primary)] mb-4 border-b border-gray-100 pb-2">
+              {editId ? 'Edit Academic Year' : 'Create Academic Year'}
+            </h3>
           <form onSubmit={handleSubmit} className="space-y-5">
             <InputField
               label="Year Name *"
@@ -192,9 +195,10 @@ const AcademicYearsPage = () => {
             </div>
           </form>
         </div>
+        )}
 
         {/* Table Card */}
-        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-xl shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] overflow-hidden">
+        <div className={`${user?.role !== 'ACCOUNTANT' ? 'lg:col-span-2' : ''} bg-white border border-gray-200 rounded-xl shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] overflow-hidden`}>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -203,7 +207,9 @@ const AcademicYearsPage = () => {
                   <th className="py-4 px-6 whitespace-nowrap">Start Date</th>
                   <th className="py-4 px-6 whitespace-nowrap">End Date</th>
                   <th className="py-4 px-6 whitespace-nowrap">Status</th>
-                  <th className="py-4 px-6 text-right whitespace-nowrap">Actions</th>
+                  {user?.role !== 'ACCOUNTANT' && (
+                    <th className="py-4 px-6 text-right whitespace-nowrap">Actions</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm">
@@ -234,23 +240,25 @@ const AcademicYearsPage = () => {
                           </span>
                         )}
                       </td>
-                      <td className="py-4 px-6">
-                        <div className="flex justify-end items-center gap-2">
-                          <Button
-                            variant="secondary"
-                            onClick={() => handleEdit(y)}
-                            className="px-3 py-1.5 text-xs h-[30px]"
-                          >
-                            Edit
-                          </Button>
-                          <button
-                            onClick={() => requestDelete(y)}
-                            className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer h-[30px] flex items-center justify-center"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
+                      {user?.role !== 'ACCOUNTANT' && (
+                        <td className="py-4 px-6">
+                          <div className="flex justify-end items-center gap-2">
+                            <Button
+                              variant="secondary"
+                              onClick={() => handleEdit(y)}
+                              className="px-3 py-1.5 text-xs h-[30px]"
+                            >
+                              Edit
+                            </Button>
+                            <button
+                              onClick={() => requestDelete(y)}
+                              className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer h-[30px] flex items-center justify-center"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))
                 )}
