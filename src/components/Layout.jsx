@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import logo from '../assets/images/logo.png';
 
 const Layout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -34,11 +36,23 @@ const Layout = () => {
 
   return (
     <div className="text-[var(--color-text)] font-sans antialiased flex h-screen overflow-hidden bg-[var(--color-background)] print:h-auto print:overflow-visible">
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-20 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
+
       {/* SideNavBar */}
-      <aside className="fixed left-0 top-0 h-screen w-[260px] transition-all duration-300 bg-[var(--color-primary)] shadow-md flex flex-col z-20 print:hidden">
-        <div className="p-6">
-          <h1 className="text-xl font-bold text-white tracking-tight">Pen & Page Academia</h1>
-          <p className="text-[var(--color-accent)] text-sm mt-1">School Management</p>
+      <aside className={`fixed left-0 top-0 h-screen w-[260px] transition-transform duration-300 bg-[var(--color-primary)] shadow-md flex flex-col z-30 print:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+        <div className="p-6 flex items-center gap-3">
+          <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
+          <div>
+            <h1 className="text-sm font-bold text-white tracking-tight uppercase">Pen & Page Academia</h1>
+            <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">(SCHOOL SECTION)</p>
+            <p className="text-[var(--color-accent)] text-[10px] mt-0.5 font-bold uppercase tracking-wider">Fee Management System</p>
+          </div>
         </div>
         
         <nav className="flex-1 overflow-y-auto">
@@ -47,6 +61,7 @@ const Layout = () => {
               <li key={item.path}>
                 <Link
                   to={item.path}
+                  onClick={() => setSidebarOpen(false)}
                   className={`flex items-center gap-3 py-3 px-6 cursor-pointer active:scale-95 transition-colors ${
                     isActive(item.path)
                       ? 'bg-[var(--color-secondary)] border-l-4 border-[var(--color-accent)] text-[var(--color-accent)]'
@@ -75,31 +90,21 @@ const Layout = () => {
       </aside>
 
       {/* Main Content Wrapper */}
-      <div className="flex-1 ml-[260px] print:ml-0 flex flex-col h-screen print:h-auto overflow-hidden print:overflow-visible">
+      <div className="flex-1 md:ml-[260px] print:ml-0 flex flex-col h-screen print:h-auto overflow-hidden print:overflow-visible transition-all duration-300">
         {/* TopNavBar */}
-        <header className="h-16 flex items-center justify-between px-6 bg-white border-b border-gray-200 shadow-sm z-10 shrink-0 print:hidden">
+        <header className="h-16 flex items-center justify-between px-4 md:px-6 bg-white border-b border-gray-200 shadow-sm z-10 shrink-0 print:hidden">
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-              <input
-                className="pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] w-64 transition-all"
-                placeholder="Search..."
-                type="text"
-              />
-            </div>
+            <button 
+              className="md:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <span className="material-symbols-outlined">menu</span>
+            </button>
+            {/* Search bar removed as per request */}
           </div>
           
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <button className="p-2 text-gray-500 hover:bg-gray-100 transition-colors rounded-full active:opacity-80">
-                <span className="material-symbols-outlined">notifications</span>
-              </button>
-              <Link to="/profile" className="p-2 text-gray-500 hover:bg-gray-100 transition-colors rounded-full active:opacity-80 flex items-center justify-center">
-                <span className="material-symbols-outlined">settings</span>
-              </Link>
-            </div>
-            
-            <div className="flex items-center gap-3 border-l border-gray-200 pl-6">
+          <div className="flex items-center gap-4 md:gap-6">
+            <div className="flex items-center gap-3 md:border-l md:border-gray-200 md:pl-6">
               <div className="text-right hidden md:block">
                 <p className="font-bold text-[10px] tracking-wider text-[var(--color-primary)] uppercase">{user?.role}</p>
                 <p className="text-sm font-medium text-gray-700">{user?.name}</p>

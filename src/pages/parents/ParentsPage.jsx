@@ -157,29 +157,31 @@ const ParentsPage = () => {
                       <td className="py-4 px-6 font-mono text-xs text-gray-600">{p.cnic}</td>
                       <td className="py-4 px-6 text-gray-700 font-medium">{p.phone}</td>
                       <td className="py-4 px-6 text-gray-600">{p.occupation || '-'}</td>
-                      <td className="py-4 px-6 text-right space-x-2 whitespace-nowrap">
-                        <Link to={`/parents/${p._id}`}>
-                          <Button variant="outline" className="inline-flex px-3 py-1.5 text-xs">View</Button>
-                        </Link>
-                        <Link to={`/parents/edit/${p._id}`}>
-                          <Button variant="secondary" className="inline-flex px-3 py-1.5 text-xs bg-gray-100">Edit</Button>
-                        </Link>
-                        <button
-                          onClick={() => handleToggleActive(p)}
-                          className={`px-3 py-1.5 text-xs font-bold rounded transition-all cursor-pointer border ${
-                            p.isActive 
-                              ? 'bg-amber-50 text-amber-600 hover:bg-amber-100 border-amber-200'
-                              : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-200'
-                          }`}
-                        >
-                          {p.isActive ? 'Disable' : 'Enable'}
-                        </button>
-                        <button
-                          onClick={() => requestDelete(p)}
-                          className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer"
-                        >
-                          Delete
-                        </button>
+                      <td className="py-4 px-6">
+                        <div className="flex justify-end items-center gap-2">
+                          <Link to={`/parents/${p._id}`} className="block">
+                            <Button variant="outline" className="w-20 px-0 py-1.5 text-xs justify-center">View</Button>
+                          </Link>
+                          <Link to={`/parents/edit/${p._id}`} className="block">
+                            <Button variant="secondary" className="w-20 px-0 py-1.5 text-xs bg-gray-100 justify-center">Edit</Button>
+                          </Link>
+                          <button
+                            onClick={() => handleToggleActive(p)}
+                            className={`w-20 px-0 py-1.5 text-xs font-bold rounded transition-all cursor-pointer border text-center ${
+                              p.isActive 
+                                ? 'bg-amber-50 text-amber-600 hover:bg-amber-100 border-amber-200'
+                                : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-200'
+                            }`}
+                          >
+                            {p.isActive ? 'Disable' : 'Enable'}
+                          </button>
+                          <button
+                            onClick={() => requestDelete(p)}
+                            className="w-20 px-0 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer text-center"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))

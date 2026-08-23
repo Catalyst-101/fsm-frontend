@@ -280,12 +280,14 @@ const FeeStructuresPage = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 font-bold text-gray-500 uppercase text-xs tracking-wider">
-                  <th className="py-4 px-4 whitespace-nowrap">Year / Grade</th>
-                  <th className="py-4 px-3 whitespace-nowrap">Monthly Tuition</th>
-                  <th className="py-4 px-3 whitespace-nowrap">Admission</th>
-                  <th className="py-4 px-3 whitespace-nowrap">Other Fees</th>
-                  <th className="py-4 px-4 text-right whitespace-nowrap">Actions</th>
+                <tr className="bg-gray-50 border-b border-gray-200 font-bold text-gray-500 uppercase text-[10px] tracking-wider">
+                  <th className="py-4 px-3 whitespace-nowrap">Year / Grade</th>
+                  <th className="py-4 px-2 whitespace-nowrap">Tuition</th>
+                  <th className="py-4 px-2 whitespace-nowrap">Admission</th>
+                  <th className="py-4 px-2 whitespace-nowrap">Reg.</th>
+                  <th className="py-4 px-2 whitespace-nowrap">Misc.</th>
+                  <th className="py-4 px-2 whitespace-nowrap">Annual</th>
+                  <th className="py-4 px-3 text-right whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm">
@@ -302,31 +304,31 @@ const FeeStructuresPage = () => {
                 ) : (
                   structures.map((s) => (
                     <tr key={s._id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="py-4 px-4">
+                      <td className="py-4 px-3">
                         <div className="font-bold text-[var(--color-primary)]">{s.grade}</div>
                         <div className="text-[11px] font-semibold text-[var(--color-secondary)] uppercase tracking-wider mt-0.5">{s.academicYearId?.name}</div>
                       </td>
-                      <td className="py-4 px-3 font-semibold text-gray-800">Rs. {s.monthlyTuition}</td>
-                      <td className="py-4 px-3 font-medium text-gray-600">Rs. {s.admissionFee}</td>
+                      <td className="py-4 px-2 font-semibold text-gray-800">Rs. {s.monthlyTuition}</td>
+                      <td className="py-4 px-2 font-medium text-gray-600">Rs. {s.admissionFee}</td>
+                      <td className="py-4 px-2 font-medium text-gray-600">Rs. {s.registrationFee}</td>
+                      <td className="py-4 px-2 font-medium text-gray-600">Rs. {s.miscellaneousFee}</td>
+                      <td className="py-4 px-2 font-medium text-gray-600">Rs. {s.annualCharges}</td>
                       <td className="py-4 px-3">
-                        <div className="text-[11px] text-gray-500">Reg: <span className="font-medium text-gray-700">Rs. {s.registrationFee}</span></div>
-                        <div className="text-[11px] text-gray-500">Misc: <span className="font-medium text-gray-700">Rs. {s.miscellaneousFee}</span></div>
-                        <div className="text-[11px] text-gray-500">Annual: <span className="font-medium text-gray-700">Rs. {s.annualCharges}</span></div>
-                      </td>
-                      <td className="py-4 px-4 text-right space-x-2 whitespace-nowrap">
-                        <Button
-                          variant="secondary"
-                          onClick={() => handleEdit(s)}
-                          className="px-3 py-1.5 text-xs"
-                        >
-                          Edit
-                        </Button>
-                        <button
-                          onClick={() => requestDelete(s)}
-                          className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer inline-block"
-                        >
-                          Delete
-                        </button>
+                        <div className="flex justify-end items-center gap-2">
+                          <Button
+                            variant="secondary"
+                            onClick={() => handleEdit(s)}
+                            className="px-3 py-1.5 text-xs h-[30px]"
+                          >
+                            Edit
+                          </Button>
+                          <button
+                            onClick={() => requestDelete(s)}
+                            className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer h-[30px] flex items-center justify-center"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))

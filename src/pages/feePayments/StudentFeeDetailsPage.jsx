@@ -262,14 +262,17 @@ const StudentFeeDetailsPage = () => {
                     <td className="px-6 py-4 text-sm font-medium text-gray-500 flex items-center gap-1.5">
                       <span className="material-symbols-outlined text-[16px]">{receipt.paymentMethod === 'Cash' ? 'payments' : 'account_balance'}</span> {receipt.paymentMethod}
                     </td>
-                    <td className="px-6 py-4 text-sm text-right">
-                      <Link
-                        to={`/receipt/${receipt._id}`}
-                      >
-                         <Button variant="secondary" className="px-3 py-1.5 text-xs flex items-center gap-1">
-                           <span className="material-symbols-outlined text-[14px]">visibility</span> View
-                         </Button>
-                      </Link>
+                    <td className="px-6 py-4 text-sm">
+                      <div className="flex justify-end">
+                        <Link
+                          to={`/receipt/${receipt._id}`}
+                          className="inline-block"
+                        >
+                           <Button variant="secondary" className="px-3 py-1.5 text-xs flex items-center gap-1">
+                             <span className="material-symbols-outlined text-[14px]">visibility</span> View
+                           </Button>
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}

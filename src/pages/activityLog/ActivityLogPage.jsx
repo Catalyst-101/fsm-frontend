@@ -28,11 +28,17 @@ const ActivityLogPage = () => {
     setLoading(true);
     try {
       const activeFilters = Object.fromEntries(Object.entries(filters).filter(([_, v]) => v !== ''));
+      if (activeFilters.reversed === 'true') activeFilters.reversed = true;
+      if (activeFilters.reversed === 'false') activeFilters.reversed = false;
+      if (activeFilters.reversible === 'true') activeFilters.reversible = true;
+      if (activeFilters.reversible === 'false') activeFilters.reversible = false;
+
       const response = await getAllLogs({ page, limit: pagination.limit, ...activeFilters });
       setLogs(response.data.data);
       setPagination(response.data.pagination);
     } catch (error) {
-      alert('Failed to fetch activity logs');
+      console.error("Fetch Logs Error:", error);
+      // Graceful error state without annoying alerts
     } finally {
       setLoading(false);
     }
@@ -158,12 +164,10 @@ const ActivityLogPage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button onClick={() => viewDetails(log)} className="text-[var(--color-secondary)] hover:text-[var(--color-primary)] hover:underline mr-4 transition-colors font-bold">View</button>
-                      {log.action === 'PAYMENT' && !log.reversed ? (
+                      {log.action === 'PAYMENT' && log.reversible !== false && !log.reversed ? (
                         <button onClick={() => handleReverseClick(log)} className="text-red-500 hover:text-red-700 hover:underline transition-colors font-bold">Reverse</button>
                       ) : log.reversed ? (
                         <span className="text-gray-400 cursor-not-allowed text-xs font-semibold uppercase">Reversed</span>
-                      ) : log.action === 'PAYMENT' ? (
-                         null
                       ) : (
                         <span className="text-gray-400 cursor-not-allowed text-xs font-semibold uppercase">Permanent</span>
                       )}

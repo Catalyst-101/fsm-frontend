@@ -234,20 +234,22 @@ const AcademicYearsPage = () => {
                           </span>
                         )}
                       </td>
-                      <td className="py-4 px-6 text-right space-x-2 whitespace-nowrap">
-                        <Button
-                          variant="secondary"
-                          onClick={() => handleEdit(y)}
-                          className="px-3 py-1.5 text-xs"
-                        >
-                          Edit
-                        </Button>
-                        <button
-                          onClick={() => requestDelete(y)}
-                          className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer inline-block"
-                        >
-                          Delete
-                        </button>
+                      <td className="py-4 px-6">
+                        <div className="flex justify-end items-center gap-2">
+                          <Button
+                            variant="secondary"
+                            onClick={() => handleEdit(y)}
+                            className="px-3 py-1.5 text-xs h-[30px]"
+                          >
+                            Edit
+                          </Button>
+                          <button
+                            onClick={() => requestDelete(y)}
+                            className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer h-[30px] flex items-center justify-center"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
