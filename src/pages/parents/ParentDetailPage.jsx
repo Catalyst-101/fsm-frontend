@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import Button from '../../components/ui/Button';
 
+const getLatestValue = (arr) => Array.isArray(arr) && arr.length > 0 ? arr[arr.length - 1].value : (arr || '');
+
 const ParentDetailPage = () => {
   const { id } = useParams();
 
@@ -140,7 +142,9 @@ const ParentDetailPage = () => {
                   students.map((s) => (
                     <tr key={s._id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="py-4 px-6 font-bold text-[var(--color-primary)]">{s.name}</td>
-                      <td className="py-4 px-6 text-gray-700 font-medium">{s.grade} {s.section && `(Sec: ${s.section})`}</td>
+                      <td className="py-4 px-6 text-gray-700 font-medium">
+                        {getLatestValue(s.grade)} {getLatestValue(s.section) && `(Sec: ${getLatestValue(s.section)})`}
+                      </td>
                       <td className="py-4 px-6 text-gray-600">{s.gender}</td>
                       <td className="py-4 px-6">
                         <span className={`px-2.5 py-1 text-xs font-bold uppercase rounded-full ${s.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>

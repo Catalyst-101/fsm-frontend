@@ -253,13 +253,16 @@ const FeePaymentPage = () => {
                     onChange={handleChange}
                     className="w-full bg-white border-2 border-[var(--color-primary)] rounded-lg pl-12 pr-4 py-4 text-[var(--color-primary)] text-xl font-black focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all shadow-inner"
                     min="1"
-                    max={paymentData.paymentScope === 'TUITION_ONLY' ? summary.remainingFees.tuition : (paymentData.paymentScope === 'TUITION_AND_TRANSPORT' ? (summary.remainingFees.tuition + summary.remainingFees.transport) : summary.remainingBalance)}
-                    disabled={paymentData.paymentScope === 'TUITION_ONLY' ? summary.remainingFees.tuition === 0 : (paymentData.paymentScope === 'TUITION_AND_TRANSPORT' ? (summary.remainingFees.tuition + summary.remainingFees.transport) === 0 : summary.remainingBalance === 0)}
+                    max={paymentData.paymentScope === 'TUITION_ONLY' ? summary.remainingFees.tuition : paymentData.paymentScope === 'TRANSPORT_ONLY' ? summary.remainingFees.transport : (paymentData.paymentScope === 'TUITION_AND_TRANSPORT' ? (summary.remainingFees.tuition + summary.remainingFees.transport) : summary.remainingBalance)}
+                    disabled={paymentData.paymentScope === 'TUITION_ONLY' ? summary.remainingFees.tuition === 0 : paymentData.paymentScope === 'TRANSPORT_ONLY' ? summary.remainingFees.transport === 0 : (paymentData.paymentScope === 'TUITION_AND_TRANSPORT' ? (summary.remainingFees.tuition + summary.remainingFees.transport) === 0 : summary.remainingBalance === 0)}
                     required
                   />
                 </div>
                 {paymentData.paymentScope === 'TUITION_ONLY' && summary.remainingFees.tuition === 0 && (
                   <p className="text-xs text-[var(--color-accent)] font-bold mt-2">Tuition is fully paid.</p>
+                )}
+                {paymentData.paymentScope === 'TRANSPORT_ONLY' && summary.remainingFees.transport === 0 && (
+                  <p className="text-xs text-[var(--color-accent)] font-bold mt-2">Transport is fully paid.</p>
                 )}
                 {paymentData.paymentScope === 'TUITION_AND_TRANSPORT' && (summary.remainingFees.tuition + summary.remainingFees.transport) === 0 && (
                   <p className="text-xs text-[var(--color-accent)] font-bold mt-2">Tuition and Transport are fully paid.</p>
@@ -301,6 +304,7 @@ const FeePaymentPage = () => {
                        <option value="ALL">All Fees (Default)</option>
                        <option value="TUITION_AND_TRANSPORT">Tuition & Transport Only</option>
                        <option value="TUITION_ONLY">Tuition Only</option>
+                       <option value="TRANSPORT_ONLY">Transport Only</option>
                      </select>
                   </div>
                 </div>
@@ -321,7 +325,7 @@ const FeePaymentPage = () => {
               <div className="pt-4 border-t border-gray-100">
                 <Button
                   type="submit"
-                  disabled={processing || summary.remainingBalance === 0 || (paymentData.paymentScope === 'TUITION_ONLY' && summary.remainingFees.tuition === 0) || (paymentData.paymentScope === 'TUITION_AND_TRANSPORT' && (summary.remainingFees.tuition + summary.remainingFees.transport) === 0)}
+                  disabled={processing || summary.remainingBalance === 0 || (paymentData.paymentScope === 'TUITION_ONLY' && summary.remainingFees.tuition === 0) || (paymentData.paymentScope === 'TRANSPORT_ONLY' && summary.remainingFees.transport === 0) || (paymentData.paymentScope === 'TUITION_AND_TRANSPORT' && (summary.remainingFees.tuition + summary.remainingFees.transport) === 0)}
                   className="w-full py-4 text-lg shadow-lg flex items-center justify-center gap-2"
                 >
                   <span className="material-symbols-outlined">receipt_long</span>

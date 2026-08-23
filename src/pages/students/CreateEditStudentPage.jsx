@@ -20,6 +20,8 @@ const GRADES = [
   'Grade 10',
 ];
 
+const getLatestValue = (arr) => Array.isArray(arr) && arr.length > 0 ? arr[arr.length - 1].value : (arr || '');
+
 const CreateEditStudentPage = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -127,8 +129,8 @@ const CreateEditStudentPage = () => {
           setGender(s.gender || 'Male');
           setDob(s.dob ? new Date(s.dob).toISOString().split('T')[0] : '');
           setJoiningDate(s.joiningDate ? new Date(s.joiningDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
-          setGrade(s.grade || 'Grade 1');
-          setSection(s.section || '');
+          setGrade(getLatestValue(s.grade) || 'Grade 1');
+          setSection(getLatestValue(s.section) || '');
           setStudentId(s.studentId || '');
           setIsActive(s.isActive !== undefined ? s.isActive : true);
 

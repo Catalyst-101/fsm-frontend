@@ -7,6 +7,7 @@ const ActivityLogPage = () => {
   const [logs, setLogs] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 25, total: 0, totalPages: 1 });
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState('');
   const [filters, setFilters] = useState({
     action: '',
     entityType: '',
@@ -36,9 +37,11 @@ const ActivityLogPage = () => {
       const response = await getAllLogs({ page, limit: pagination.limit, ...activeFilters });
       setLogs(response.data.data);
       setPagination(response.data.pagination);
+      setFetchError('');
     } catch (error) {
       console.error("Fetch Logs Error:", error);
-      // Graceful error state without annoying alerts
+      setFetchError(error.response?.data?.message || 'Failed to load activity logs. Please check your connection or try logging in again.');
+      setLogs([]); // Clear logs on error to avoid showing stale data when pagination fails
     } finally {
       setLoading(false);
     }
@@ -174,9 +177,22 @@ const ActivityLogPage = () => {
                     </td>
                   </tr>
                 ))}
-                {logs.length === 0 && (
+                {logs.length === 0 && !fetchError && (
                   <tr>
                     <td colSpan="7" className="px-6 py-12 text-center text-gray-500 font-medium">No activity logs match your filters.</td>
+                  </tr>
+                )}
+                {fetchError && (
+                  <tr>
+                    <td colSpan="7" className="px-6 py-12">
+                      <div className="flex flex-col items-center justify-center text-red-600 bg-red-50 p-6 rounded-lg border border-red-200">
+                        <span className="material-symbols-outlined text-[32px] mb-2">error</span>
+                        <p className="font-bold text-center">{fetchError}</p>
+                        <Button onClick={() => fetchLogs(pagination.page)} variant="secondary" className="mt-4 border-red-200 text-red-700 hover:bg-red-100">
+                          Try Again
+                        </Button>
+                      </div>
+                    </td>
                   </tr>
                 )}
               </tbody>

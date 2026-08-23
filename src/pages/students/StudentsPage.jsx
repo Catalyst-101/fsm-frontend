@@ -5,6 +5,8 @@ import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import InputField from '../../components/ui/InputField';
 
+const getLatestValue = (arr) => Array.isArray(arr) && arr.length > 0 ? arr[arr.length - 1].value : (arr || '');
+
 const StudentsPage = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -180,7 +182,7 @@ const StudentsPage = () => {
                         )}
                       </td>
                       <td className="py-4 px-6 text-gray-700 font-medium">
-                        {s.grade} {s.section && `(Sec: ${s.section})`}
+                        {getLatestValue(s.grade)} {getLatestValue(s.section) && `(Sec: ${getLatestValue(s.section)})`}
                       </td>
                       <td className="py-4 px-6 text-gray-600">{s.gender}</td>
                       <td className="py-4 px-6 text-right space-x-2 whitespace-nowrap">

@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import Button from '../../components/ui/Button';
 
+const getLatestValue = (arr) => Array.isArray(arr) && arr.length > 0 ? arr[arr.length - 1].value : (arr || '');
+
 const StudentDetailPage = () => {
   const { id } = useParams();
 
@@ -38,7 +40,7 @@ const StudentDetailPage = () => {
            <div>
             <h2 className="text-2xl font-bold text-[var(--color-primary)] tracking-tight">{student?.name}</h2>
             <p className="text-sm text-gray-500 font-mono mt-0.5 font-medium flex items-center gap-1">
-               <span className="material-symbols-outlined text-[16px]">badge</span> ID: {student?._id}
+               <span className="material-symbols-outlined text-[16px]">badge</span> ID: {student?.studentId ? (typeof student.studentId === 'object' ? (student.studentId.studentId || Object.values(student.studentId)[0]) : student.studentId) : student?._id}
             </p>
            </div>
         </div>
@@ -64,11 +66,11 @@ const StudentDetailPage = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-xs text-gray-500 font-medium uppercase">Grade / Class</p>
-              <p className="text-sm text-gray-800 font-semibold mt-1">{student?.grade}</p>
+              <p className="text-sm text-gray-800 font-semibold mt-1">{getLatestValue(student?.grade)}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500 font-medium uppercase">Section</p>
-              <p className="text-sm text-gray-800 font-semibold mt-1">{student?.section || 'N/A'}</p>
+              <p className="text-sm text-gray-800 font-semibold mt-1">{getLatestValue(student?.section) || 'N/A'}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500 font-medium uppercase">Student ID</p>
@@ -190,6 +192,18 @@ const StudentDetailPage = () => {
               <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                 <span className="text-[10px] font-bold uppercase text-gray-500 block mb-1">Annual Charges</span>
                 <span className="font-semibold text-gray-700">Rs. {student.fee.annualCharges}</span>
+              </div>
+              <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                <span className="text-[10px] font-bold uppercase text-gray-500 block mb-1">Books & Stationery</span>
+                <span className="font-semibold text-gray-700">Rs. {student.fee.booksAndStationeryFee}</span>
+              </div>
+              <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                <span className="text-[10px] font-bold uppercase text-gray-500 block mb-1">Transport Fee</span>
+                <span className="font-semibold text-gray-700">Rs. {student.fee.transportFee}</span>
+              </div>
+              <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                <span className="text-[10px] font-bold uppercase text-gray-500 block mb-1">Security Fee</span>
+                <span className="font-semibold text-gray-700">Rs. {student.fee.securityFee}</span>
               </div>
             </div>
           </div>

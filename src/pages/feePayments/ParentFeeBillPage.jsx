@@ -132,13 +132,24 @@ const ParentFeeBillPage = () => {
       const parentInfo = parents.find(p => p._id === selectedParent);
       const yearInfo = academicYears.find(y => y._id === selectedYear);
 
+      let isCurrentMonthInAcademicYear = true;
+      if (yearInfo) {
+        const start = new Date(yearInfo.startDate);
+        const end = new Date(yearInfo.endDate);
+        const currentMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const startMonth = new Date(start.getFullYear(), start.getMonth(), 1);
+        const endMonth = new Date(end.getFullYear(), end.getMonth(), 1);
+        isCurrentMonthInAcademicYear = currentMonthDate >= startMonth && currentMonthDate <= endMonth;
+      }
+
       setBillData({
         parent: parentInfo,
         academicYear: yearInfo,
         students: studentSummaries,
         grandTotal,
         currentMonthName,
-        dueDate
+        dueDate,
+        isCurrentMonthInAcademicYear
       });
     } catch (err) {
       console.error(err);
@@ -323,7 +334,8 @@ const ParentFeeBillPage = () => {
                       </div>
 
                       {/* Part 2: Current Month's Payable Amount */}
-                      <div className="bg-gray-50 border border-gray-200 rounded p-4">
+                      {billData.isCurrentMonthInAcademicYear && (
+                        <div className="bg-gray-50 border border-gray-200 rounded p-4">
                         <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-3 pb-1 border-b border-gray-300">
                           Payable for {billData.currentMonthName}
                         </h4>
@@ -364,6 +376,7 @@ const ParentFeeBillPage = () => {
                           </div>
                         )}
                       </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -372,7 +385,7 @@ const ParentFeeBillPage = () => {
               <div className="mt-8 bg-gray-900 text-white p-6 rounded-lg flex justify-between items-center shadow-lg">
                 <div>
                   <h3 className="text-xl font-bold uppercase tracking-widest text-gray-300">Grand Total Payable</h3>
-                  <p className="text-sm text-gray-400 mt-1">For all students for the month of {billData.currentMonthName}</p>
+                  <p className="text-sm text-gray-400 mt-1">For all students {billData.isCurrentMonthInAcademicYear ? `for the month of ${billData.currentMonthName}` : ''}</p>
                 </div>
                 <div className="text-right">
                   <div className="text-3xl font-black mb-1">Rs. {billData.grandTotal}</div>
