@@ -46,8 +46,8 @@ const Layout = () => {
 
       {/* SideNavBar */}
       <aside className={`fixed left-0 top-0 h-screen w-[260px] transition-transform duration-300 bg-[var(--color-primary)] shadow-md flex flex-col z-30 print:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
-        <div className="p-6 flex items-center gap-3">
-          <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
+        <div className="p-6 flex flex-col items-start gap-4">
+          <img src={logo} alt="Logo" className="w-16 h-16 rounded-full object-cover shadow-sm bg-white p-0.5" />
           <div>
             <h1 className="text-sm font-bold text-white tracking-tight uppercase">Pen & Page Academia</h1>
             <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">(SCHOOL SECTION)</p>

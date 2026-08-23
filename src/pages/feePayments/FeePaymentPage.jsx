@@ -19,7 +19,7 @@ const FeePaymentPage = () => {
     amountPaid: '',
     paymentMethod: 'Cash',
     remarks: '',
-    isTuitionOnly: false,
+    paymentScope: 'ALL',
   });
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState('');
@@ -101,7 +101,7 @@ const FeePaymentPage = () => {
         amountPaid: Number(paymentData.amountPaid),
         paymentMethod: paymentData.paymentMethod,
         remarks: paymentData.remarks,
-        isTuitionOnly: paymentData.isTuitionOnly
+        paymentScope: paymentData.paymentScope
       });
       navigate(`/receipt/${res.data.receipt._id}`);
     } catch (err) {
@@ -184,7 +184,7 @@ const FeePaymentPage = () => {
                   </div>
                   <div>
                     <h3 className="font-bold text-[var(--color-primary)]">{summary.student.name}</h3>
-                    <p className="text-xs text-blue-600 font-medium">ID: <span className="font-mono">{summary.student.studentId || 'N/A'}</span></p>
+                    <p className="text-xs text-blue-600 font-medium">ID: <span className="font-mono">{summary.student.studentId ? (typeof summary.student.studentId === 'object' ? (summary.student.studentId.studentId || Object.values(summary.student.studentId)[0] || JSON.stringify(summary.student.studentId)) : summary.student.studentId) : 'N/A'}</span></p>
                   </div>
                 </div>
                 <div className="text-xs text-gray-600 font-medium grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-blue-200 border-dashed">
@@ -223,10 +223,13 @@ const FeePaymentPage = () => {
                 <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Remaining Breakdown</h4>
                 <div className="space-y-2 text-xs font-medium text-gray-600">
                   <div className="flex justify-between"><span>Tuition:</span> <span className="font-mono text-gray-800">Rs. {summary.remainingFees.tuition}</span></div>
+                  <div className="flex justify-between"><span>Transport:</span> <span className="font-mono text-gray-800">Rs. {summary.remainingFees.transport}</span></div>
                   <div className="flex justify-between"><span>Admission:</span> <span className="font-mono text-gray-800">Rs. {summary.remainingFees.admission}</span></div>
                   <div className="flex justify-between"><span>Registration:</span> <span className="font-mono text-gray-800">Rs. {summary.remainingFees.registration}</span></div>
+                  <div className="flex justify-between"><span>Security:</span> <span className="font-mono text-gray-800">Rs. {summary.remainingFees.security}</span></div>
                   <div className="flex justify-between"><span>Miscellaneous:</span> <span className="font-mono text-gray-800">Rs. {summary.remainingFees.miscellaneous}</span></div>
                   <div className="flex justify-between"><span>Annual:</span> <span className="font-mono text-gray-800">Rs. {summary.remainingFees.annual}</span></div>
+                  <div className="flex justify-between"><span>Books & Stationery:</span> <span className="font-mono text-gray-800">Rs. {summary.remainingFees.booksAndStationery}</span></div>
                 </div>
               </div>
             </div>
@@ -250,15 +253,18 @@ const FeePaymentPage = () => {
                     onChange={handleChange}
                     className="w-full bg-white border-2 border-[var(--color-primary)] rounded-lg pl-12 pr-4 py-4 text-[var(--color-primary)] text-xl font-black focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all shadow-inner"
                     min="1"
-                    max={paymentData.isTuitionOnly ? summary.remainingFees.tuition : summary.remainingBalance}
-                    disabled={paymentData.isTuitionOnly ? summary.remainingFees.tuition === 0 : summary.remainingBalance === 0}
+                    max={paymentData.paymentScope === 'TUITION_ONLY' ? summary.remainingFees.tuition : (paymentData.paymentScope === 'TUITION_AND_TRANSPORT' ? (summary.remainingFees.tuition + summary.remainingFees.transport) : summary.remainingBalance)}
+                    disabled={paymentData.paymentScope === 'TUITION_ONLY' ? summary.remainingFees.tuition === 0 : (paymentData.paymentScope === 'TUITION_AND_TRANSPORT' ? (summary.remainingFees.tuition + summary.remainingFees.transport) === 0 : summary.remainingBalance === 0)}
                     required
                   />
                 </div>
-                {paymentData.isTuitionOnly && summary.remainingFees.tuition === 0 && (
+                {paymentData.paymentScope === 'TUITION_ONLY' && summary.remainingFees.tuition === 0 && (
                   <p className="text-xs text-[var(--color-accent)] font-bold mt-2">Tuition is fully paid.</p>
                 )}
-                {!paymentData.isTuitionOnly && summary.remainingBalance === 0 && (
+                {paymentData.paymentScope === 'TUITION_AND_TRANSPORT' && (summary.remainingFees.tuition + summary.remainingFees.transport) === 0 && (
+                  <p className="text-xs text-[var(--color-accent)] font-bold mt-2">Tuition and Transport are fully paid.</p>
+                )}
+                {paymentData.paymentScope === 'ALL' && summary.remainingBalance === 0 && (
                    <p className="text-xs text-emerald-600 font-bold mt-2">All dues are cleared.</p>
                 )}
               </div>
@@ -282,24 +288,21 @@ const FeePaymentPage = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center pt-6">
-                  <label htmlFor="isTuitionOnly" className="flex items-center gap-3 cursor-pointer group">
-                    <div className="relative flex items-center justify-center">
-                      <input
-                        type="checkbox"
-                        name="isTuitionOnly"
-                        checked={paymentData.isTuitionOnly}
-                        onChange={handleChange}
-                        id="isTuitionOnly"
-                        className="peer sr-only"
-                      />
-                      <div className="w-5 h-5 border-2 border-gray-300 rounded peer-checked:bg-[var(--color-secondary)] peer-checked:border-[var(--color-secondary)] transition-all"></div>
-                      <span className="absolute text-white material-symbols-outlined text-[14px] opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">check</span>
-                    </div>
-                    <span className="text-sm text-gray-700 font-bold group-hover:text-[var(--color-primary)] transition-colors select-none">
-                      Pay Tuition Only <span className="text-[10px] text-gray-400 block font-normal">(Skips admission/annual fees)</span>
-                    </span>
-                  </label>
+                <div>
+                  <label className="block text-xs font-bold text-[var(--color-text)] uppercase tracking-wider mb-2">Payment Scope</label>
+                  <div className="relative">
+                     <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-[18px]">filter_alt</span>
+                     <select
+                       name="paymentScope"
+                       value={paymentData.paymentScope}
+                       onChange={handleChange}
+                       className="w-full bg-white border border-gray-300 rounded-lg pl-10 pr-4 py-3 text-[var(--color-text)] text-sm focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)] transition-all font-medium appearance-none"
+                     >
+                       <option value="ALL">All Fees (Default)</option>
+                       <option value="TUITION_AND_TRANSPORT">Tuition & Transport Only</option>
+                       <option value="TUITION_ONLY">Tuition Only</option>
+                     </select>
+                  </div>
                 </div>
               </div>
 
@@ -318,7 +321,7 @@ const FeePaymentPage = () => {
               <div className="pt-4 border-t border-gray-100">
                 <Button
                   type="submit"
-                  disabled={processing || summary.remainingBalance === 0 || (paymentData.isTuitionOnly && summary.remainingFees.tuition === 0)}
+                  disabled={processing || summary.remainingBalance === 0 || (paymentData.paymentScope === 'TUITION_ONLY' && summary.remainingFees.tuition === 0) || (paymentData.paymentScope === 'TUITION_AND_TRANSPORT' && (summary.remainingFees.tuition + summary.remainingFees.transport) === 0)}
                   className="w-full py-4 text-lg shadow-lg flex items-center justify-center gap-2"
                 >
                   <span className="material-symbols-outlined">receipt_long</span>

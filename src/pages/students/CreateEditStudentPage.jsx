@@ -51,6 +51,9 @@ const CreateEditStudentPage = () => {
   const [registrationFee, setRegistrationFee] = useState(0);
   const [miscellaneousFee, setMiscellaneousFee] = useState(0);
   const [annualCharges, setAnnualCharges] = useState(0);
+  const [booksAndStationeryFee, setBooksAndStationeryFee] = useState(0);
+  const [transportFee, setTransportFee] = useState(0);
+  const [securityFee, setSecurityFee] = useState(0);
   const [feeNotice, setFeeNotice] = useState('');
 
   const [loading, setLoading] = useState(true);
@@ -92,6 +95,9 @@ const CreateEditStudentPage = () => {
         setRegistrationFee(fs.registrationFee || 0);
         setMiscellaneousFee(fs.miscellaneousFee || 0);
         setAnnualCharges(fs.annualCharges || 0);
+        setBooksAndStationeryFee(fs.booksAndStationeryFee || 0);
+        setTransportFee(fs.transportFee || 0);
+        setSecurityFee(fs.securityFee || 0);
         setFeeNotice('Pre-filled default Fee Structure values for this Class & Academic Year.');
       } catch (err) {
         setMonthlyTuition(0);
@@ -99,6 +105,9 @@ const CreateEditStudentPage = () => {
         setRegistrationFee(0);
         setMiscellaneousFee(0);
         setAnnualCharges(0);
+        setBooksAndStationeryFee(0);
+        setTransportFee(0);
+        setSecurityFee(0);
         setFeeNotice('No default Fee Structure found for this Class in selected Academic Year. You can enter custom fee values below.');
       }
     };
@@ -135,6 +144,9 @@ const CreateEditStudentPage = () => {
             setRegistrationFee(fa.registrationFee || 0);
             setMiscellaneousFee(fa.miscellaneousFee || 0);
             setAnnualCharges(fa.annualCharges || 0);
+            setBooksAndStationeryFee(fa.booksAndStationeryFee || 0);
+            setTransportFee(fa.transportFee || 0);
+            setSecurityFee(fa.securityFee || 0);
           }
         } catch (err) {
           setError(err.response?.data?.message || 'Failed to fetch student data.');
@@ -171,6 +183,9 @@ const CreateEditStudentPage = () => {
       registrationFee: Number(registrationFee),
       miscellaneousFee: Number(miscellaneousFee),
       annualCharges: Number(annualCharges),
+      booksAndStationeryFee: Number(booksAndStationeryFee),
+      transportFee: Number(transportFee),
+      securityFee: Number(securityFee),
     };
 
     try {
@@ -386,46 +401,33 @@ const CreateEditStudentPage = () => {
             )}
 
             <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InputField
-                  label="Monthly Tuition (Rs.) *"
-                  type="number"
-                  min="0"
-                  value={monthlyTuition}
-                  onChange={(e) => setMonthlyTuition(e.target.value)}
-                  required
-                />
-                <InputField
-                  label="Admission Fee (Rs.)"
-                  type="number"
-                  min="0"
-                  value={admissionFee}
-                  onChange={(e) => setAdmissionFee(e.target.value)}
-                />
+              {/* One-Time Fees */}
+              <div>
+                <p className="text-[10px] font-bold text-[var(--color-secondary)] uppercase tracking-widest mb-3">One-Time Fees</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <InputField label="Admission Fee (Rs.)" type="number" min="0" value={admissionFee} onChange={(e) => setAdmissionFee(e.target.value)} />
+                  <InputField label="Registration Fee" type="number" min="0" value={registrationFee} onChange={(e) => setRegistrationFee(e.target.value)} />
+                  <InputField label="Security Fee" type="number" min="0" value={securityFee} onChange={(e) => setSecurityFee(e.target.value)} />
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <InputField
-                  label="Registration Fee"
-                  type="number"
-                  min="0"
-                  value={registrationFee}
-                  onChange={(e) => setRegistrationFee(e.target.value)}
-                />
-                <InputField
-                  label="Miscellaneous Fee"
-                  type="number"
-                  min="0"
-                  value={miscellaneousFee}
-                  onChange={(e) => setMiscellaneousFee(e.target.value)}
-                />
-                <InputField
-                  label="Annual Charges"
-                  type="number"
-                  min="0"
-                  value={annualCharges}
-                  onChange={(e) => setAnnualCharges(e.target.value)}
-                />
+              {/* Annual Fees */}
+              <div className="pt-2 border-t border-gray-200">
+                <p className="text-[10px] font-bold text-[var(--color-secondary)] uppercase tracking-widest mb-3 mt-3">Annual Fees</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <InputField label="Miscellaneous Fee" type="number" min="0" value={miscellaneousFee} onChange={(e) => setMiscellaneousFee(e.target.value)} />
+                  <InputField label="Annual Charges" type="number" min="0" value={annualCharges} onChange={(e) => setAnnualCharges(e.target.value)} />
+                  <InputField label="Books & Stationery" type="number" min="0" value={booksAndStationeryFee} onChange={(e) => setBooksAndStationeryFee(e.target.value)} />
+                </div>
+              </div>
+
+              {/* Monthly Fees */}
+              <div className="pt-2 border-t border-gray-200">
+                <p className="text-[10px] font-bold text-[var(--color-secondary)] uppercase tracking-widest mb-3 mt-3">Monthly Fees</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <InputField label="Tuition Fee *" type="number" min="0" value={monthlyTuition} onChange={(e) => setMonthlyTuition(e.target.value)} required />
+                  <InputField label="Transport Fee" type="number" min="0" value={transportFee} onChange={(e) => setTransportFee(e.target.value)} />
+                </div>
               </div>
             </div>
           </div>

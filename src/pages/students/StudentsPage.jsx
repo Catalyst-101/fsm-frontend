@@ -109,7 +109,7 @@ const StudentsPage = () => {
       <form onSubmit={handleSearch} className="flex flex-wrap gap-3 items-center">
         <InputField
           type="text"
-          placeholder="Search by student name or roll #..."
+          placeholder="Search by student name or Student ID..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           icon="search"

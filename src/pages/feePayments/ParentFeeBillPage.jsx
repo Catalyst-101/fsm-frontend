@@ -96,15 +96,18 @@ const ParentFeeBillPage = () => {
           const lastReceipt = receipts.length > 0 ? receipts[0] : null;
 
           const remainingTuition = summary.remainingFees.tuition;
-          const remainingOther = summary.remainingFees.admission + summary.remainingFees.registration + summary.remainingFees.miscellaneous + summary.remainingFees.annual;
+          const remainingOther = summary.remainingFees.admission + summary.remainingFees.registration + summary.remainingFees.security + summary.remainingFees.miscellaneous + summary.remainingFees.annual + summary.remainingFees.booksAndStationery;
           const totalRemaining = summary.remainingBalance;
 
           const currentMonthTuition = summary.currentMonthTuition || 0;
           const previousTuitionDues = summary.previousUnpaidTuition || 0;
 
+          const currentMonthTransport = summary.currentMonthTransport || 0;
+          const previousTransportDues = summary.previousUnpaidTransport || 0;
+
           // Total payable for the current month section
-          // It consists of current month's tuition + any unpaid previous tuition + unpaid other fees
-          const currentMonthPayable = currentMonthTuition + previousTuitionDues + remainingOther;
+          // It consists of current month's tuition & transport + any unpaid previous tuition & transport + unpaid other fees
+          const currentMonthPayable = currentMonthTuition + previousTuitionDues + currentMonthTransport + previousTransportDues + remainingOther;
 
           studentSummaries.push({
             student,
@@ -115,7 +118,9 @@ const ParentFeeBillPage = () => {
             lastReceipt,
             currentMonthPayable,
             currentMonthTuition,
-            previousTuitionDues
+            previousTuitionDues,
+            currentMonthTransport,
+            previousTransportDues
           });
 
           grandTotal += currentMonthPayable;
@@ -250,7 +255,7 @@ const ParentFeeBillPage = () => {
                   <div className="bg-gray-100 px-4 py-3 border-b border-gray-300 flex justify-between items-center">
                     <div>
                       <h3 className="font-bold text-lg">{item.student.name}</h3>
-                      <p className="text-sm text-gray-600">Student ID: <span className="font-mono">{item.student.studentId || 'N/A'}</span> | Class: {item.student.grade} {item.student.section ? `(${item.student.section})` : ''}</p>
+                      <p className="text-sm text-gray-600">Student ID: <span className="font-mono">{item.student.studentId ? (typeof item.student.studentId === 'object' ? (item.student.studentId.studentId || Object.values(item.student.studentId)[0] || JSON.stringify(item.student.studentId)) : item.student.studentId) : 'N/A'}</span> | Class: {item.student.grade} {item.student.section ? `(${item.student.section})` : ''}</p>
                     </div>
                   </div>
 
@@ -270,6 +275,10 @@ const ParentFeeBillPage = () => {
                               <td className="py-1 text-right">Rs. {item.remainingTuition}</td>
                             </tr>
                             <tr className="border-b border-gray-100">
+                              <td className="py-1">Transport Fee</td>
+                              <td className="py-1 text-right">Rs. {item.summary.remainingFees.transport}</td>
+                            </tr>
+                            <tr className="border-b border-gray-100">
                               <td className="py-1">Admission Fee</td>
                               <td className="py-1 text-right">Rs. {item.summary.remainingFees.admission}</td>
                             </tr>
@@ -278,12 +287,20 @@ const ParentFeeBillPage = () => {
                               <td className="py-1 text-right">Rs. {item.summary.remainingFees.registration}</td>
                             </tr>
                             <tr className="border-b border-gray-100">
+                              <td className="py-1">Security Fee</td>
+                              <td className="py-1 text-right">Rs. {item.summary.remainingFees.security}</td>
+                            </tr>
+                            <tr className="border-b border-gray-100">
                               <td className="py-1">Miscellaneous Fee</td>
                               <td className="py-1 text-right">Rs. {item.summary.remainingFees.miscellaneous}</td>
                             </tr>
                             <tr className="border-b border-gray-100">
                               <td className="py-1">Annual Fee</td>
                               <td className="py-1 text-right">Rs. {item.summary.remainingFees.annual}</td>
+                            </tr>
+                            <tr className="border-b border-gray-100">
+                              <td className="py-1">Books & Stationery</td>
+                              <td className="py-1 text-right">Rs. {item.summary.remainingFees.booksAndStationery}</td>
                             </tr>
                             <tr className="font-bold text-gray-800 bg-gray-50">
                               <td className="py-1.5 px-1">Total Remaining</td>
@@ -322,8 +339,16 @@ const ParentFeeBillPage = () => {
                               <span className="font-mono">Rs. {item.currentMonthTuition}</span>
                             </div>
                             <div className="flex justify-between text-sm">
+                              <span>Current Month Transport:</span>
+                              <span className="font-mono">Rs. {item.currentMonthTransport}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
                               <span>Previous Unpaid Tuition:</span>
                               <span className="font-mono text-red-600">Rs. {item.previousTuitionDues}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span>Previous Unpaid Transport:</span>
+                              <span className="font-mono text-red-600">Rs. {item.previousTransportDues}</span>
                             </div>
                             <div className="flex justify-between text-sm">
                               <span>Other Unpaid Fees:</span>

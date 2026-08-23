@@ -262,8 +262,11 @@ const FeeLedgerPage = () => {
       ...monthColumns,
       'Admission Rem',
       'Registration Rem',
+      'Security Rem',
       'Misc Rem',
       'Annual Rem',
+      'Books Rem',
+      'Transport Rem',
       'Monthly Total',
       'Other Total',
       'Total Fee',
@@ -292,8 +295,11 @@ const FeeLedgerPage = () => {
         ...months.map(m => `"${m}"`),
         item.admissionFeeRemaining,
         item.registrationFeeRemaining,
+        item.securityFeeRemaining,
         item.miscellaneousFeeRemaining,
         item.annualChargesRemaining,
+        item.booksAndStationeryFeeRemaining,
+        item.transportFeeRemaining,
         item.monthlyTuitionTotal,
         item.otherFeesRemaining,
         item.totalAmount,
@@ -538,8 +544,11 @@ const FeeLedgerPage = () => {
                   {/* SEPARATE OTHER FEE REMAINING COLUMNS */}
                   <th className="py-3 px-2 text-right border-l border-gray-200 text-red-700">Adm Rem</th>
                   <th className="py-3 px-2 text-right text-red-700">Reg Rem</th>
+                  <th className="py-3 px-2 text-right text-red-700">Sec Rem</th>
                   <th className="py-3 px-2 text-right text-red-700">Misc Rem</th>
                   <th className="py-3 px-2 text-right text-red-700">Ann Rem</th>
+                  <th className="py-3 px-2 text-right text-red-700">Books Rem</th>
+                  <th className="py-3 px-2 text-right text-red-700">Trans Rem</th>
 
                   {/* SUMMARY COLUMNS */}
                   <th className="py-3 px-3 text-right border-l border-gray-200 font-black">Tuition Total</th>
@@ -555,7 +564,7 @@ const FeeLedgerPage = () => {
               <tbody className="divide-y divide-gray-100 text-gray-700">
                 {parentGroups.length === 0 ? (
                   <tr>
-                    <td colSpan={19 + monthColumns.length} className="py-12 text-center text-gray-500 text-base font-medium">
+                    <td colSpan={21 + monthColumns.length} className="py-12 text-center text-gray-500 text-base font-medium">
                       No matching student ledger records found.
                     </td>
                   </tr>
@@ -585,7 +594,7 @@ const FeeLedgerPage = () => {
                           </td>
 
                           {/* Empty Month Cells spanning length */}
-                          <td colSpan={monthColumns.length + 4} className="py-2.5 px-2 border-l border-white/20 text-right text-[11px] text-blue-200 font-semibold italic">
+                          <td colSpan={monthColumns.length + 7} className="py-2.5 px-2 border-l border-white/20 text-right text-[11px] text-blue-200 font-semibold italic">
                             Parent Totals →
                           </td>
 
@@ -595,7 +604,7 @@ const FeeLedgerPage = () => {
                           <td colSpan={2} className="py-2.5 px-3 text-right text-red-300 font-black">
                             Rem: Rs. {group.totalRemaining}
                           </td>
-                          <td colSpan={2} className="py-2.5 px-3 text-center text-blue-200 text-[10px]">
+                          <td colSpan={1} className="py-2.5 px-3 text-center text-blue-200 text-[10px]">
                             Other Rem: Rs. {group.totalOtherFeesRemaining}
                           </td>
                         </tr>
@@ -660,10 +669,19 @@ const FeeLedgerPage = () => {
                                     {student.registrationFeeRemaining}
                                   </td>
                                   <td className="py-2.5 px-2 text-right text-gray-600 font-mono font-medium">
+                                    {student.securityFeeRemaining}
+                                  </td>
+                                  <td className="py-2.5 px-2 text-right text-gray-600 font-mono font-medium">
                                     {student.miscellaneousFeeRemaining}
                                   </td>
                                   <td className="py-2.5 px-2 text-right text-gray-600 font-mono font-medium">
                                     {student.annualChargesRemaining}
+                                  </td>
+                                  <td className="py-2.5 px-2 text-right text-gray-600 font-mono font-medium">
+                                    {student.booksAndStationeryFeeRemaining}
+                                  </td>
+                                  <td className="py-2.5 px-2 text-right text-gray-600 font-mono font-medium">
+                                    {student.transportFeeRemaining}
                                   </td>
 
                                   {/* SUMMARY COLUMNS */}
@@ -697,7 +715,7 @@ const FeeLedgerPage = () => {
                                 {/* ROW EXPANSION DRAWER (RECEIPT PAYMENT HISTORY) */}
                                 {isExpanded && (
                                   <tr className="bg-gray-100 border-b-2 border-[var(--color-primary)] shadow-inner">
-                                    <td colSpan={19 + monthColumns.length} className="p-4">
+                                    <td colSpan={21 + monthColumns.length} className="p-4">
                                       <div className="bg-white border border-gray-300 rounded-lg p-4 shadow-sm">
                                         <div className="flex items-center justify-between mb-3">
                                           <h4 className="text-xs font-black text-[var(--color-primary)] uppercase tracking-wider flex items-center gap-1.5">

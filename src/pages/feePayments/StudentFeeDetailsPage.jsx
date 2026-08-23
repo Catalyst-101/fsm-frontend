@@ -103,7 +103,7 @@ const StudentFeeDetailsPage = () => {
               <option value="">-- Select Student --</option>
               {(students || []).map(s => (
                 <option key={s._id} value={s._id}>
-                  {s.name} | ID: {s.studentId || 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'}
+                  {s.name} | ID: {s.studentId ? (typeof s.studentId === 'object' ? (s.studentId.studentId || Object.values(s.studentId)[0] || JSON.stringify(s.studentId)) : s.studentId) : 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'}
                 </option>
               ))}
             </select>
@@ -150,7 +150,7 @@ const StudentFeeDetailsPage = () => {
           <div className="flex gap-8 z-10 bg-black/20 rounded-lg p-4">
             <div>
               <p className="text-[10px] text-blue-300 uppercase tracking-widest font-bold">Student ID</p>
-              <p className="font-mono text-lg font-bold">{summary.student.studentId || 'N/A'}</p>
+              <p className="font-mono text-lg font-bold">{summary.student.studentId ? (typeof summary.student.studentId === 'object' ? (summary.student.studentId.studentId || Object.values(summary.student.studentId)[0] || JSON.stringify(summary.student.studentId)) : summary.student.studentId) : 'N/A'}</p>
             </div>
             <div>
               <p className="text-[10px] text-blue-300 uppercase tracking-widest font-bold">Parent / Guardian</p>
@@ -219,10 +219,19 @@ const StudentFeeDetailsPage = () => {
                 <span className="material-symbols-outlined text-[16px] text-gray-400">app_registration</span> Registration: <span className="font-mono text-black">Rs. {summary.remainingFees.registration}</span>
               </span>
               <span className="bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px] text-gray-400">shield</span> Security: <span className="font-mono text-black">Rs. {summary.remainingFees.security}</span>
+              </span>
+              <span className="bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow-sm flex items-center gap-2">
                 <span className="material-symbols-outlined text-[16px] text-gray-400">more_horiz</span> Miscellaneous: <span className="font-mono text-black">Rs. {summary.remainingFees.miscellaneous}</span>
               </span>
               <span className="bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow-sm flex items-center gap-2">
                 <span className="material-symbols-outlined text-[16px] text-gray-400">event</span> Annual: <span className="font-mono text-black">Rs. {summary.remainingFees.annual}</span>
+              </span>
+              <span className="bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px] text-gray-400">menu_book</span> Books & Stationery: <span className="font-mono text-black">Rs. {summary.remainingFees.booksAndStationery}</span>
+              </span>
+              <span className="bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px] text-gray-400">directions_bus</span> Transport: <span className="font-mono text-black">Rs. {summary.remainingFees.transport}</span>
               </span>
             </div>
           </div>

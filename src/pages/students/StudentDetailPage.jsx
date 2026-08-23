@@ -71,8 +71,8 @@ const StudentDetailPage = () => {
               <p className="text-sm text-gray-800 font-semibold mt-1">{student?.section || 'N/A'}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 font-medium uppercase">Student ID (Roll No)</p>
-              <p className="text-sm text-gray-800 font-semibold font-mono mt-1">{student?.studentId || 'N/A'}</p>
+              <p className="text-xs text-gray-500 font-medium uppercase">Student ID</p>
+              <p className="text-sm text-gray-800 font-semibold font-mono mt-1">{student?.studentId ? (typeof student.studentId === 'object' ? (student.studentId.studentId || Object.values(student.studentId)[0] || JSON.stringify(student.studentId)) : student.studentId) : 'N/A'}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500 font-medium uppercase">Gender</p>

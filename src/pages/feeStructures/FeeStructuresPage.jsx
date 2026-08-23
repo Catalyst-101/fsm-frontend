@@ -35,6 +35,9 @@ const FeeStructuresPage = () => {
   const [registrationFee, setRegistrationFee] = useState(0);
   const [miscellaneousFee, setMiscellaneousFee] = useState(0);
   const [annualCharges, setAnnualCharges] = useState(0);
+  const [booksAndStationeryFee, setBooksAndStationeryFee] = useState(0);
+  const [transportFee, setTransportFee] = useState(0);
+  const [securityFee, setSecurityFee] = useState(0);
 
   const [editId, setEditId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -86,6 +89,9 @@ const FeeStructuresPage = () => {
       registrationFee: Number(registrationFee),
       miscellaneousFee: Number(miscellaneousFee),
       annualCharges: Number(annualCharges),
+      booksAndStationeryFee: Number(booksAndStationeryFee),
+      transportFee: Number(transportFee),
+      securityFee: Number(securityFee),
     };
 
     try {
@@ -114,6 +120,9 @@ const FeeStructuresPage = () => {
     setRegistrationFee(s.registrationFee || 0);
     setMiscellaneousFee(s.miscellaneousFee || 0);
     setAnnualCharges(s.annualCharges || 0);
+    setBooksAndStationeryFee(s.booksAndStationeryFee || 0);
+    setTransportFee(s.transportFee || 0);
+    setSecurityFee(s.securityFee || 0);
   };
 
   const requestDelete = (s) => {
@@ -145,6 +154,9 @@ const FeeStructuresPage = () => {
     setRegistrationFee(0);
     setMiscellaneousFee(0);
     setAnnualCharges(0);
+    setBooksAndStationeryFee(0);
+    setTransportFee(0);
+    setSecurityFee(0);
   };
 
   return (
@@ -211,47 +223,34 @@ const FeeStructuresPage = () => {
             </div>
 
             <div className="pt-2 border-t border-gray-100 space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <InputField
-                  label="Monthly Tuition"
-                  type="number"
-                  min="0"
-                  value={monthlyTuition}
-                  onChange={(e) => setMonthlyTuition(e.target.value)}
-                />
-                <InputField
-                  label="Admission Fee"
-                  type="number"
-                  min="0"
-                  value={admissionFee}
-                  onChange={(e) => setAdmissionFee(e.target.value)}
-                />
+              {/* One-Time Fees */}
+              <div>
+                <p className="text-[10px] font-bold text-[var(--color-secondary)] uppercase tracking-widest mb-3">One-Time Fees</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <InputField label="Admission Fee" type="number" min="0" value={admissionFee} onChange={(e) => setAdmissionFee(e.target.value)} />
+                  <InputField label="Registration Fee" type="number" min="0" value={registrationFee} onChange={(e) => setRegistrationFee(e.target.value)} />
+                  <InputField label="Security Fee" type="number" min="0" value={securityFee} onChange={(e) => setSecurityFee(e.target.value)} />
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <InputField
-                  label="Registration Fee"
-                  type="number"
-                  min="0"
-                  value={registrationFee}
-                  onChange={(e) => setRegistrationFee(e.target.value)}
-                />
-                <InputField
-                  label="Miscellaneous Fee"
-                  type="number"
-                  min="0"
-                  value={miscellaneousFee}
-                  onChange={(e) => setMiscellaneousFee(e.target.value)}
-                />
+              {/* Annual Fees */}
+              <div className="pt-2">
+                <p className="text-[10px] font-bold text-[var(--color-secondary)] uppercase tracking-widest mb-3">Annual Fees</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <InputField label="Miscellaneous Fee" type="number" min="0" value={miscellaneousFee} onChange={(e) => setMiscellaneousFee(e.target.value)} />
+                  <InputField label="Annual Charges" type="number" min="0" value={annualCharges} onChange={(e) => setAnnualCharges(e.target.value)} />
+                  <InputField label="Books & Stationery" type="number" min="0" value={booksAndStationeryFee} onChange={(e) => setBooksAndStationeryFee(e.target.value)} />
+                </div>
               </div>
               
-              <InputField
-                  label="Annual Charges"
-                  type="number"
-                  min="0"
-                  value={annualCharges}
-                  onChange={(e) => setAnnualCharges(e.target.value)}
-              />
+              {/* Monthly Fees */}
+              <div className="pt-2">
+                <p className="text-[10px] font-bold text-[var(--color-secondary)] uppercase tracking-widest mb-3">Monthly Fees</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <InputField label="Tuition Fee" type="number" min="0" value={monthlyTuition} onChange={(e) => setMonthlyTuition(e.target.value)} />
+                  <InputField label="Transport Fee" type="number" min="0" value={transportFee} onChange={(e) => setTransportFee(e.target.value)} />
+                </div>
+              </div>
             </div>
 
             <div className="flex gap-2 pt-4 border-t border-gray-100">
@@ -283,10 +282,13 @@ const FeeStructuresPage = () => {
                 <tr className="bg-gray-50 border-b border-gray-200 font-bold text-gray-500 uppercase text-[10px] tracking-wider">
                   <th className="py-4 px-3 whitespace-nowrap">Year / Grade</th>
                   <th className="py-4 px-2 whitespace-nowrap">Tuition</th>
+                  <th className="py-4 px-2 whitespace-nowrap">Trans.</th>
                   <th className="py-4 px-2 whitespace-nowrap">Admission</th>
                   <th className="py-4 px-2 whitespace-nowrap">Reg.</th>
+                  <th className="py-4 px-2 whitespace-nowrap">Sec.</th>
                   <th className="py-4 px-2 whitespace-nowrap">Misc.</th>
-                  <th className="py-4 px-2 whitespace-nowrap">Annual</th>
+                  <th className="py-4 px-2 whitespace-nowrap">Ann.</th>
+                  <th className="py-4 px-2 whitespace-nowrap">Books</th>
                   <th className="py-4 px-3 text-right whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
@@ -309,10 +311,13 @@ const FeeStructuresPage = () => {
                         <div className="text-[11px] font-semibold text-[var(--color-secondary)] uppercase tracking-wider mt-0.5">{s.academicYearId?.name}</div>
                       </td>
                       <td className="py-4 px-2 font-semibold text-gray-800">Rs. {s.monthlyTuition}</td>
+                      <td className="py-4 px-2 font-medium text-gray-600">Rs. {s.transportFee || 0}</td>
                       <td className="py-4 px-2 font-medium text-gray-600">Rs. {s.admissionFee}</td>
                       <td className="py-4 px-2 font-medium text-gray-600">Rs. {s.registrationFee}</td>
+                      <td className="py-4 px-2 font-medium text-gray-600">Rs. {s.securityFee || 0}</td>
                       <td className="py-4 px-2 font-medium text-gray-600">Rs. {s.miscellaneousFee}</td>
                       <td className="py-4 px-2 font-medium text-gray-600">Rs. {s.annualCharges}</td>
+                      <td className="py-4 px-2 font-medium text-gray-600">Rs. {s.booksAndStationeryFee || 0}</td>
                       <td className="py-4 px-3">
                         <div className="flex justify-end items-center gap-2">
                           <Button

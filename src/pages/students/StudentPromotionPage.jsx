@@ -95,7 +95,7 @@ const StudentPromotionPage = () => {
     if (classFilter) {
       result = result.filter(s => s.grade === classFilter);
     }
-    // Sort by grade then section then roll number
+    // Sort by grade then section then student ID
     result.sort((a, b) => {
       if (a.grade !== b.grade) return (a.grade || '').localeCompare(b.grade || '');
       if (a.section !== b.section) return (a.section || '').localeCompare(b.section || '');
@@ -194,7 +194,7 @@ const StudentPromotionPage = () => {
                     />
                   </th>
                   <th className="p-4">Student Name</th>
-                  <th className="p-4">Roll No</th>
+                  <th className="p-4">Student ID</th>
                   <th className="p-4 text-center">Current Grade</th>
                   <th className="p-4 text-center">Section</th>
                 </tr>

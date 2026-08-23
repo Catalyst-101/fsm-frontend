@@ -140,7 +140,7 @@ const ReceiptCopy = ({ receipt, copyType }) => {
           <div className="info-row">
             <span>Student ID</span>
             <strong className="mono">
-              {student?.studentId || 'N/A'}
+              {student?.studentId ? (typeof student.studentId === 'object' ? (student.studentId.studentId || Object.values(student.studentId)[0] || JSON.stringify(student.studentId)) : student.studentId) : 'N/A'}
             </strong>
           </div>
 
@@ -210,6 +210,13 @@ const ReceiptCopy = ({ receipt, copyType }) => {
               </tr>
             )}
 
+            {Number(receipt?.allocatedToTransport) > 0 && (
+              <tr>
+                <td>Transport Fee</td>
+                <td>Rs. {receipt.allocatedToTransport}</td>
+              </tr>
+            )}
+
             {Number(receipt?.allocatedToAdmission) > 0 && (
               <tr>
                 <td>Admission Fee</td>
@@ -224,6 +231,13 @@ const ReceiptCopy = ({ receipt, copyType }) => {
               </tr>
             )}
 
+            {Number(receipt?.allocatedToSecurity) > 0 && (
+              <tr>
+                <td>Security Fee</td>
+                <td>Rs. {receipt.allocatedToSecurity}</td>
+              </tr>
+            )}
+
             {Number(receipt?.allocatedToMiscellaneous) > 0 && (
               <tr>
                 <td>Miscellaneous Fee</td>
@@ -235,6 +249,13 @@ const ReceiptCopy = ({ receipt, copyType }) => {
               <tr>
                 <td>Annual Charges</td>
                 <td>Rs. {receipt.allocatedToAnnual}</td>
+              </tr>
+            )}
+
+            {Number(receipt?.allocatedToBooksAndStationery) > 0 && (
+              <tr>
+                <td>Books & Stationery</td>
+                <td>Rs. {receipt.allocatedToBooksAndStationery}</td>
               </tr>
             )}
 
