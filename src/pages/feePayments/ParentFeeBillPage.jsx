@@ -25,6 +25,8 @@ const ParentFeeBillPage = () => {
   const [parents, setParents] = useState([]);
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedParent, setSelectedParent] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [monthOptions, setMonthOptions] = useState([]);
 
   const [billData, setBillData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -35,12 +37,51 @@ const ParentFeeBillPage = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedYear && selectedParent) {
+    if (selectedYear && selectedParent && selectedMonth) {
       generateBill();
     } else {
       setBillData(null);
     }
-  }, [selectedYear, selectedParent]);
+  }, [selectedYear, selectedParent, selectedMonth]);
+
+  useEffect(() => {
+    if (selectedYear) {
+      const yearInfo = academicYears.find(y => y._id === selectedYear);
+      if (yearInfo) {
+        const start = new Date(yearInfo.startDate);
+        const end = new Date(yearInfo.endDate);
+        const options = [];
+        let curr = new Date(start.getFullYear(), start.getMonth(), 1);
+        const last = new Date(end.getFullYear(), end.getMonth(), 1);
+        
+        while (curr <= last) {
+          const year = curr.getFullYear();
+          const month = String(curr.getMonth() + 1).padStart(2, '0');
+          const value = `${year}-${month}-01T12:00:00Z`;
+          options.push({
+            value: value,
+            label: curr.toLocaleString('default', { month: 'long', year: 'numeric' })
+          });
+          curr.setMonth(curr.getMonth() + 1);
+        }
+        setMonthOptions(options);
+        
+        const now = new Date();
+        const currentMonthVal = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01T12:00:00Z`;
+        const hasCurrent = options.find(o => o.value === currentMonthVal);
+        if (hasCurrent) {
+          setSelectedMonth(currentMonthVal);
+        } else if (options.length > 0) {
+          setSelectedMonth(options[0].value);
+        } else {
+          setSelectedMonth('');
+        }
+      }
+    } else {
+      setMonthOptions([]);
+      setSelectedMonth('');
+    }
+  }, [selectedYear, academicYears]);
 
   const fetchInitialData = async () => {
     try {
@@ -76,7 +117,7 @@ const ParentFeeBillPage = () => {
         return;
       }
 
-      const currentDate = new Date();
+      const currentDate = selectedMonth ? new Date(selectedMonth) : new Date();
       const currentMonthName = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
       const dueDate = `5th ${currentDate.toLocaleString('default', { month: 'long' })}, ${currentDate.getFullYear()}`;
 
@@ -87,7 +128,7 @@ const ParentFeeBillPage = () => {
       for (const student of parentStudents) {
         try {
           const [summaryRes, receiptRes] = await Promise.all([
-            api.get(`/fee-payments/summary?studentId=${student._id}&academicYearId=${selectedYear}`),
+            api.get(`/fee-payments/summary?studentId=${student._id}&academicYearId=${selectedYear}&targetDate=${selectedMonth}`),
             api.get(`/fee-payments/student/${student._id}?academicYearId=${selectedYear}`)
           ]);
 
@@ -132,15 +173,7 @@ const ParentFeeBillPage = () => {
       const parentInfo = parents.find(p => p._id === selectedParent);
       const yearInfo = academicYears.find(y => y._id === selectedYear);
 
-      let isCurrentMonthInAcademicYear = true;
-      if (yearInfo) {
-        const start = new Date(yearInfo.startDate);
-        const end = new Date(yearInfo.endDate);
-        const currentMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-        const startMonth = new Date(start.getFullYear(), start.getMonth(), 1);
-        const endMonth = new Date(end.getFullYear(), end.getMonth(), 1);
-        isCurrentMonthInAcademicYear = currentMonthDate >= startMonth && currentMonthDate <= endMonth;
-      }
+      let isCurrentMonthInAcademicYear = true; // Always true because months are generated from the academic year
 
       setBillData({
         parent: parentInfo,
@@ -191,7 +224,7 @@ const ParentFeeBillPage = () => {
 
       {/* Controls */}
       <div className="bg-white border border-gray-200 shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] rounded-xl p-6 print:hidden">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label className="block text-xs font-bold text-[var(--color-text)] uppercase tracking-wider mb-2">Academic Year</label>
             <select
@@ -218,6 +251,22 @@ const ParentFeeBillPage = () => {
               {parents.map(p => (
                 <option key={p._id} value={p._id}>
                   {p.name} (CNIC: {p.cnic})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-[var(--color-text)] uppercase tracking-wider mb-2">Month</label>
+            <select
+              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-[var(--color-text)] text-sm focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)] transition-all font-medium"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              disabled={monthOptions.length === 0}
+            >
+              <option value="">-- Select Month --</option>
+              {monthOptions.map(m => (
+                <option key={m.value} value={m.value}>
+                  {m.label}
                 </option>
               ))}
             </select>

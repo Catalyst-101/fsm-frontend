@@ -62,6 +62,10 @@ const CreateEditStudentPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  const [initialYear, setInitialYear] = useState('');
+  const [initialGrade, setInitialGrade] = useState('');
+  const [hasLoadedInitial, setHasLoadedInitial] = useState(false);
+
   // Fetch Parents and Academic Years
   useEffect(() => {
     const fetchInit = async () => {
@@ -83,9 +87,14 @@ const CreateEditStudentPage = () => {
     fetchInit();
   }, []);
 
-  // Dynamically load default FeeStructure when academicYearId or grade changes in Creation Mode
+  // Dynamically load default FeeStructure when academicYearId or grade changes in Creation Mode or if manually changed in Edit Mode
   useEffect(() => {
-    if (!academicYearId || !grade || isEdit) return;
+    if (!academicYearId || !grade) return;
+    
+    if (isEdit) {
+      if (!hasLoadedInitial) return;
+      if (academicYearId === initialYear && grade === initialGrade) return;
+    }
 
     const loadFeeStructure = async () => {
       setFeeNotice('');
@@ -115,7 +124,7 @@ const CreateEditStudentPage = () => {
     };
 
     loadFeeStructure();
-  }, [academicYearId, grade, isEdit]);
+  }, [academicYearId, grade, isEdit, hasLoadedInitial, initialYear, initialGrade]);
 
   // Fetch Student data + existing Fee Assignment if edit mode
   useEffect(() => {
@@ -130,6 +139,7 @@ const CreateEditStudentPage = () => {
           setDob(s.dob ? new Date(s.dob).toISOString().split('T')[0] : '');
           setJoiningDate(s.joiningDate ? new Date(s.joiningDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
           setGrade(getLatestValue(s.grade) || 'Grade 1');
+          setInitialGrade(getLatestValue(s.grade) || 'Grade 1');
           setSection(getLatestValue(s.section) || '');
           setStudentId(s.studentId || '');
           setIsActive(s.isActive !== undefined ? s.isActive : true);
@@ -140,6 +150,7 @@ const CreateEditStudentPage = () => {
             setFeeAssignmentId(fa._id || 'embedded');
             if (fa.academicYearId) {
               setAcademicYearId(fa.academicYearId);
+              setInitialYear(fa.academicYearId);
             }
             setMonthlyTuition(fa.monthlyTuition || 0);
             setAdmissionFee(fa.admissionFee || 0);
@@ -154,6 +165,7 @@ const CreateEditStudentPage = () => {
           setError(err.response?.data?.message || 'Failed to fetch student data.');
         }
       }
+      setHasLoadedInitial(true);
       setLoading(false);
     };
     initData();
