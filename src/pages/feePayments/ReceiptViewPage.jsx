@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../../api/axios';
 import logo from '../../assets/images/logo.png';
+import Button from '../../components/ui/Button';
 
 function numberToWords(num) {
   num = Number(num) || 0;
@@ -354,36 +355,23 @@ const ReceiptViewPage = () => {
   if (!receipt) return null;
 
   return (
-    <>
+    <div className="pt-6">
       {/* Screen Controls */}
-      <div className="receipt-controls">
+      <div className="max-w-[1400px] mx-auto mb-6 flex justify-between items-center print:hidden px-4">
         <Link
           to="/student-fee-details"
-          className="back-button"
+          className="text-[var(--color-primary)] font-bold hover:underline flex items-center gap-2"
         >
-          ← Back to Fee Details
+          <span className="material-symbols-outlined text-[18px]">arrow_back</span> Back to Fee Details
         </Link>
 
-        <button
-          type="button"
+        <Button
           onClick={handlePrint}
-          className="print-button"
+          className="flex items-center gap-2 shadow-md"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <span className="material-symbols-outlined text-[18px]">print</span>
           Print Receipt
-        </button>
+        </Button>
       </div>
 
       {/* Receipt Sheet */}
@@ -800,178 +788,59 @@ const ReceiptViewPage = () => {
           margin-bottom: 4px;
         }
 
-        .stamp {
-          text-align: center;
-        }
-
         .stamp-box {
-          width: 70px;
-          height: 40px;
-          border: 1px dashed #9ca3af;
+          width: 80px;
+          height: 35px;
+          border: 2px dashed #d1d5db;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 9px;
-          color: #9ca3af;
+          color: #d1d5db;
+          font-weight: 900;
+          font-size: 12px;
+          letter-spacing: 2px;
         }
 
         /* ================================
-           PRINT
+           PRINT STYLES
            ================================ */
 
         @media print {
-          html,
-          body {
-            width: 297mm;
-            height: 210mm;
-            margin: 0 !important;
-            padding: 0 !important;
-            background: white !important;
-          }
-
           @page {
-            size: A4 landscape;
-            margin: 0;
+            size: landscape;
+            margin: 10mm;
           }
 
-          body * {
-            visibility: hidden;
+          body {
+            background: white !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
           }
 
-          .receipt-sheet,
-          .receipt-sheet * {
-            visibility: visible;
-          }
-
-          .receipt-controls {
+          .receipt-controls,
+          .cut-line span {
             display: none !important;
           }
 
           .receipt-sheet {
-            position: absolute;
-            left: 0;
-            top: 0;
-
-            width: 297mm;
-            height: 210mm;
-
+            width: 100% !important;
+            height: 95vh !important;
+            aspect-ratio: auto;
             margin: 0 !important;
-            padding: 0 !important;
-
             border: none !important;
             box-shadow: none !important;
-
-            display: grid;
-            grid-template-columns: 1fr 1px 1fr;
-
-            overflow: hidden;
           }
 
           .receipt-half {
-            width: 100%;
-            height: 210mm;
-            padding: 8mm;
-            overflow: hidden;
+            padding: 0 15px !important;
           }
 
           .cut-line {
-            height: 210mm;
-            border-left: 1px dashed #000;
-          }
-
-          .cut-line span {
-            color: #000;
-            background: white;
-          }
-
-          .receipt-copy {
-            width: 100%;
-            height: 100%;
-          }
-
-          .receipt-header {
-            margin-bottom: 10px;
-          }
-
-          .receipt-brand img {
-            width: 48px;
-            height: 48px;
-          }
-
-          .receipt-brand h1 {
-            font-size: 18px;
-          }
-
-          .receipt-brand h2 {
-            font-size: 11px;
-          }
-
-          .receipt-brand p {
-            font-size: 9px;
-          }
-
-          .info-row {
-            font-size: 11px;
-          }
-
-          .fee-table {
-            font-size: 11px;
-          }
-
-          .fee-table th,
-          .fee-table td {
-            padding: 5px 8px;
-          }
-
-          .amount-words {
-            font-size: 9px;
-          }
-
-          .total-box strong {
-            font-size: 22px;
-          }
-        }
-
-        /* Smaller screens */
-
-        @media screen and (max-width: 900px) {
-          .receipt-controls {
-            width: calc(100% - 24px);
-          }
-
-          .receipt-sheet {
-            width: calc(100% - 24px);
-            aspect-ratio: auto;
-            min-height: 700px;
-          }
-
-          .receipt-half {
-            padding: 10px;
-          }
-
-          .receipt-brand h1 {
-            font-size: 11px;
-          }
-
-          .receipt-brand img {
-            width: 35px;
-            height: 35px;
-          }
-
-          .receipt-info {
-            gap: 6px;
-          }
-
-          .info-row {
-            font-size: 7px;
-          }
-
-          .fee-table {
-            font-size: 7px;
+            border-left: 1px dashed #9ca3af !important;
           }
         }
       `}</style>
-    </>
+    </div>
   );
 };
 

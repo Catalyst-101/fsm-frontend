@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../../api/axios';
+import InputField from '../../components/ui/InputField';
+import Button from '../../components/ui/Button';
 
 const CreateEditParentPage = () => {
   const { id } = useParams();
@@ -63,120 +65,121 @@ const CreateEditParentPage = () => {
     }
   };
 
-  if (loading) return <div className="text-slate-400 text-sm">Loading parent data...</div>;
+  if (loading) return <div className="p-8 text-center text-gray-500 font-medium flex items-center justify-center gap-2"><span className="material-symbols-outlined animate-spin">refresh</span> Loading parent data...</div>;
 
   return (
-    <div className="max-w-xl mx-auto space-y-6">
-      <div className="flex items-center justify-between bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
+    <div className="max-w-2xl mx-auto space-y-6">
+      <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
         <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">
+          <h2 className="text-xl font-bold text-[var(--color-primary)] tracking-tight">
             {isEdit ? 'Edit Parent Record' : 'Create New Parent'}
           </h2>
-          <p className="text-xs text-slate-400">Parent details and identification</p>
+          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mt-1">Parent Details and Identification</p>
         </div>
-        <Link to="/parents" className="text-xs text-indigo-400 hover:text-indigo-300 font-medium">
-          ← Back to Parents List
+        <Link to="/parents">
+          <Button variant="secondary" className="px-4 py-2">
+            <span className="material-symbols-outlined text-sm">arrow_back</span> Back
+          </Button>
         </Link>
       </div>
 
-      {error && <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm p-3 rounded-lg">{error}</div>}
+      {error && (
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 text-sm text-red-700 flex items-start gap-2 rounded-r-lg">
+          <span className="material-symbols-outlined text-red-500 text-[20px]">error</span>
+          <span>{error}</span>
+        </div>
+      )}
 
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Full Name *</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Mohammad Ali"
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
-              required
-            />
-          </div>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)]">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <InputField
+            label="Full Name *"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Mohammad Ali"
+            required
+          />
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">CNIC (National ID) *</label>
-            <input
-              type="text"
-              value={cnic}
-              onChange={(e) => setCnic(e.target.value.replace(/\D/g, '').slice(0, 13))}
-              placeholder="e.g. 3520212345671 (13 digits)"
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500 font-mono"
-              required
-              maxLength={13}
-              minLength={13}
-            />
-          </div>
+          <InputField
+            label="CNIC (National ID) *"
+            type="text"
+            value={cnic}
+            onChange={(e) => setCnic(e.target.value.replace(/\D/g, '').slice(0, 13))}
+            placeholder="e.g. 3520212345671 (13 digits)"
+            required
+            maxLength={13}
+            minLength={13}
+            className="font-mono"
+            icon="badge"
+          />
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Phone Number *</label>
-            <input
-              type="text"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
-              placeholder="e.g. 03369341134 (11 digits)"
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
-              required
-              maxLength={11}
-              minLength={11}
-            />
-          </div>
+          <InputField
+            label="Phone Number *"
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
+            placeholder="e.g. 03369341134 (11 digits)"
+            required
+            maxLength={11}
+            minLength={11}
+            icon="phone"
+          />
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Email Address (Optional)</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g. parent@example.com"
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
-            />
-          </div>
+          <InputField
+            label="Email Address (Optional)"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="e.g. parent@example.com"
+            icon="mail"
+          />
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Occupation (Optional)</label>
-            <input
-              type="text"
-              value={occupation}
-              onChange={(e) => setOccupation(e.target.value)}
-              placeholder="e.g. Engineer"
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
-            />
-          </div>
+          <InputField
+            label="Occupation (Optional)"
+            type="text"
+            value={occupation}
+            onChange={(e) => setOccupation(e.target.value)}
+            placeholder="e.g. Engineer"
+            icon="work"
+          />
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Address (Optional)</label>
-            <textarea
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              rows={3}
-              placeholder="Residential address..."
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
-            />
+            <label className="block font-semibold text-xs tracking-wider text-[var(--color-text)] mb-2 uppercase">Address (Optional)</label>
+            <div className="relative rounded-lg border border-gray-300 transition-all focus-within:border-[var(--color-secondary)] focus-within:border-2 bg-white">
+              <textarea
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                rows={3}
+                placeholder="Residential address..."
+                className="block w-full p-3 border-none bg-transparent focus:ring-0 text-sm text-[var(--color-text)] rounded-lg placeholder-gray-400 outline-none resize-none"
+              />
+            </div>
           </div>
 
           {isEdit && (
-            <div>
-              <label className="flex items-center gap-2 text-slate-300 text-sm cursor-pointer select-none">
+            <div className="pt-2">
+              <label className="flex items-center gap-2 text-sm text-gray-700 font-medium cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={isActive}
                   onChange={(e) => setIsActive(e.target.checked)}
-                  className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                  className="w-4 h-4 rounded border-gray-300 text-[var(--color-primary)] focus:ring-[var(--color-primary)] cursor-pointer"
                 />
                 Parent Active Status
               </label>
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-lg text-sm transition-all cursor-pointer disabled:opacity-50"
-          >
-            {submitting ? 'Saving...' : isEdit ? 'Update Parent Record' : 'Create Parent'}
-          </button>
+          <div className="pt-4 border-t border-gray-100 mt-6">
+            <Button
+              type="submit"
+              disabled={submitting}
+              className="w-full py-3"
+            >
+              {submitting ? 'Saving...' : isEdit ? 'Update Parent Record' : 'Create Parent'}
+            </Button>
+          </div>
         </form>
       </div>
     </div>

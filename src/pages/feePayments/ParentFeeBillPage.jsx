@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import logo from '../../assets/images/logo.png';
+import Button from '../../components/ui/Button';
 
 function numberToWords(num) {
   if (num === 0) return 'Zero Rupees Only';
@@ -147,35 +148,38 @@ const ParentFeeBillPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="mb-6 flex justify-between items-center print:hidden">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Generate Parent Fee Bill</h1>
+    <div className="container mx-auto px-4 py-8 max-w-6xl space-y-6">
+      <div className="flex justify-between items-center bg-white border border-gray-200 rounded-xl p-6 shadow-sm print:hidden">
+        <div>
+          <h1 className="text-3xl font-bold text-[var(--color-primary)] tracking-tight">Generate Parent Fee Bill</h1>
+          <p className="text-sm font-medium text-gray-500 mt-1">Consolidated monthly bill for all students under a parent</p>
+        </div>
         {billData && billData.students.length > 0 && (
-          <button
+          <Button
             onClick={handlePrint}
-            className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded shadow flex items-center gap-2"
+            variant="primary"
+            className="flex items-center gap-2 shadow-md"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clipRule="evenodd" />
-            </svg>
+            <span className="material-symbols-outlined text-[18px]">print</span>
             Print Bill
-          </button>
+          </Button>
         )}
       </div>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 print:hidden">
-          {error}
+        <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg shadow-sm font-medium flex items-start gap-2 print:hidden">
+          <span className="material-symbols-outlined text-[20px]">error</span>
+          <span>{error}</span>
         </div>
       )}
 
       {/* Controls */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6 print:hidden">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="bg-white border border-gray-200 shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] rounded-xl p-6 print:hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Academic Year</label>
+            <label className="block text-xs font-bold text-[var(--color-text)] uppercase tracking-wider mb-2">Academic Year</label>
             <select
-              className="shadow border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-white"
+              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-[var(--color-text)] text-sm focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)] transition-all font-medium"
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
             >
@@ -188,9 +192,9 @@ const ParentFeeBillPage = () => {
             </select>
           </div>
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Parent</label>
+            <label className="block text-xs font-bold text-[var(--color-text)] uppercase tracking-wider mb-2">Parent</label>
             <select
-              className="shadow border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-white"
+              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-[var(--color-text)] text-sm focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)] transition-all font-medium"
               value={selectedParent}
               onChange={(e) => setSelectedParent(e.target.value)}
             >

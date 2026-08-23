@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
+import InputField from '../../components/ui/InputField';
+import Button from '../../components/ui/Button';
+import Modal from '../../components/ui/Modal';
 
 const AcademicYearsPage = () => {
   const [years, setYears] = useState([]);
@@ -14,6 +17,9 @@ const AcademicYearsPage = () => {
   const [isCurrent, setIsCurrent] = useState(false);
   const [editId, setEditId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [yearToDelete, setYearToDelete] = useState(null);
 
   const fetchYears = async () => {
     setLoading(true);
@@ -61,8 +67,6 @@ const AcademicYearsPage = () => {
     }
   };
 
-
-
   const handleEdit = (y) => {
     setEditId(y._id);
     setName(y.name);
@@ -71,18 +75,24 @@ const AcademicYearsPage = () => {
     setIsCurrent(y.is_current);
   };
 
-  const handleDelete = async (id, yearName) => {
-    if (!window.confirm(`WARNING: Deleting Academic Year ${yearName} will PERMANENTLY delete all related fee structures and payment receipts! You cannot do this if there are students currently enrolled in this year.\n\nAre you sure you want to proceed?`)) {
-      return;
-    }
+  const requestDelete = (y) => {
+    setYearToDelete(y);
+    setModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!yearToDelete) return;
     setMsg('');
     setError('');
+    setModalOpen(false);
     try {
-      await api.delete(`/academic-years/${id}`);
+      await api.delete(`/academic-years/${yearToDelete._id}`);
       setMsg('Academic Year deleted.');
       fetchYears();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete academic year.');
+    } finally {
+      setYearToDelete(null);
     }
   };
 
@@ -96,146 +106,179 @@ const AcademicYearsPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
-        <h2 className="text-2xl font-bold text-white tracking-tight">Academic Year Management</h2>
-        <p className="text-sm text-slate-400">Configure active school academic sessions</p>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-[var(--color-primary)] tracking-tight">Academic Year Management</h2>
+          <p className="text-sm text-gray-500 font-medium mt-1">Configure active school academic sessions</p>
+        </div>
+        <span className="material-symbols-outlined text-[var(--color-secondary)] text-4xl opacity-20">calendar_month</span>
       </div>
 
-      {msg && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm p-3 rounded-lg">{msg}</div>}
-      {error && <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm p-3 rounded-lg">{error}</div>}
+      {msg && (
+        <div className="bg-green-50 border-l-4 border-green-500 p-4 text-sm text-green-700 flex items-start gap-2 rounded-r-lg shadow-sm">
+          <span className="material-symbols-outlined text-green-500 text-[20px]">check_circle</span>
+          <span>{msg}</span>
+        </div>
+      )}
+      {error && (
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 text-sm text-red-700 flex items-start gap-2 rounded-r-lg shadow-sm">
+          <span className="material-symbols-outlined text-red-500 text-[20px]">error</span>
+          <span>{error}</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Form Card */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-4">
-          <h3 className="text-lg font-bold text-white">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] h-fit">
+          <h3 className="text-lg font-bold text-[var(--color-primary)] mb-4 border-b border-gray-100 pb-2">
             {editId ? 'Edit Academic Year' : 'Create Academic Year'}
           </h3>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Year Name *</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. 2026-2027"
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
-                required
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <InputField
+              label="Year Name *"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. 2026-2027"
+              required
+            />
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Start Date *</label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
-                required
-              />
-            </div>
+            <InputField
+              label="Start Date *"
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              required
+            />
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">End Date *</label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
-                required
-              />
-            </div>
+            <InputField
+              label="End Date *"
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              required
+            />
 
-            <div>
-              <label className="flex items-center gap-2 text-slate-300 text-sm cursor-pointer select-none">
+            <div className="pt-2">
+              <label className="flex items-center gap-2 text-sm text-gray-700 font-medium cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={isCurrent}
                   onChange={(e) => setIsCurrent(e.target.checked)}
-                  className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                  className="w-4 h-4 rounded border-gray-300 text-[var(--color-primary)] focus:ring-[var(--color-primary)] cursor-pointer"
                 />
                 Mark as Current Active Year
               </label>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-2">
-              <button
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
+              <Button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-lg text-sm transition-all cursor-pointer disabled:opacity-50"
+                className="flex-1"
               >
                 {submitting ? 'Saving...' : editId ? 'Update' : 'Create'}
-              </button>
+              </Button>
               
               {editId && (
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={resetForm}
-                  className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-semibold rounded-lg"
                 >
                   Cancel
-                </button>
+                </Button>
               )}
             </div>
           </form>
         </div>
 
         {/* Table Card */}
-        <div className="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl overflow-hidden">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                <th className="py-3.5 px-4">Year Name</th>
-                <th className="py-3.5 px-4">Start Date</th>
-                <th className="py-3.5 px-4">End Date</th>
-                <th className="py-3.5 px-4">Status</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-700/60 text-sm">
-              {loading ? (
-                <tr>
-                  <td colSpan="5" className="py-8 text-center text-slate-400">Loading...</td>
+        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-xl shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  <th className="py-4 px-6 whitespace-nowrap">Year Name</th>
+                  <th className="py-4 px-6 whitespace-nowrap">Start Date</th>
+                  <th className="py-4 px-6 whitespace-nowrap">End Date</th>
+                  <th className="py-4 px-6 whitespace-nowrap">Status</th>
+                  <th className="py-4 px-6 text-right whitespace-nowrap">Actions</th>
                 </tr>
-              ) : years.length === 0 ? (
-                <tr>
-                  <td colSpan="5" className="py-8 text-center text-slate-500">No Academic Years created yet.</td>
-                </tr>
-              ) : (
-                years.map((y) => (
-                  <tr key={y._id} className="hover:bg-slate-700/30 transition-colors">
-                    <td className="py-3.5 px-4 font-semibold text-white">{y.name}</td>
-                    <td className="py-3.5 px-4 text-slate-300">{new Date(y.startDate).toLocaleDateString()}</td>
-                    <td className="py-3.5 px-4 text-slate-300">{new Date(y.endDate).toLocaleDateString()}</td>
-                    <td className="py-3.5 px-4">
-                      {y.is_current ? (
-                        <span className="px-2.5 py-0.5 text-xs font-bold uppercase rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                          Current Active
-                        </span>
-                      ) : (
-                        <span className="text-xs text-slate-500">Inactive</span>
-                      )}
-                    </td>
-                    <td className="py-3.5 px-4 text-right space-x-2">
-                      <button
-                        onClick={() => handleEdit(y)}
-                        className="px-2.5 py-1 text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded transition-all cursor-pointer"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(y._id, y.name)}
-                        className="px-2.5 py-1 text-xs font-medium bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded border border-rose-500/30 transition-all cursor-pointer"
-                      >
-                        Delete
-                      </button>
+              </thead>
+              <tbody className="divide-y divide-gray-100 text-sm">
+                {loading ? (
+                  <tr>
+                    <td colSpan="5" className="py-8 text-center text-gray-500 font-medium">
+                      <span className="material-symbols-outlined animate-spin inline-block align-middle mr-2">refresh</span> Loading...
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : years.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="py-8 text-center text-gray-500 font-medium bg-gray-50">No Academic Years created yet.</td>
+                  </tr>
+                ) : (
+                  years.map((y) => (
+                    <tr key={y._id} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="py-4 px-6 font-bold text-[var(--color-primary)]">{y.name}</td>
+                      <td className="py-4 px-6 text-gray-700 font-medium">{new Date(y.startDate).toLocaleDateString()}</td>
+                      <td className="py-4 px-6 text-gray-700 font-medium">{new Date(y.endDate).toLocaleDateString()}</td>
+                      <td className="py-4 px-6">
+                        {y.is_current ? (
+                          <span className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
+                            Current Active
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-full bg-gray-100 text-gray-500 border border-gray-200">
+                            Inactive
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-4 px-6 text-right space-x-2 whitespace-nowrap">
+                        <Button
+                          variant="secondary"
+                          onClick={() => handleEdit(y)}
+                          className="px-3 py-1.5 text-xs"
+                        >
+                          Edit
+                        </Button>
+                        <button
+                          onClick={() => requestDelete(y)}
+                          className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer inline-block"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <Modal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        title="Delete Academic Year"
+        type="danger"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>
+            <Button variant="danger" onClick={confirmDelete}>Delete Permanently</Button>
+          </>
+        }
+      >
+        <p>Are you sure you want to delete the academic year <strong>{yearToDelete?.name}</strong>?</p>
+        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 font-medium">
+          <p className="flex items-start gap-2">
+            <span className="material-symbols-outlined text-[18px]">warning</span>
+            <span>WARNING: This will PERMANENTLY delete all related fee structures and payment receipts! You cannot do this if there are students currently enrolled in this year.</span>
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 };

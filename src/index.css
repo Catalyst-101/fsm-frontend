@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #0B2545;
+  --color-secondary: #134074;
+  --color-accent: #E2B13C;
+  --color-background: #FAF3E0;
+  --color-text: #3B3B3B;
+  
+  --font-sans: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
 /* Hide HTML5 number input arrows */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

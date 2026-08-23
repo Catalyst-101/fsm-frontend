@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import InputField from '../components/ui/InputField';
+import Button from '../components/ui/Button';
 
 const CreateUserPage = () => {
   const navigate = useNavigate();
@@ -92,142 +94,169 @@ const CreateUserPage = () => {
 
   return (
     <div className="max-w-xl mx-auto space-y-6">
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-6">
+      <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm space-y-8">
         <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">Create User Wizard</h2>
-          <p className="text-sm text-slate-400">3-Step Pending OTP User Registration</p>
+          <h2 className="text-2xl font-bold text-[var(--color-primary)] tracking-tight">Create User Wizard</h2>
+          <p className="text-sm font-medium text-gray-500 mt-1">3-Step Pending OTP User Registration</p>
         </div>
 
         {/* Step indicator */}
-        <div className="flex items-center gap-2 text-xs font-semibold">
-          <span className={`px-3 py-1 rounded-full ${step === 1 ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-400'}`}>
+        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider justify-center">
+          <span className={`px-4 py-1.5 rounded-full border transition-all ${step === 1 ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-md' : 'bg-gray-100 text-gray-400 border-gray-200'}`}>
             1. Details
           </span>
-          <span className="text-slate-600">→</span>
-          <span className={`px-3 py-1 rounded-full ${step === 2 ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-400'}`}>
+          <span className="material-symbols-outlined text-gray-300">arrow_forward</span>
+          <span className={`px-4 py-1.5 rounded-full border transition-all ${step === 2 ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-md' : 'bg-gray-100 text-gray-400 border-gray-200'}`}>
             2. OTP Verify
           </span>
-          <span className="text-slate-600">→</span>
-          <span className={`px-3 py-1 rounded-full ${step === 3 ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-400'}`}>
+          <span className="material-symbols-outlined text-gray-300">arrow_forward</span>
+          <span className={`px-4 py-1.5 rounded-full border transition-all ${step === 3 ? 'bg-emerald-500 text-white border-emerald-500 shadow-md' : 'bg-gray-100 text-gray-400 border-gray-200'}`}>
             3. Complete
           </span>
         </div>
 
-        {infoMsg && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm p-3 rounded-lg">{infoMsg}</div>}
-        {error && <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm p-3 rounded-lg">{error}</div>}
+        {infoMsg && (
+          <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-r-lg text-sm flex items-start gap-2 font-medium">
+            <span className="material-symbols-outlined text-[20px] text-green-500">info</span>
+            <span>{infoMsg}</span>
+          </div>
+        )}
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg text-sm flex items-start gap-2 font-medium">
+            <span className="material-symbols-outlined text-[20px] text-red-500">error</span>
+            <span>{error}</span>
+          </div>
+        )}
 
         {/* STEP 1: Details */}
         {step === 1 && (
-          <form onSubmit={handleInitiate} className="space-y-4">
+          <form onSubmit={handleInitiate} className="space-y-5">
+            <InputField
+              label="Full Name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="John Doe"
+              required
+              icon="person"
+            />
+            
+            <InputField
+              label="Email Address"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="user@example.com"
+              required
+              icon="mail"
+            />
+            
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Full Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="John Doe"
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Email Address</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="user@example.com"
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Role</label>
+              <label className="block text-xs font-semibold text-[var(--color-text)] uppercase tracking-wider mb-2">Role</label>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
+                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-[var(--color-text)] text-sm focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)] transition-all font-medium"
               >
                 {currentUser?.role === 'SUPER_ADMIN' && <option value="ADMIN">ADMIN</option>}
                 <option value="ACCOUNTANT">ACCOUNTANT</option>
               </select>
             </div>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-lg text-sm transition-all cursor-pointer disabled:opacity-50"
-            >
-              {submitting ? 'Initiating & Sending OTP...' : 'Send OTP to User'}
-            </button>
+
+            <div className="pt-4 border-t border-gray-100">
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="w-full py-4 text-base shadow-md"
+              >
+                {submitting ? 'Initiating & Sending OTP...' : 'Send OTP to User'}
+              </Button>
+            </div>
           </form>
         )}
 
         {/* STEP 2: Verify OTP */}
         {step === 2 && (
-          <div className="space-y-4">
-            <div className="p-3 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300">
-              OTP sent to: <span className="font-semibold text-white">{email}</span>
+          <div className="space-y-6">
+            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 text-center font-medium">
+              We have sent a verification code to:<br/>
+              <span className="font-bold text-[var(--color-primary)] text-lg mt-1 block">{email}</span>
             </div>
-            <form onSubmit={handleVerifyOTP} className="space-y-4">
+            
+            <form onSubmit={handleVerifyOTP} className="space-y-5">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Enter 6-Digit OTP</label>
+                <label className="block text-xs font-semibold text-[var(--color-text)] uppercase tracking-wider mb-2 text-center">Enter 6-Digit OTP</label>
                 <input
                   type="text"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   maxLength={6}
                   placeholder="123456"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white font-mono text-lg tracking-widest text-center focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-4 text-[var(--color-primary)] font-mono text-2xl font-bold tracking-[1em] text-center focus:outline-none focus:border-[var(--color-secondary)] focus:ring-2 focus:ring-[var(--color-secondary)] transition-all shadow-inner"
                   required
                 />
               </div>
-              <button
+              <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-lg text-sm transition-all cursor-pointer disabled:opacity-50"
+                className="w-full py-4 text-base shadow-md"
               >
                 {submitting ? 'Verifying OTP...' : 'Verify OTP & Create Account'}
-              </button>
+              </Button>
             </form>
-            <div className="flex gap-2 pt-2">
-              <button
+
+            <div className="flex gap-3 pt-4 border-t border-gray-100">
+              <Button
                 type="button"
+                variant="secondary"
                 onClick={handleResendOTP}
-                className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold py-2 rounded-lg transition-all cursor-pointer"
+                className="flex-1"
               >
                 Resend OTP
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="outline"
                 onClick={handleCancelPending}
-                className="flex-1 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-semibold py-2 rounded-lg transition-all cursor-pointer"
+                className="flex-1 text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
               >
                 Cancel Process
-              </button>
+              </Button>
             </div>
           </div>
         )}
 
         {/* STEP 3: Complete */}
         {step === 3 && (
-          <div className="space-y-4 text-center">
-            <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 mx-auto flex items-center justify-center text-xl">
-              ✓
+          <div className="space-y-6 text-center py-4">
+            <div className="w-20 h-20 rounded-full bg-emerald-100 border border-emerald-200 text-emerald-600 mx-auto flex items-center justify-center">
+               <span className="material-symbols-outlined text-4xl">check</span>
             </div>
-            <h3 className="text-lg font-bold text-white">Account Created!</h3>
-            <p className="text-xs text-slate-400">User account has been saved in the database.</p>
+            <div>
+              <h3 className="text-2xl font-bold text-[var(--color-primary)] tracking-tight">Account Created!</h3>
+              <p className="text-sm font-medium text-gray-500 mt-2">The user account has been successfully saved in the database.</p>
+            </div>
+            
             {createdUserData?.tempPassword && (
-              <div className="p-3 bg-slate-900 border border-indigo-500/40 rounded-lg text-xs">
-                <span className="text-slate-400 block mb-1">Temporary Password (dev simulation):</span>
-                <code className="text-indigo-400 font-mono font-bold text-sm select-all">{createdUserData.tempPassword}</code>
+              <div className="p-6 bg-blue-50 border border-blue-100 rounded-xl mt-6">
+                <span className="text-blue-600 font-bold uppercase tracking-wider text-xs block mb-3 flex items-center justify-center gap-1">
+                   <span className="material-symbols-outlined text-[16px]">visibility</span> Temporary Password
+                </span>
+                <code className="bg-white border border-blue-200 px-6 py-3 rounded-lg text-blue-800 font-mono font-bold text-xl select-all shadow-inner block">
+                  {createdUserData.tempPassword}
+                </code>
+                <p className="text-xs text-blue-500 font-medium mt-3">Please provide this password to the user. They will be required to change it upon first login.</p>
               </div>
             )}
-            <button
-              onClick={() => navigate('/users')}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-lg text-sm transition-all cursor-pointer"
-            >
-              Return to Users List
-            </button>
+            
+            <div className="pt-6">
+              <Button
+                onClick={() => navigate('/users')}
+                className="w-full py-4 shadow-md"
+              >
+                Return to Users List
+              </Button>
+            </div>
           </div>
         )}
       </div>

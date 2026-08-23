@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
+import Button from '../../components/ui/Button';
 
 const StudentFeeDetailsPage = () => {
   const [students, setStudents] = useState([]);
@@ -42,7 +43,7 @@ const StudentFeeDetailsPage = () => {
         ? yearRes.data.data
         : yearRes.data?.data?.docs || [];
 
-      setStudents(fetchedStudents);
+      setStudents(fetchedStudents.filter(s => s.isActive !== false));
       setAcademicYears(fetchedYears);
       
       const current = fetchedYears.find(y => y.is_current);
@@ -74,43 +75,50 @@ const StudentFeeDetailsPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">Student Fee Details & History</h1>
+    <div className="container mx-auto px-4 py-8 max-w-6xl space-y-6">
+      <div className="flex justify-between items-center bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+        <div>
+          <h1 className="text-3xl font-bold text-[var(--color-primary)] tracking-tight">Student Fee Details</h1>
+          <p className="text-sm font-medium text-gray-500 mt-1">View comprehensive payment history and current ledger</p>
+        </div>
+      </div>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
+        <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg shadow-sm font-medium flex items-start gap-2">
+          <span className="material-symbols-outlined text-[20px]">error</span>
+          <span>{error}</span>
         </div>
       )}
 
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Filters */}
+      <div className="bg-white border border-gray-200 shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] rounded-xl p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Student</label>
+            <label className="block text-xs font-bold text-[var(--color-text)] uppercase tracking-wider mb-2">Student</label>
             <select
-              className="shadow border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-white"
+              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-[var(--color-text)] text-sm focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)] transition-all font-medium"
               value={selectedStudent}
               onChange={(e) => setSelectedStudent(e.target.value)}
             >
               <option value="">-- Select Student --</option>
               {(students || []).map(s => (
                 <option key={s._id} value={s._id}>
-                  {s.name} | Student ID: {s.studentId || 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'}
+                  {s.name} | ID: {s.studentId || 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'}
                 </option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Academic Year</label>
+            <label className="block text-xs font-bold text-[var(--color-text)] uppercase tracking-wider mb-2">Academic Year</label>
             <select
-              className="shadow border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-white"
+              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-[var(--color-text)] text-sm focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)] transition-all font-medium"
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
             >
               <option value="">-- Select Year --</option>
               {(academicYears || []).map(y => (
                 <option key={y._id} value={y._id}>
-                  {y.name} {y.is_current ? '(Current)' : ''}
+                  {y.name} {y.is_current ? '(Current Active)' : ''}
                 </option>
               ))}
             </select>
@@ -118,137 +126,162 @@ const StudentFeeDetailsPage = () => {
         </div>
       </div>
 
-      {loading && <p className="text-gray-600 dark:text-gray-300">Loading data...</p>}
+      {loading && (
+        <div className="p-12 text-center text-gray-500 font-medium">
+          <span className="material-symbols-outlined animate-spin align-middle mr-2">refresh</span> Loading student details...
+        </div>
+      )}
 
+      {/* Profile Header */}
       {!loading && summary && summary.student && (
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 mb-6 shadow-md flex flex-wrap justify-between items-center gap-4 text-sm text-slate-200">
-          <div>
-            <h2 className="text-lg font-bold text-white">{summary.student.name}</h2>
-            <p className="text-xs text-slate-400">Class: <span className="font-semibold text-slate-200">{summary.student.grade} {summary.student.section ? `(Rs. {summary.student.section})` : ''}</span></p>
-          </div>
-          <div>
-            <p className="text-xs text-slate-400">Student ID:</p>
-            <p className="font-mono font-semibold text-indigo-300">{summary.student.studentId || 'N/A'}</p>
-          </div>
-          <div>
-            <p className="text-xs text-slate-400">Parent / Guardian:</p>
-            <p className="font-semibold text-slate-200">{summary.student.parentId?.name || 'N/A'}</p>
-          </div>
-        </div>
-      )}
-
-      {!loading && summary && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-blue-50 dark:bg-blue-900 shadow rounded p-4 text-center">
-            <h3 className="text-blue-800 dark:text-blue-100 font-semibold mb-1">Total Academic Year Fee</h3>
-            <p className="text-2xl font-bold text-blue-600 dark:text-blue-300">Rs. {summary.totalAmount}</p>
-          </div>
-          <div className="bg-green-50 dark:bg-green-900 shadow rounded p-4 text-center">
-            <h3 className="text-green-800 dark:text-green-100 font-semibold mb-1">Total Paid</h3>
-            <p className="text-2xl font-bold text-green-600 dark:text-green-300">Rs. {summary.totalPaid}</p>
-          </div>
-          <div className="bg-red-50 dark:bg-red-900 shadow rounded p-4 text-center">
-            <h3 className="text-red-800 dark:text-red-100 font-semibold mb-1">Remaining Balance</h3>
-            <p className="text-2xl font-bold text-red-600 dark:text-red-300">Rs. {summary.remainingBalance}</p>
-          </div>
-        </div>
-      )}
-
-      {!loading && summary && (
-        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Monthly Tuition Ledger</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {(summary.monthlyLedger || []).map((month, idx) => (
-              <div key={idx} className={`border rounded p-3 text-center ${
-                month.status === 'Paid' ? 'border-green-500 bg-green-50 dark:bg-green-900/30' :
-                month.status === 'Partial' ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/30' :
-                month.status === 'N/A' ? 'border-gray-300 bg-gray-100 dark:bg-gray-700 opacity-60' :
-                'border-red-500 bg-red-50 dark:bg-red-900/30'
-              }`}>
-                <p className="font-bold text-gray-800 dark:text-gray-200">{month.monthName} {month.year}</p>
-                <p className="text-sm font-semibold mt-1">
-                  {month.status === 'N/A' ? '-' : `$${month.paidAmount} / $${month.originalAmount}`}
-                </p>
-                <p className={`text-xs mt-1 font-bold ${
-                  month.status === 'Paid' ? 'text-green-600' :
-                  month.status === 'Partial' ? 'text-yellow-600' :
-                  month.status === 'N/A' ? 'text-gray-500' :
-                  'text-red-600'
-                }`}>{month.status}</p>
-              </div>
-            ))}
+        <div className="bg-[var(--color-primary)] text-white rounded-xl p-6 shadow-md flex flex-wrap justify-between items-center gap-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          
+          <div className="flex items-center gap-4 z-10">
+            <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center border-2 border-white/20">
+               <span className="material-symbols-outlined text-3xl text-[var(--color-accent)]">person</span>
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold uppercase tracking-wide">{summary.student.name}</h2>
+              <p className="text-blue-200 font-medium text-sm mt-1">Class: {summary.student.grade} {summary.student.section ? `(${summary.student.section})` : ''}</p>
+            </div>
           </div>
           
-          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <h3 className="font-bold text-gray-800 dark:text-white mb-2">Other Yearly Fees (Remaining)</h3>
-            <div className="flex gap-4 text-sm text-gray-700 dark:text-gray-300">
-              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Admission: Rs. {summary.remainingFees.admission}</span>
-              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Registration: Rs. {summary.remainingFees.registration}</span>
-              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Miscellaneous: Rs. {summary.remainingFees.miscellaneous}</span>
-              <span className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">Annual Charges: Rs. {summary.remainingFees.annual}</span>
+          <div className="flex gap-8 z-10 bg-black/20 rounded-lg p-4">
+            <div>
+              <p className="text-[10px] text-blue-300 uppercase tracking-widest font-bold">Student ID</p>
+              <p className="font-mono text-lg font-bold">{summary.student.studentId || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-blue-300 uppercase tracking-widest font-bold">Parent / Guardian</p>
+              <p className="text-lg font-bold">{summary.student.parentId?.name || 'N/A'}</p>
             </div>
           </div>
         </div>
       )}
 
-      {!loading && summary && receipts.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white">Payment History</h2>
+      {/* Snapshot Cards */}
+      {!loading && summary && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white border-l-4 border-blue-500 shadow-sm rounded-xl p-6">
+            <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">Total Academic Year Fee</h3>
+            <p className="text-3xl font-black text-blue-600">Rs. {summary.totalAmount}</p>
           </div>
-          <table className="min-w-full leading-normal">
-            <thead>
-              <tr>
-                <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Receipt No
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Method
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {receipts.map(receipt => (
-                <tr key={receipt._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-300">
-                    {new Date(receipt.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    {receipt.receiptNumber}
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 text-sm text-green-600 font-bold">
-                    ${receipt.amountPaid}
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-300">
-                    {receipt.paymentMethod}
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 text-sm">
-                    <Link
-                      to={`/receipt/${receipt._id}`}
-                      className="text-blue-500 hover:text-blue-700 font-semibold"
-                    >
-                      View Receipt
-                    </Link>
-                  </td>
+          <div className="bg-white border-l-4 border-emerald-500 shadow-sm rounded-xl p-6">
+            <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">Total Paid</h3>
+            <p className="text-3xl font-black text-emerald-600">Rs. {summary.totalPaid}</p>
+          </div>
+          <div className="bg-white border-l-4 border-red-500 shadow-sm rounded-xl p-6">
+            <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">Remaining Balance</h3>
+            <p className="text-3xl font-black text-red-600">Rs. {summary.remainingBalance}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Monthly Tuition Ledger */}
+      {!loading && summary && (
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
+          <div className="flex items-center gap-2 mb-6">
+            <span className="material-symbols-outlined text-[var(--color-secondary)]">calendar_month</span>
+            <h2 className="text-xl font-bold text-[var(--color-primary)]">Monthly Tuition Ledger</h2>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {(summary.monthlyLedger || []).map((month, idx) => (
+              <div key={idx} className={`border-2 rounded-xl p-4 text-center transition-all ${
+                month.status === 'Paid' ? 'border-emerald-200 bg-emerald-50' :
+                month.status === 'Partial' ? 'border-amber-200 bg-amber-50' :
+                month.status === 'N/A' ? 'border-gray-100 bg-gray-50 opacity-60 grayscale' :
+                'border-red-200 bg-red-50 shadow-inner'
+              }`}>
+                <p className="font-bold text-[var(--color-primary)] text-sm">{month.monthName} {month.year}</p>
+                <div className="my-2 h-[1px] w-full bg-black/10"></div>
+                <p className="text-xs font-mono font-semibold text-gray-700">
+                  {month.status === 'N/A' ? '-' : `Rs. ${month.paidAmount} / Rs. ${month.originalAmount}`}
+                </p>
+                <p className={`text-[10px] mt-2 font-black uppercase tracking-widest inline-block px-2 py-0.5 rounded-full ${
+                  month.status === 'Paid' ? 'text-emerald-700 bg-emerald-200/50' :
+                  month.status === 'Partial' ? 'text-amber-700 bg-amber-200/50' :
+                  month.status === 'N/A' ? 'text-gray-500 bg-gray-200' :
+                  'text-red-700 bg-red-200/50'
+                }`}>{month.status}</p>
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-8 pt-6 border-t border-dashed border-gray-200">
+            <h3 className="font-bold text-gray-800 text-sm mb-4 uppercase tracking-wider">Other Fees (Remaining)</h3>
+            <div className="flex flex-wrap gap-4 text-sm font-semibold">
+              <span className="bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px] text-gray-400">payments</span> Admission: <span className="font-mono text-black">Rs. {summary.remainingFees.admission}</span>
+              </span>
+              <span className="bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px] text-gray-400">app_registration</span> Registration: <span className="font-mono text-black">Rs. {summary.remainingFees.registration}</span>
+              </span>
+              <span className="bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px] text-gray-400">more_horiz</span> Miscellaneous: <span className="font-mono text-black">Rs. {summary.remainingFees.miscellaneous}</span>
+              </span>
+              <span className="bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px] text-gray-400">event</span> Annual: <span className="font-mono text-black">Rs. {summary.remainingFees.annual}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment History */}
+      {!loading && summary && receipts.length > 0 && (
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
+          <div className="px-6 py-5 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+             <span className="material-symbols-outlined text-[var(--color-secondary)]">history</span>
+            <h2 className="text-xl font-bold text-[var(--color-primary)]">Payment History</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr>
+                  <th className="px-6 py-4 bg-white text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">Date</th>
+                  <th className="px-6 py-4 bg-white text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">Receipt No</th>
+                  <th className="px-6 py-4 bg-white text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">Amount</th>
+                  <th className="px-6 py-4 bg-white text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">Method</th>
+                  <th className="px-6 py-4 bg-white text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200 text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {receipts.map(receipt => (
+                  <tr key={receipt._id} className="hover:bg-blue-50/50 transition-colors">
+                    <td className="px-6 py-4 text-sm font-medium text-gray-700">
+                      {new Date(receipt.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-bold text-[var(--color-primary)]">
+                      {receipt.receiptNumber}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-black text-emerald-600">
+                      Rs. {receipt.amountPaid}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-500 flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-[16px]">{receipt.paymentMethod === 'Cash' ? 'payments' : 'account_balance'}</span> {receipt.paymentMethod}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-right">
+                      <Link
+                        to={`/receipt/${receipt._id}`}
+                      >
+                         <Button variant="secondary" className="px-3 py-1.5 text-xs flex items-center gap-1">
+                           <span className="material-symbols-outlined text-[14px]">visibility</span> View
+                         </Button>
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {!loading && summary && receipts.length === 0 && (
-        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 text-center text-gray-500">
-          No payments recorded for this academic year.
+        <div className="bg-white border-2 border-dashed border-gray-200 rounded-xl p-12 text-center text-gray-400 font-bold uppercase tracking-wider">
+          No payments recorded for this academic year
         </div>
       )}
     </div>

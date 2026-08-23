@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
+import InputField from '../../components/ui/InputField';
+import Button from '../../components/ui/Button';
+import Modal from '../../components/ui/Modal';
 
 const GRADES = [
   'Reception 1',
@@ -35,6 +38,9 @@ const FeeStructuresPage = () => {
 
   const [editId, setEditId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [structureToDelete, setStructureToDelete] = useState(null);
 
   const fetchYears = async () => {
     try {
@@ -110,18 +116,24 @@ const FeeStructuresPage = () => {
     setAnnualCharges(s.annualCharges || 0);
   };
 
-  const handleDelete = async (id, yearName, gradeName) => {
-    if (!window.confirm(`Are you sure you want to delete Fee Structure for ${gradeName} (Rs. {yearName})?`)) {
-      return;
-    }
+  const requestDelete = (s) => {
+    setStructureToDelete(s);
+    setModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!structureToDelete) return;
     setMsg('');
     setError('');
+    setModalOpen(false);
     try {
-      await api.delete(`/fee-structures/${id}`);
+      await api.delete(`/fee-structures/${structureToDelete._id}`);
       setMsg('Fee Structure deleted.');
       fetchStructures();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete fee structure.');
+    } finally {
+      setStructureToDelete(null);
     }
   };
 
@@ -137,27 +149,40 @@ const FeeStructuresPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
-        <h2 className="text-2xl font-bold text-white tracking-tight">Fee Structure Management</h2>
-        <p className="text-sm text-slate-400">Configure default class fees per Academic Year</p>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-[var(--color-primary)] tracking-tight">Fee Structure Management</h2>
+          <p className="text-sm text-gray-500 font-medium mt-1">Configure default class fees per Academic Year</p>
+        </div>
+        <span className="material-symbols-outlined text-[var(--color-secondary)] text-4xl opacity-20">account_balance_wallet</span>
       </div>
 
-      {msg && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm p-3 rounded-lg">{msg}</div>}
-      {error && <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm p-3 rounded-lg">{error}</div>}
+      {msg && (
+        <div className="bg-green-50 border-l-4 border-green-500 p-4 text-sm text-green-700 flex items-start gap-2 rounded-r-lg shadow-sm">
+          <span className="material-symbols-outlined text-green-500 text-[20px]">check_circle</span>
+          <span>{msg}</span>
+        </div>
+      )}
+      {error && (
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 text-sm text-red-700 flex items-start gap-2 rounded-r-lg shadow-sm">
+          <span className="material-symbols-outlined text-red-500 text-[20px]">error</span>
+          <span>{error}</span>
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Form Card */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-4">
-          <h3 className="text-lg font-bold text-white">
+        <div className="lg:col-span-4 bg-white border border-gray-200 rounded-xl p-6 shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] h-fit">
+          <h3 className="text-lg font-bold text-[var(--color-primary)] mb-4 border-b border-gray-100 pb-2">
             {editId ? 'Edit Fee Structure' : 'Create Fee Structure'}
           </h3>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Academic Year *</label>
+              <label className="block text-xs font-semibold text-[var(--color-text)] uppercase tracking-wider mb-2">Academic Year *</label>
               <select
                 value={academicYearId}
                 onChange={(e) => setAcademicYearId(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
+                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-[var(--color-text)] text-sm focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)] font-medium transition-all"
                 required
               >
                 <option value="">-- Choose Academic Year --</option>
@@ -170,11 +195,11 @@ const FeeStructuresPage = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Grade / Class *</label>
+              <label className="block text-xs font-semibold text-[var(--color-text)] uppercase tracking-wider mb-2">Grade / Class *</label>
               <select
                 value={grade}
                 onChange={(e) => setGrade(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
+                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-[var(--color-text)] text-sm focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)] font-medium transition-all"
                 required
               >
                 {GRADES.map((g) => (
@@ -185,139 +210,149 @@ const FeeStructuresPage = () => {
               </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Monthly Tuition</label>
-                <input
+            <div className="pt-2 border-t border-gray-100 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <InputField
+                  label="Monthly Tuition"
                   type="number"
                   min="0"
                   value={monthlyTuition}
                   onChange={(e) => setMonthlyTuition(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
                 />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Admission Fee</label>
-                <input
+                <InputField
+                  label="Admission Fee"
                   type="number"
                   min="0"
                   value={admissionFee}
                   onChange={(e) => setAdmissionFee(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
                 />
               </div>
-            </div>
 
-            <div className="grid grid-cols-3 gap-2">
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Registration Fee</label>
-                <input
+              <div className="grid grid-cols-2 gap-3">
+                <InputField
+                  label="Registration Fee"
                   type="number"
                   min="0"
                   value={registrationFee}
                   onChange={(e) => setRegistrationFee(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-xs focus:outline-none focus:border-indigo-500"
                 />
-              </div>
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Miscellaneous Fee</label>
-                <input
+                <InputField
+                  label="Miscellaneous Fee"
                   type="number"
                   min="0"
                   value={miscellaneousFee}
                   onChange={(e) => setMiscellaneousFee(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-xs focus:outline-none focus:border-indigo-500"
                 />
               </div>
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Annual Charges</label>
-                <input
+              
+              <InputField
+                  label="Annual Charges"
                   type="number"
                   min="0"
                   value={annualCharges}
                   onChange={(e) => setAnnualCharges(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-xs focus:outline-none focus:border-indigo-500"
-                />
-              </div>
+              />
             </div>
 
-            <div className="flex gap-2">
-              <button
+            <div className="flex gap-2 pt-4 border-t border-gray-100">
+              <Button
                 type="submit"
                 disabled={submitting || years.length === 0}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-lg text-sm transition-all cursor-pointer disabled:opacity-50"
+                className="flex-1"
               >
                 {submitting ? 'Saving...' : editId ? 'Update' : 'Create'}
-              </button>
+              </Button>
               {editId && (
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={resetForm}
-                  className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-semibold rounded-lg"
                 >
                   Cancel
-                </button>
+                </Button>
               )}
             </div>
           </form>
         </div>
 
         {/* Table Card */}
-        <div className="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl overflow-hidden">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="bg-slate-900/60 border-b border-slate-700 font-semibold text-slate-400 uppercase tracking-wider">
-                <th className="py-3.5 px-3">Year / Grade</th>
-                <th className="py-3.5 px-3">Monthly Tuition</th>
-                <th className="py-3.5 px-3">Admission</th>
-                <th className="py-3.5 px-3">Registration</th>
-                <th className="py-3.5 px-3">Misc</th>
-                <th className="py-3.5 px-3">Annual</th>
-                <th className="py-3.5 px-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-700/60 text-xs">
-              {loading ? (
-                <tr>
-                  <td colSpan="7" className="py-8 text-center text-slate-400">Loading...</td>
+        <div className="lg:col-span-8 bg-white border border-gray-200 rounded-xl shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200 font-bold text-gray-500 uppercase text-xs tracking-wider">
+                  <th className="py-4 px-4 whitespace-nowrap">Year / Grade</th>
+                  <th className="py-4 px-3 whitespace-nowrap">Monthly Tuition</th>
+                  <th className="py-4 px-3 whitespace-nowrap">Admission</th>
+                  <th className="py-4 px-3 whitespace-nowrap">Other Fees</th>
+                  <th className="py-4 px-4 text-right whitespace-nowrap">Actions</th>
                 </tr>
-              ) : structures.length === 0 ? (
-                <tr>
-                  <td colSpan="7" className="py-8 text-center text-slate-500">No Fee Structures created yet.</td>
-                </tr>
-              ) : (
-                structures.map((s) => (
-                  <tr key={s._id} className="hover:bg-slate-700/30 transition-colors">
-                    <td className="py-3.5 px-3">
-                      <div className="font-semibold text-white">{s.grade}</div>
-                      <div className="text-[10px] text-indigo-400">{s.academicYearId?.name}</div>
-                    </td>
-                    <td className="py-3.5 px-3 text-slate-200 font-mono">Rs. {s.monthlyTuition}</td>
-                    <td className="py-3.5 px-3 text-slate-200 font-mono">Rs. {s.admissionFee}</td>
-                    <td className="py-3.5 px-3 text-slate-200 font-mono">Rs. {s.registrationFee}</td>
-                    <td className="py-3.5 px-3 text-slate-200 font-mono">Rs. {s.miscellaneousFee}</td>
-                    <td className="py-3.5 px-3 text-slate-200 font-mono">Rs. {s.annualCharges}</td>
-                    <td className="py-3.5 px-3 text-right space-x-1">
-                      <button
-                        onClick={() => handleEdit(s)}
-                        className="px-2 py-1 font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded transition-all cursor-pointer"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(s._id, s.academicYearId?.name, s.grade)}
-                        className="px-2 py-1 font-medium bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded border border-rose-500/30 transition-all cursor-pointer"
-                      >
-                        Delete
-                      </button>
+              </thead>
+              <tbody className="divide-y divide-gray-100 text-sm">
+                {loading ? (
+                  <tr>
+                    <td colSpan="5" className="py-8 text-center text-gray-500 font-medium">
+                      <span className="material-symbols-outlined animate-spin inline-block align-middle mr-2">refresh</span> Loading...
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : structures.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="py-8 text-center text-gray-500 bg-gray-50 font-medium">No Fee Structures created yet.</td>
+                  </tr>
+                ) : (
+                  structures.map((s) => (
+                    <tr key={s._id} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="py-4 px-4">
+                        <div className="font-bold text-[var(--color-primary)]">{s.grade}</div>
+                        <div className="text-[11px] font-semibold text-[var(--color-secondary)] uppercase tracking-wider mt-0.5">{s.academicYearId?.name}</div>
+                      </td>
+                      <td className="py-4 px-3 font-semibold text-gray-800">Rs. {s.monthlyTuition}</td>
+                      <td className="py-4 px-3 font-medium text-gray-600">Rs. {s.admissionFee}</td>
+                      <td className="py-4 px-3">
+                        <div className="text-[11px] text-gray-500">Reg: <span className="font-medium text-gray-700">Rs. {s.registrationFee}</span></div>
+                        <div className="text-[11px] text-gray-500">Misc: <span className="font-medium text-gray-700">Rs. {s.miscellaneousFee}</span></div>
+                        <div className="text-[11px] text-gray-500">Annual: <span className="font-medium text-gray-700">Rs. {s.annualCharges}</span></div>
+                      </td>
+                      <td className="py-4 px-4 text-right space-x-2 whitespace-nowrap">
+                        <Button
+                          variant="secondary"
+                          onClick={() => handleEdit(s)}
+                          className="px-3 py-1.5 text-xs"
+                        >
+                          Edit
+                        </Button>
+                        <button
+                          onClick={() => requestDelete(s)}
+                          className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded border border-red-200 transition-all cursor-pointer inline-block"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <Modal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        title="Confirm Deletion"
+        type="danger"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>
+            <Button variant="danger" onClick={confirmDelete}>Delete</Button>
+          </>
+        }
+      >
+        <p>Are you sure you want to delete Fee Structure for <strong>{structureToDelete?.grade}</strong> ({structureToDelete?.academicYearId?.name})?</p>
+        <p className="text-sm text-gray-500 mt-2">Students currently using this fee structure will not be affected until their fee is reassigned.</p>
+      </Modal>
     </div>
   );
 };

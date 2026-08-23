@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import InputField from '../components/ui/InputField';
+import Button from '../components/ui/Button';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -8,6 +10,7 @@ const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -27,78 +30,107 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-slate-800 border border-slate-700 rounded-xl shadow-2xl p-8 space-y-6">
-        <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-xl bg-indigo-600 mx-auto flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-indigo-500/30">
-            F
+    <div className="min-h-screen flex items-center justify-center p-4 md:p-6 bg-[var(--color-background)]">
+      <main className="w-full max-w-md bg-white rounded-xl shadow-[0_4px_12px_rgba(11,37,69,0.05)] overflow-hidden relative border border-gray-100">
+        {/* Decorative Top Accent */}
+        <div className="h-2 w-full bg-[var(--color-accent)] absolute top-0 left-0"></div>
+        
+        <div className="p-8 pt-10">
+          {/* Header Section */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-[var(--color-primary)] rounded-lg mb-4 shadow-sm">
+              <span className="material-symbols-outlined text-white" style={{ fontSize: '32px' }}>school</span>
+            </div>
+            <h1 className="text-2xl font-bold text-[var(--color-primary)] mb-2">Pen & Page Academia</h1>
+            <p className="text-gray-500 font-medium">Welcome Back</p>
           </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Welcome Back</h2>
-          <p className="text-sm text-slate-400">Sign in to your Fee Management account</p>
-        </div>
 
-        {error && (
-          <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm p-3 rounded-lg flex items-center gap-2">
-            <span>⚠️</span> {error}
-          </div>
-        )}
+          {error && (
+            <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 text-sm text-red-700 flex items-start gap-2 rounded-r-lg">
+              <span className="material-symbols-outlined text-red-500 text-[20px]">error</span>
+              <span>{error}</span>
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
-              Email Address
-            </label>
-            <input
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <InputField
+              label="Email Address"
+              icon="mail"
               type="email"
+              id="email"
+              name="email"
+              placeholder="admin@penandpage.edu"
+              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="user@example.com"
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-500"
-              required
             />
-          </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-500"
-              required
-            />
-          </div>
+            <div>
+              <label className="block font-semibold text-xs tracking-wider text-[var(--color-text)] mb-2 uppercase">Password</label>
+              <div className="relative rounded-lg border border-gray-300 transition-all focus-within:border-[var(--color-secondary)] focus-within:border-2 bg-white">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="material-symbols-outlined text-gray-400">lock</span>
+                </div>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  className="block w-full pl-10 pr-10 py-3 border-none bg-transparent focus:ring-0 text-sm text-[var(--color-text)] rounded-lg placeholder-gray-400 outline-none"
+                  placeholder="••••••••"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer">
+                  <button 
+                    type="button" 
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-gray-400 hover:text-[var(--color-primary)] transition-colors focus:outline-none flex items-center justify-center"
+                  >
+                    <span className="material-symbols-outlined">{showPassword ? 'visibility_off' : 'visibility'}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <label className="flex items-center gap-2 text-slate-400 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-              />
-              Remember Me
-            </label>
-            <Link
-              to="/forgot-password"
-              className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors font-medium"
-            >
-              Forgot Password?
-            </Link>
-          </div>
+            {/* Controls */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)] border-gray-300 rounded cursor-pointer"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-600 cursor-pointer select-none">
+                  Remember me
+                </label>
+              </div>
+              <div className="text-sm">
+                <Link to="/forgot-password" className="text-sm text-[var(--color-secondary)] hover:text-[var(--color-primary)] font-semibold transition-colors">
+                  Forgot Password?
+                </Link>
+              </div>
+            </div>
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-lg shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/40 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-          >
-            {submitting ? 'Authenticating...' : 'Sign In'}
-          </button>
-        </form>
-      </div>
+            {/* Submit Button */}
+            <div className="pt-2">
+              <Button type="submit" className="w-full py-3 text-base" disabled={submitting}>
+                {submitting ? 'Signing In...' : 'Sign In'}
+              </Button>
+            </div>
+          </form>
+
+          {/* Secure Connection Note */}
+          <div className="mt-8 text-center flex items-center justify-center text-gray-400 opacity-75">
+            <span className="material-symbols-outlined text-[16px] mr-1">shield</span>
+            <span className="text-xs font-medium">Secure Administrative Portal</span>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };

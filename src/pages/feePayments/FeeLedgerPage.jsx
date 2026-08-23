@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
-
+import Button from '../../components/ui/Button';
 
 const FeeLedgerPage = () => {
   const [academicYears, setAcademicYears] = useState([]);
@@ -320,84 +320,79 @@ const FeeLedgerPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-[1600px] space-y-6">
+    <div className="container mx-auto px-4 py-6 max-w-[1600px] space-y-6 text-gray-800">
       {/* Header & Print Control */}
       <div className="flex flex-wrap items-center justify-between gap-4 print:hidden">
         <div>
-          <h1 className="text-3xl font-bold text-slate-100 tracking-tight">Fee Ledger Dashboard</h1>
-          <p className="text-sm text-slate-400">Database-style accountant view with parent grouping and tuition tracking</p>
+          <h1 className="text-3xl font-bold text-[var(--color-primary)] tracking-tight">Fee Ledger Dashboard</h1>
+          <p className="text-sm font-medium text-gray-500 mt-1">Database-style accountant view with parent grouping and tuition tracking</p>
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={exportLedgerToCSV}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-1.5 cursor-pointer"
-          >
-            📊 Export CSV / Excel
-          </button>
+          <Button onClick={exportLedgerToCSV} variant="secondary" className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px]">download</span> Export CSV
+          </Button>
 
-          <button
-            onClick={handlePrint}
-            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
-          >
-            🖨️ Print / Save PDF
-          </button>
+          <Button onClick={handlePrint} variant="primary" className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px]">print</span> Print / Save PDF
+          </Button>
         </div>
       </div>
 
       {error && (
-        <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm p-4 rounded-xl">
-          {error}
+        <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg shadow-sm font-medium flex items-start gap-2">
+           <span className="material-symbols-outlined text-[20px]">error</span>
+           <span>{error}</span>
         </div>
       )}
 
-      {/* 11. DASHBOARD TOTALS ABOVE LEDGER */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 print:hidden">
-        <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-indigo-500 shadow-md">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Students</p>
-          <p className="text-xl font-extrabold text-white mt-1">{metrics.totalStudents}</p>
+      {/* DASHBOARD TOTALS ABOVE LEDGER */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4 print:hidden">
+        <div className="bg-white border border-gray-200 p-4 rounded-xl border-l-4 border-l-blue-500 shadow-sm">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total Students</p>
+          <p className="text-xl font-black text-blue-600">{metrics.totalStudents}</p>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-purple-500 shadow-md">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Parents</p>
-          <p className="text-xl font-extrabold text-white mt-1">{metrics.totalParents}</p>
+        <div className="bg-white border border-gray-200 p-4 rounded-xl border-l-4 border-l-[var(--color-primary)] shadow-sm">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total Parents</p>
+          <p className="text-xl font-black text-[var(--color-primary)]">{metrics.totalParents}</p>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-blue-500 shadow-md">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Expected Fee</p>
-          <p className="text-xl font-extrabold text-white mt-1">Rs. {metrics.expectedFee}</p>
+        <div className="bg-white border border-gray-200 p-4 rounded-xl border-l-4 border-l-purple-500 shadow-sm">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Expected Fee</p>
+          <p className="text-xl font-black text-purple-600">Rs. {metrics.expectedFee}</p>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-emerald-500 shadow-md">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Collected Fee</p>
-          <p className="text-xl font-extrabold text-emerald-400 mt-1">Rs. {metrics.collectedFee}</p>
+        <div className="bg-white border border-gray-200 p-4 rounded-xl border-l-4 border-l-emerald-500 shadow-sm">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Collected Fee</p>
+          <p className="text-xl font-black text-emerald-600">Rs. {metrics.collectedFee}</p>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-rose-500 shadow-md">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Remaining Fee</p>
-          <p className="text-xl font-extrabold text-rose-400 mt-1">Rs. {metrics.remainingFee}</p>
+        <div className="bg-white border border-gray-200 p-4 rounded-xl border-l-4 border-l-red-500 shadow-sm">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Remaining Fee</p>
+          <p className="text-xl font-black text-red-600">Rs. {metrics.remainingFee}</p>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-teal-500 shadow-md">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fully Paid</p>
-          <p className="text-xl font-extrabold text-teal-300 mt-1">{metrics.studentsFullyPaid}</p>
+        <div className="bg-white border border-gray-200 p-4 rounded-xl border-l-4 border-l-teal-500 shadow-sm">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Fully Paid</p>
+          <p className="text-xl font-black text-teal-600">{metrics.studentsFullyPaid}</p>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-xl border-l-4 border-l-orange-500 shadow-md">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">With Due Amount</p>
-          <p className="text-xl font-extrabold text-orange-400 mt-1">{metrics.studentsWithDue}</p>
+        <div className="bg-white border border-gray-200 p-4 rounded-xl border-l-4 border-l-orange-500 shadow-sm">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">With Due Amount</p>
+          <p className="text-xl font-black text-orange-600">{metrics.studentsWithDue}</p>
         </div>
       </div>
 
-      {/* 8. FILTERING BAR */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-xl space-y-4 print:hidden">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+      {/* FILTERING BAR */}
+      <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4 print:hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <div>
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Academic Year</label>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Academic Year</label>
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+              className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 font-medium focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)]"
             >
               <option value="">-- Select Year --</option>
               {academicYears.map(y => (
@@ -409,22 +404,22 @@ const FeeLedgerPage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Multi-Search</label>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Multi-Search</label>
             <input
               type="text"
               placeholder="Student / Adm No / Parent..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 font-medium focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Parent</label>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Parent</label>
             <select
               value={parentFilter}
               onChange={(e) => setParentFilter(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+              className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 font-medium focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)]"
             >
               <option value="">All Parents</option>
               {uniqueParents.map(p => (
@@ -434,11 +429,11 @@ const FeeLedgerPage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Class Filter</label>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Class Filter</label>
             <select
               value={classFilter}
               onChange={(e) => setClassFilter(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+              className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 font-medium focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)]"
             >
               <option value="">All Classes</option>
               {uniqueClasses.map(c => (
@@ -448,11 +443,11 @@ const FeeLedgerPage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Section</label>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Section</label>
             <select
               value={sectionFilter}
               onChange={(e) => setSectionFilter(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+              className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 font-medium focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)]"
             >
               <option value="">All Sections</option>
               {uniqueSections.map(s => (
@@ -462,11 +457,11 @@ const FeeLedgerPage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Payment Status</label>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Payment Status</label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+              className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 font-medium focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)]"
             >
               <option value="All">All Statuses</option>
               <option value="Only Defaulters">Only Defaulters (Due/Partial)</option>
@@ -477,26 +472,26 @@ const FeeLedgerPage = () => {
           </div>
         </div>
 
-        {/* 9. SORTING & QUICK TOGGLES */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-700/60">
+        {/* SORTING & QUICK TOGGLES */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-gray-200 mt-2">
           <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2 text-xs font-semibold text-amber-400 cursor-pointer">
+            <label className="flex items-center gap-2 text-xs font-bold text-[var(--color-accent)] cursor-pointer bg-orange-50 px-3 py-1.5 rounded border border-orange-200 hover:bg-orange-100 transition-colors">
               <input
                 type="checkbox"
                 checked={onlyDefaulters}
                 onChange={(e) => setOnlyDefaulters(e.target.checked)}
-                className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-amber-500 focus:ring-amber-500 cursor-pointer"
+                className="w-4 h-4 rounded text-orange-500 focus:ring-orange-500 border-orange-300 cursor-pointer"
               />
-              ⚠️ Only Show Defaulters (Pending Balance)
+              <span className="material-symbols-outlined text-[16px]">warning</span> Only Show Defaulters
             </label>
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-slate-300">
-            <span className="font-semibold uppercase tracking-wider text-slate-400">Sort By:</span>
+          <div className="flex items-center gap-2 text-xs text-gray-600">
+            <span className="font-bold uppercase tracking-wider text-gray-400">Sort By:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-xs text-white focus:outline-none"
+              className="bg-gray-50 border border-gray-300 rounded px-2.5 py-1 text-xs text-gray-700 font-semibold focus:outline-none focus:border-[var(--color-secondary)]"
             >
               <option value="parent">Parent Name</option>
               <option value="student">Student Name</option>
@@ -508,9 +503,9 @@ const FeeLedgerPage = () => {
 
             <button
               onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-              className="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs font-bold text-white transition-all cursor-pointer"
+              className="px-2.5 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs font-bold text-gray-700 transition-all cursor-pointer flex items-center gap-1"
             >
-              {sortOrder === 'asc' ? '↑ ASC' : '↓ DESC'}
+               {sortOrder === 'asc' ? <><span className="material-symbols-outlined text-[14px]">arrow_upward</span> ASC</> : <><span className="material-symbols-outlined text-[14px]">arrow_downward</span> DESC</>}
             </button>
           </div>
         </div>
@@ -518,48 +513,50 @@ const FeeLedgerPage = () => {
 
       {/* DATABASE-STYLE ACCOUNTANT TABLE WITH PARENT GROUPING */}
       {loading ? (
-        <div className="p-8 text-center text-slate-400 text-sm">Loading fee ledger data...</div>
+        <div className="p-12 text-center text-gray-500 font-medium bg-white rounded-xl shadow-sm border border-gray-200">
+          <span className="material-symbols-outlined animate-spin align-middle mr-2">refresh</span> Loading fee ledger data...
+        </div>
       ) : (
-        <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden print:border-none print:shadow-none printable-ledger" id="ledger-table-container">
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden print:border-none print:shadow-none printable-ledger" id="ledger-table-container">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-max text-xs">
               <thead>
-                <tr className="bg-slate-950 text-slate-300 uppercase font-bold text-[10px] tracking-wider border-b border-slate-700">
-                  <th className="py-3 px-3 text-center w-8">History</th>
+                <tr className="bg-gray-50 text-gray-500 uppercase font-black text-[10px] tracking-wider border-b-2 border-gray-200">
+                  <th className="py-3 px-3 text-center w-8">Hist</th>
                   <th className="py-3 px-3 text-center">Student ID</th>
-                  <th className="py-3 px-3 font-extrabold text-white">Student Name</th>
+                  <th className="py-3 px-3 font-black text-gray-800">Student Name</th>
                   <th className="py-3 px-3">Parent Name</th>
                   <th className="py-3 px-3 text-center">Class</th>
                   <th className="py-3 px-3 text-center">Sec</th>
                   <th className="py-3 px-3 text-center">AY</th>
 
-                  {/* 3. MONTHLY TUITION COLUMNS */}
+                  {/* MONTHLY TUITION COLUMNS */}
                   {monthColumns.map(m => (
-                    <th key={m} className="py-3 px-2 text-center border-l border-slate-700 bg-slate-900/80">{m}</th>
+                    <th key={m} className="py-3 px-2 text-center border-l border-gray-200 bg-blue-50/50 text-[var(--color-primary)]">{m}</th>
                   ))}
 
-                  {/* 4. SEPARATE OTHER FEE REMAINING COLUMNS */}
-                  <th className="py-3 px-2 text-right border-l border-slate-700 text-rose-300">Adm Fee Rem</th>
-                  <th className="py-3 px-2 text-right text-rose-300">Reg Fee Rem</th>
-                  <th className="py-3 px-2 text-right text-rose-300">Misc Rem</th>
-                  <th className="py-3 px-2 text-right text-rose-300">Annual Rem</th>
+                  {/* SEPARATE OTHER FEE REMAINING COLUMNS */}
+                  <th className="py-3 px-2 text-right border-l border-gray-200 text-red-700">Adm Rem</th>
+                  <th className="py-3 px-2 text-right text-red-700">Reg Rem</th>
+                  <th className="py-3 px-2 text-right text-red-700">Misc Rem</th>
+                  <th className="py-3 px-2 text-right text-red-700">Ann Rem</th>
 
-                  {/* 5. SUMMARY COLUMNS */}
-                  <th className="py-3 px-3 text-right border-l border-slate-700 font-bold">Tuition Total</th>
-                  <th className="py-3 px-3 text-right font-bold text-rose-300">Other Rem Total</th>
-                  <th className="py-3 px-3 text-right font-bold text-indigo-300">Grand Total</th>
-                  <th className="py-3 px-3 text-right font-bold text-emerald-400">Total Paid</th>
-                  <th className="py-3 px-3 text-right font-bold text-rose-400">Rem Balance</th>
+                  {/* SUMMARY COLUMNS */}
+                  <th className="py-3 px-3 text-right border-l border-gray-200 font-black">Tuition Total</th>
+                  <th className="py-3 px-3 text-right font-black text-red-700">Other Rem</th>
+                  <th className="py-3 px-3 text-right font-black text-[var(--color-primary)]">Grand Total</th>
+                  <th className="py-3 px-3 text-right font-black text-emerald-700">Total Paid</th>
+                  <th className="py-3 px-3 text-right font-black text-red-600 bg-red-50">Rem Balance</th>
                   <th className="py-3 px-3 text-center">Last Paid Date</th>
                   <th className="py-3 px-3 text-center">Status</th>
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-slate-700/60 text-slate-200">
+              <tbody className="divide-y divide-gray-100 text-gray-700">
                 {parentGroups.length === 0 ? (
                   <tr>
-                    <td colSpan={19 + monthColumns.length} className="py-12 text-center text-slate-500 text-base">
-                      No matching student ledger records found for this academic year and filter selection.
+                    <td colSpan={19 + monthColumns.length} className="py-12 text-center text-gray-500 text-base font-medium">
+                      No matching student ledger records found.
                     </td>
                   </tr>
                 ) : (
@@ -568,37 +565,37 @@ const FeeLedgerPage = () => {
                     return (
                       <React.Fragment key={group.parentId}>
                         {/* 1. GROUP BY PARENT ROW */}
-                        <tr className="bg-indigo-950/70 border-y-2 border-indigo-500/40 text-xs font-bold text-white hover:bg-indigo-900/60 transition-colors">
-                          <td colSpan={8} className="py-3 px-4">
+                        <tr className="bg-[var(--color-primary)] border-y-[3px] border-[var(--color-secondary)] text-xs font-bold text-white hover:bg-[var(--color-secondary)] transition-colors">
+                          <td colSpan={8} className="py-2.5 px-4">
                             <div className="flex items-center gap-3">
                               <button
                                 onClick={() => toggleParentCollapse(group.parentId)}
-                                className="w-5 h-5 rounded bg-indigo-800 hover:bg-indigo-700 text-white flex items-center justify-center text-xs font-bold transition-all cursor-pointer"
+                                className="w-5 h-5 rounded bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-xs font-bold transition-all cursor-pointer"
                                 title="Expand / Collapse Parent"
                               >
-                                {isCollapsed ? '+' : '−'}
+                                <span className="material-symbols-outlined text-[16px]">{isCollapsed ? 'add' : 'remove'}</span>
                               </button>
                               <div>
-                                <span className="text-indigo-300 text-sm font-extrabold">{group.parentName}</span>
-                                <span className="ml-3 text-[11px] text-slate-400 font-normal">
-                                  CNIC: <span className="font-mono text-slate-300">{group.parentCnic}</span> | Phone: {group.parentPhone} | Children: <span className="font-bold text-indigo-200">{group.children.length}</span>
+                                <span className="text-white text-sm font-black uppercase tracking-wider">{group.parentName}</span>
+                                <span className="ml-3 text-[11px] text-blue-200 font-normal">
+                                  CNIC: <span className="font-mono text-white">{group.parentCnic}</span> | Phone: {group.parentPhone} | Children: <span className="font-black text-[var(--color-accent)]">{group.children.length}</span>
                                 </span>
                               </div>
                             </div>
                           </td>
 
                           {/* Empty Month Cells spanning length */}
-                          <td colSpan={monthColumns.length + 4} className="py-3 px-2 border-l border-slate-700 text-right text-[11px] text-indigo-300 font-semibold italic">
+                          <td colSpan={monthColumns.length + 4} className="py-2.5 px-2 border-l border-white/20 text-right text-[11px] text-blue-200 font-semibold italic">
                             Parent Totals →
                           </td>
 
-                          <td colSpan={3} className="py-3 px-3 text-right text-emerald-300 font-extrabold border-l border-slate-700">
+                          <td colSpan={3} className="py-2.5 px-3 text-right text-emerald-300 font-black border-l border-white/20">
                             Paid: Rs. {group.totalPaid}
                           </td>
-                          <td colSpan={2} className="py-3 px-3 text-right text-rose-300 font-extrabold">
+                          <td colSpan={2} className="py-2.5 px-3 text-right text-red-300 font-black">
                             Rem: Rs. {group.totalRemaining}
                           </td>
-                          <td colSpan={2} className="py-3 px-3 text-center text-slate-400 text-[10px]">
+                          <td colSpan={2} className="py-2.5 px-3 text-center text-blue-200 text-[10px]">
                             Other Rem: Rs. {group.totalOtherFeesRemaining}
                           </td>
                         </tr>
@@ -609,87 +606,87 @@ const FeeLedgerPage = () => {
                             const isExpanded = expandedStudents[student.assignmentId];
                             return (
                               <React.Fragment key={student.assignmentId}>
-                                <tr className="hover:bg-slate-700/40 transition-colors border-b border-slate-700/50">
-                                  {/* 7. ROW EXPANSION TOGGLE */}
+                                <tr className={`hover:bg-gray-50 transition-colors border-b border-gray-100 ${isExpanded ? 'bg-blue-50/30' : ''}`}>
+                                  {/* ROW EXPANSION TOGGLE */}
                                   <td className="py-2.5 px-3 text-center">
                                     <button
                                       onClick={() => toggleStudentExpand(student.assignmentId)}
-                                      className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold transition-all cursor-pointer ${isExpanded ? 'bg-indigo-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+                                      className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold transition-all cursor-pointer ${isExpanded ? 'bg-[var(--color-primary)] text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-600'
                                         }`}
                                       title="Toggle Payment Receipt History"
                                     >
-                                      {isExpanded ? '▲' : '▼'}
+                                      <span className="material-symbols-outlined text-[14px]">{isExpanded ? 'expand_less' : 'expand_more'}</span>
                                     </button>
                                   </td>
 
-                                  {/* 2. STUDENT INFORMATION COLUMNS */}
-                                  <td className="py-2.5 px-3 font-mono text-slate-400">{student.studentId}</td>
-                                  <td className="py-2.5 px-3 font-bold text-white whitespace-nowrap">{student.studentName}</td>
-                                  <td className="py-2.5 px-3 text-slate-300 whitespace-nowrap">{student.parentName}</td>
-                                  <td className="py-2.5 px-3 text-center font-semibold">{student.class}</td>
-                                  <td className="py-2.5 px-3 text-center text-slate-400">{student.section || '-'}</td>
-                                  <td className="py-2.5 px-3 text-center text-slate-400 whitespace-nowrap">{student.academicYearName}</td>
+                                  {/* STUDENT INFORMATION COLUMNS */}
+                                  <td className="py-2.5 px-3 font-mono text-gray-500 font-semibold">{student.studentId}</td>
+                                  <td className="py-2.5 px-3 font-black text-[var(--color-primary)] whitespace-nowrap">{student.studentName}</td>
+                                  <td className="py-2.5 px-3 text-gray-600 whitespace-nowrap font-medium">{student.parentName}</td>
+                                  <td className="py-2.5 px-3 text-center font-bold text-gray-800">{student.class}</td>
+                                  <td className="py-2.5 px-3 text-center text-gray-500 font-medium">{student.section || '-'}</td>
+                                  <td className="py-2.5 px-3 text-center text-gray-500 whitespace-nowrap font-medium">{student.academicYearName}</td>
 
-                                  {/* 3. MONTHLY TUITION STATUS COLUMNS */}
+                                  {/* MONTHLY TUITION STATUS COLUMNS */}
                                   {(student.monthlyLedger || []).map((m, idx) => {
                                     let cellContent = '-';
-                                    let badgeStyle = 'text-slate-500';
+                                    let badgeStyle = 'text-gray-400 font-medium';
 
                                     if (m.status === 'Paid') {
-                                      cellContent = `$${m.paidAmount} ✓`;
-                                      badgeStyle = 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30';
+                                      cellContent = `Rs.${m.paidAmount} ✓`;
+                                      badgeStyle = 'bg-emerald-100 text-emerald-800 font-bold border border-emerald-200';
                                     } else if (m.status === 'Partial') {
-                                      cellContent = `$${m.paidAmount} (Partial)`;
-                                      badgeStyle = 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30';
+                                      cellContent = `Rs.${m.paidAmount} (P)`;
+                                      badgeStyle = 'bg-amber-100 text-amber-800 font-bold border border-amber-200';
                                     } else if (m.status === 'Unpaid') {
                                       cellContent = 'Due';
-                                      badgeStyle = 'bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30';
+                                      badgeStyle = 'bg-red-100 text-red-800 font-bold border border-red-200';
                                     }
 
                                     return (
-                                      <td key={idx} className="py-2.5 px-2 text-center border-l border-slate-700/60 whitespace-nowrap">
-                                        <span className={`px-1.5 py-0.5 rounded text-[10px] inline-block ${badgeStyle}`}>
+                                      <td key={idx} className="py-2 px-1 text-center border-l border-gray-100 whitespace-nowrap">
+                                        <span className={`px-1.5 py-0.5 rounded-[3px] text-[9px] inline-block w-full ${badgeStyle}`}>
                                           {cellContent}
                                         </span>
                                       </td>
                                     );
                                   })}
 
-                                  {/* 4. OTHER FEE REMAINING COLUMNS */}
-                                  <td className="py-2.5 px-2 text-right border-l border-slate-700/60 text-slate-300 font-mono">
-                                    ${student.admissionFeeRemaining}
+                                  {/* OTHER FEE REMAINING COLUMNS */}
+                                  <td className="py-2.5 px-2 text-right border-l border-gray-200 text-gray-600 font-mono font-medium">
+                                    {student.admissionFeeRemaining}
                                   </td>
-                                  <td className="py-2.5 px-2 text-right text-slate-300 font-mono">
-                                    ${student.registrationFeeRemaining}
+                                  <td className="py-2.5 px-2 text-right text-gray-600 font-mono font-medium">
+                                    {student.registrationFeeRemaining}
                                   </td>
-                                  <td className="py-2.5 px-2 text-right text-slate-300 font-mono">
-                                    ${student.miscellaneousFeeRemaining}
+                                  <td className="py-2.5 px-2 text-right text-gray-600 font-mono font-medium">
+                                    {student.miscellaneousFeeRemaining}
                                   </td>
-                                  <td className="py-2.5 px-2 text-right text-slate-300 font-mono">
-                                    ${student.annualChargesRemaining}
+                                  <td className="py-2.5 px-2 text-right text-gray-600 font-mono font-medium">
+                                    {student.annualChargesRemaining}
                                   </td>
 
-                                  {/* 5. SUMMARY COLUMNS */}
-                                  <td className="py-2.5 px-3 text-right border-l border-slate-700/60 font-semibold text-slate-200">Rs. {student.monthlyTuitionTotal}</td>
-                                  <td className="py-2.5 px-3 text-right font-semibold text-rose-300">Rs. {student.otherFeesRemaining}</td>
-                                  <td className="py-2.5 px-3 text-right font-bold text-indigo-300">Rs. {student.totalAmount}</td>
-                                  <td className="py-2.5 px-3 text-right font-extrabold text-emerald-400">Rs. {student.totalPaid}</td>
-                                  <td className="py-2.5 px-3 text-right font-extrabold text-rose-400">Rs. {student.remainingBalance}</td>
+                                  {/* SUMMARY COLUMNS */}
+                                  <td className="py-2.5 px-3 text-right border-l border-gray-200 font-black text-gray-700">{student.monthlyTuitionTotal}</td>
+                                  <td className="py-2.5 px-3 text-right font-black text-red-700">{student.otherFeesRemaining}</td>
+                                  <td className="py-2.5 px-3 text-right font-black text-[var(--color-primary)]">{student.totalAmount}</td>
+                                  <td className="py-2.5 px-3 text-right font-black text-emerald-600 bg-emerald-50/50">{student.totalPaid}</td>
+                                  <td className="py-2.5 px-3 text-right font-black text-red-600 bg-red-50/80">{student.remainingBalance}</td>
 
-                                  <td className="py-2.5 px-3 text-center text-[10px] text-slate-400 whitespace-nowrap">
+                                  <td className="py-2.5 px-3 text-center text-[10px] text-gray-500 font-medium whitespace-nowrap">
                                     {student.lastPaymentDate ? new Date(student.lastPaymentDate).toLocaleDateString() : 'N/A'}
                                   </td>
 
-                                  {/* 6. PAYMENT STATUS BADGE */}
+                                  {/* PAYMENT STATUS BADGE */}
                                   <td className="py-2.5 px-3 text-center">
                                     <span
-                                      className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider inline-block ${student.paymentStatus === 'Fully Paid'
-                                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                      className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider inline-block ${student.paymentStatus === 'Fully Paid'
+                                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                                           : student.paymentStatus === 'Partially Paid'
-                                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                            ? 'bg-amber-100 text-amber-800 border border-amber-200'
                                             : student.paymentStatus === 'Advance'
-                                              ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                                              : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                                              ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                                              : 'bg-red-100 text-red-800 border border-red-200 shadow-sm'
                                         }`}
                                     >
                                       {student.paymentStatus}
@@ -697,52 +694,47 @@ const FeeLedgerPage = () => {
                                   </td>
                                 </tr>
 
-                                {/* 7. ROW EXPANSION DRAWER (RECEIPT PAYMENT HISTORY) */}
+                                {/* ROW EXPANSION DRAWER (RECEIPT PAYMENT HISTORY) */}
                                 {isExpanded && (
-                                  <tr className="bg-slate-900/90 border-b border-indigo-500/30">
+                                  <tr className="bg-gray-100 border-b-2 border-[var(--color-primary)] shadow-inner">
                                     <td colSpan={19 + monthColumns.length} className="p-4">
-                                      <div className="bg-slate-950 border border-slate-700/80 rounded-xl p-4 space-y-3">
-                                        <div className="flex items-center justify-between">
-                                          <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider">
-                                            Payment Receipt History for {student.studentName} ({student.class})
+                                      <div className="bg-white border border-gray-300 rounded-lg p-4 shadow-sm">
+                                        <div className="flex items-center justify-between mb-3">
+                                          <h4 className="text-xs font-black text-[var(--color-primary)] uppercase tracking-wider flex items-center gap-1.5">
+                                            <span className="material-symbols-outlined text-[16px]">receipt_long</span>
+                                            Payment Receipt History for {student.studentName}
                                           </h4>
-                                          <span className="text-[10px] text-slate-400">Total Receipts: {student.receipts.length}</span>
+                                          <span className="text-[10px] font-bold text-gray-500 uppercase bg-gray-100 px-2 py-1 rounded">Total Receipts: {student.receipts.length}</span>
                                         </div>
 
                                         {student.receipts.length === 0 ? (
-                                          <p className="text-xs text-slate-500 italic py-2">No payment receipts recorded for this academic year.</p>
+                                          <p className="text-xs text-gray-400 font-bold uppercase tracking-wider italic py-4 text-center border-2 border-dashed border-gray-200 rounded">No payment receipts recorded</p>
                                         ) : (
                                           <table className="w-full text-left border-collapse text-xs">
                                             <thead>
-                                              <tr className="bg-slate-900 text-slate-400 uppercase text-[10px] font-bold border-b border-slate-700">
+                                              <tr className="bg-gray-50 text-gray-500 uppercase text-[9px] font-black border-b border-gray-200 tracking-wider">
                                                 <th className="py-2 px-3">Receipt No</th>
                                                 <th className="py-2 px-3">Receipt Date</th>
                                                 <th className="py-2 px-3 text-right">Amount Paid</th>
                                                 <th className="py-2 px-3 text-center">Payment Method</th>
-                                                <th className="py-2 px-3 text-right">Remaining Balance After Receipt</th>
+                                                <th className="py-2 px-3 text-right">Remaining Balance After</th>
                                                 <th className="py-2 px-3 text-right">Actions</th>
                                               </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-slate-800 text-slate-300">
+                                            <tbody className="divide-y divide-gray-100 text-gray-700">
                                               {student.receipts.map((rec) => (
-                                                <tr key={rec._id} className="hover:bg-slate-800/50">
-                                                  <td className="py-2 px-3 font-mono font-bold text-indigo-300">{rec.receiptNumber}</td>
-                                                  <td className="py-2 px-3 text-slate-400">{new Date(rec.createdAt).toLocaleString()}</td>
-                                                  <td className="py-2 px-3 text-right font-bold text-emerald-400">Rs. {rec.amountPaid}</td>
-                                                  <td className="py-2 px-3 text-center text-slate-400">{rec.paymentMethod}</td>
-                                                  <td className="py-2 px-3 text-right font-semibold text-rose-300">Rs. {rec.remainingBalance}</td>
-                                                  <td className="py-2 px-3 text-right space-x-2">
+                                                <tr key={rec._id} className="hover:bg-blue-50/50">
+                                                  <td className="py-2 px-3 font-mono font-bold text-[var(--color-primary)]">{rec.receiptNumber}</td>
+                                                  <td className="py-2 px-3 font-medium text-gray-600">{new Date(rec.createdAt).toLocaleString()}</td>
+                                                  <td className="py-2 px-3 text-right font-black text-emerald-600">Rs. {rec.amountPaid}</td>
+                                                  <td className="py-2 px-3 text-center font-medium text-gray-500">{rec.paymentMethod}</td>
+                                                  <td className="py-2 px-3 text-right font-bold text-red-500">Rs. {rec.remainingBalance}</td>
+                                                  <td className="py-2 px-3 text-right">
                                                     <Link
                                                       to={`/receipt/${rec._id}`}
-                                                      className="px-2.5 py-1 bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 hover:text-white rounded text-[10px] font-semibold transition-all inline-block"
+                                                      className="text-[var(--color-secondary)] hover:text-[var(--color-primary)] font-bold text-[10px] uppercase tracking-wider flex items-center justify-end gap-1 transition-colors"
                                                     >
-                                                      Print Receipt
-                                                    </Link>
-                                                    <Link
-                                                      to={`/receipt/${rec._id}`}
-                                                      className="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-[10px] font-semibold transition-all inline-block"
-                                                    >
-                                                      Download PDF
+                                                       <span className="material-symbols-outlined text-[14px]">visibility</span> View
                                                     </Link>
                                                   </td>
                                                 </tr>
@@ -772,6 +764,8 @@ const FeeLedgerPage = () => {
         @media print {
           body * {
             visibility: hidden;
+            background-color: white !important;
+            color: black !important;
           }
           .printable-ledger, .printable-ledger * {
             visibility: visible;

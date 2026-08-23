@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api/axios';
+import Button from '../../components/ui/Button';
+import Modal from '../../components/ui/Modal';
 
 const StudentPromotionPage = () => {
   const [students, setStudents] = useState([]);
@@ -10,6 +13,7 @@ const StudentPromotionPage = () => {
   const [successMsg, setSuccessMsg] = useState('');
 
   const [classFilter, setClassFilter] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     fetchStudents();
@@ -53,10 +57,13 @@ const StudentPromotionPage = () => {
     setSelectedIds(newSet);
   };
 
-  const handlePromote = async () => {
+  const requestPromote = () => {
     if (selectedIds.size === 0) return;
-    if (!window.confirm(`Are you sure you want to promote ${selectedIds.size} students? Final grade students will be passed out.`)) return;
+    setModalOpen(true);
+  };
 
+  const confirmPromote = async () => {
+    setModalOpen(false);
     setPromoting(true);
     setSuccessMsg('');
     setError('');
@@ -98,48 +105,49 @@ const StudentPromotionPage = () => {
   }, [students, classFilter]);
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
         <div>
-          <h1 className="text-3xl font-bold text-slate-100 tracking-tight">Student Promotion System</h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Promote students to the next grade or pass them out if they are in the final grade.
-          </p>
+          <h2 className="text-2xl font-bold text-[var(--color-primary)] tracking-tight">Student Promotion System</h2>
+          <p className="text-sm text-gray-500 font-medium">Promote students to the next grade or pass them out if they are in the final grade.</p>
         </div>
         
-        <button
-          onClick={handlePromote}
-          disabled={selectedIds.size === 0 || promoting}
-          className={`px-6 py-2.5 rounded-lg font-bold text-sm shadow-lg transition-all flex items-center gap-2 ${
-            selectedIds.size === 0 || promoting
-              ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
-              : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/20'
-          }`}
-        >
-          {promoting ? 'Processing...' : `Promote Selected (${selectedIds.size})`}
-        </button>
+        <div className="flex items-center gap-3">
+          <Link to="/students">
+            <Button variant="outline">Cancel</Button>
+          </Link>
+          <Button
+            variant="primary"
+            onClick={requestPromote}
+            disabled={selectedIds.size === 0 || promoting}
+          >
+            {promoting ? 'Processing...' : `Promote Selected (${selectedIds.size})`}
+          </Button>
+        </div>
       </div>
 
       {error && (
-        <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm p-4 rounded-xl">
-          {error}
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 text-sm text-red-700 flex items-start gap-2 rounded-r-lg">
+          <span className="material-symbols-outlined text-red-500 text-[20px]">error</span>
+          <span>{error}</span>
         </div>
       )}
       
       {successMsg && (
-        <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm p-4 rounded-xl">
-          {successMsg}
+        <div className="bg-green-50 border-l-4 border-green-500 p-4 text-sm text-green-700 flex items-start gap-2 rounded-r-lg">
+          <span className="material-symbols-outlined text-green-500 text-[20px]">check_circle</span>
+          <span>{successMsg}</span>
         </div>
       )}
 
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700 pb-4">
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <label className="text-sm font-semibold text-slate-300">Filter by Class:</label>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <label className="text-sm font-semibold text-[var(--color-text)]">Filter by Class:</label>
             <select
               value={classFilter}
               onChange={(e) => setClassFilter(e.target.value)}
-              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-indigo-500 min-w-[200px]"
+              className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)] min-w-[200px]"
             >
               <option value="">All Classes</option>
               {uniqueClasses.map(c => (
@@ -149,63 +157,67 @@ const StudentPromotionPage = () => {
           </div>
           
           <div className="flex gap-2">
-            <button
+            <Button
+              variant="secondary"
               onClick={() => handleSelectAll(filteredStudents)}
-              className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded transition-colors"
+              className="py-1.5 px-3 text-xs"
             >
               Select All Shown
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => handleDeselectAll(filteredStudents)}
-              className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded transition-colors"
+              className="py-1.5 px-3 text-xs"
             >
               Deselect All Shown
-            </button>
+            </Button>
           </div>
         </div>
 
         {loading ? (
-          <div className="py-8 text-center text-slate-400">Loading students...</div>
+          <div className="py-8 text-center text-gray-500 font-medium flex items-center justify-center gap-2">
+            <span className="material-symbols-outlined animate-spin">refresh</span> Loading students...
+          </div>
         ) : filteredStudents.length === 0 ? (
-          <div className="py-8 text-center text-slate-500 italic">No active students found for the selected class.</div>
+          <div className="py-8 text-center text-gray-500 italic bg-gray-50 rounded-lg border border-gray-100">No active students found for the selected class.</div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-lg border border-gray-200">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-900/50 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-700">
-                  <th className="p-3 w-12 text-center">
+                <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 uppercase text-xs font-bold tracking-wider">
+                  <th className="p-4 w-12 text-center">
                     <input 
                       type="checkbox" 
                       onChange={(e) => e.target.checked ? handleSelectAll(filteredStudents) : handleDeselectAll(filteredStudents)}
                       checked={filteredStudents.length > 0 && filteredStudents.every(s => selectedIds.has(s._id))}
-                      className="rounded bg-slate-900 border-slate-700 text-indigo-500 focus:ring-indigo-500"
+                      className="w-4 h-4 rounded border-gray-300 text-[var(--color-primary)] focus:ring-[var(--color-primary)] cursor-pointer"
                     />
                   </th>
-                  <th className="p-3">Student Name</th>
-                  <th className="p-3">Roll No</th>
-                  <th className="p-3 text-center">Current Grade</th>
-                  <th className="p-3 text-center">Section</th>
+                  <th className="p-4">Student Name</th>
+                  <th className="p-4">Roll No</th>
+                  <th className="p-4 text-center">Current Grade</th>
+                  <th className="p-4 text-center">Section</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50">
+              <tbody className="divide-y divide-gray-100">
                 {filteredStudents.map(student => (
                   <tr 
                     key={student._id} 
-                    className={`hover:bg-slate-700/30 transition-colors cursor-pointer ${selectedIds.has(student._id) ? 'bg-indigo-900/10' : ''}`}
+                    className={`hover:bg-gray-50 transition-colors cursor-pointer ${selectedIds.has(student._id) ? 'bg-indigo-50/50' : ''}`}
                     onClick={() => toggleSelect(student._id)}
                   >
-                    <td className="p-3 text-center" onClick={e => e.stopPropagation()}>
+                    <td className="p-4 text-center" onClick={e => e.stopPropagation()}>
                       <input 
                         type="checkbox" 
                         checked={selectedIds.has(student._id)}
                         onChange={() => toggleSelect(student._id)}
-                        className="rounded bg-slate-900 border-slate-700 text-indigo-500 focus:ring-indigo-500 cursor-pointer"
+                        className="w-4 h-4 rounded border-gray-300 text-[var(--color-primary)] focus:ring-[var(--color-primary)] cursor-pointer"
                       />
                     </td>
-                    <td className="p-3 font-semibold text-white">{student.name}</td>
-                    <td className="p-3 font-mono text-slate-400 text-sm">{student.studentId || 'N/A'}</td>
-                    <td className="p-3 text-center text-indigo-300 font-medium">{student.grade || 'N/A'}</td>
-                    <td className="p-3 text-center text-slate-400">{student.section || '-'}</td>
+                    <td className="p-4 font-bold text-[var(--color-primary)]">{student.name}</td>
+                    <td className="p-4 font-mono text-gray-500 text-sm">{student.studentId || 'N/A'}</td>
+                    <td className="p-4 text-center text-[var(--color-secondary)] font-semibold">{student.grade || 'N/A'}</td>
+                    <td className="p-4 text-center text-gray-500 font-medium">{student.section || '-'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -213,6 +225,23 @@ const StudentPromotionPage = () => {
           </div>
         )}
       </div>
+
+      {/* Promotion Confirmation Modal */}
+      <Modal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        title="Confirm Promotion"
+        type="warning"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>
+            <Button variant="primary" onClick={confirmPromote}>Confirm Promotion</Button>
+          </>
+        }
+      >
+        <p>Are you sure you want to promote <strong>{selectedIds.size}</strong> students?</p>
+        <p className="text-sm text-gray-500 mt-2">Final grade students (Grade 10) will be marked as passed out. Other students will be moved to the next grade.</p>
+      </Modal>
     </div>
   );
 };

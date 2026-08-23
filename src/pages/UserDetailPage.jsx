@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import InputField from '../components/ui/InputField';
+import Button from '../components/ui/Button';
+import Modal from '../components/ui/Modal';
 
 const UserDetailPage = () => {
   const { id } = useParams();
@@ -20,6 +23,9 @@ const UserDetailPage = () => {
 
   // Change password field
   const [newPassword, setNewPassword] = useState('');
+
+  // Modals
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const isSelf = currentUser?.id === id;
   const isAdmin = currentUser?.role === 'ADMIN';
@@ -82,12 +88,10 @@ const UserDetailPage = () => {
     }
   };
 
-  const handleDeleteUser = async () => {
-    if (!window.confirm(`Are you sure you want to permanently delete user ${user.email}?`)) {
-      return;
-    }
+  const confirmDeleteUser = async () => {
     setMsg('');
     setError('');
+    setDeleteModalOpen(false);
     try {
       await api.delete(`/users/${id}`);
       navigate('/users');
@@ -96,140 +100,172 @@ const UserDetailPage = () => {
     }
   };
 
-  if (loading) return <div className="text-slate-400 text-sm">Loading user details...</div>;
-  if (error && !user) return <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm p-3 rounded-lg">{error}</div>;
+  if (loading) return <div className="p-8 text-center text-gray-500 font-medium flex items-center justify-center gap-2"><span className="material-symbols-outlined animate-spin">refresh</span> Loading user details...</div>;
+  if (error && !user) return <div className="m-6 bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg text-sm flex items-start gap-2"><span className="material-symbols-outlined text-[20px]">error</span><span>{error}</span></div>;
 
   if (isSelf) {
     return (
-      <div className="max-w-md mx-auto bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl text-center space-y-4">
-        <h2 className="text-lg font-bold text-white">Self Edit Restricted</h2>
-        <p className="text-sm text-slate-400">You cannot edit your own details or change your password from the user list.</p>
-        <Link to="/profile" className="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-lg">
-          Go to My Profile
-        </Link>
+      <div className="max-w-md mx-auto bg-white border border-gray-200 rounded-xl p-8 shadow-sm text-center space-y-4">
+        <span className="material-symbols-outlined text-gray-300 text-5xl mb-2">lock</span>
+        <h2 className="text-xl font-bold text-[var(--color-primary)]">Self Edit Restricted</h2>
+        <p className="text-sm font-medium text-gray-500">You cannot edit your own details or change your password from the user list.</p>
+        <div className="pt-4">
+          <Link to="/profile">
+            <Button variant="primary" className="w-full">
+              Go to My Profile
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="flex items-center justify-between bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
-        <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">Edit User Settings</h2>
-          <p className="text-xs text-slate-400 font-mono mt-0.5">ID: {user?._id}</p>
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center shadow-sm">
+            <span className="material-symbols-outlined text-2xl">person</span>
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-[var(--color-primary)] tracking-tight">Edit User Settings</h2>
+            <p className="text-xs text-gray-500 font-mono font-medium mt-1">ID: {user?._id}</p>
+          </div>
         </div>
-        <Link to="/users" className="text-xs text-indigo-400 hover:text-indigo-300 font-medium">
-          ← Back to Users
+        <Link to="/users">
+          <Button variant="outline">
+             <span className="material-symbols-outlined text-sm">arrow_back</span> Back to Users
+          </Button>
         </Link>
       </div>
 
-      {msg && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm p-3 rounded-lg">{msg}</div>}
-      {error && <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm p-3 rounded-lg">{error}</div>}
+      {msg && <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-r-lg text-sm flex items-start gap-2 shadow-sm font-medium"><span className="material-symbols-outlined text-[20px]">check_circle</span><span>{msg}</span></div>}
+      {error && <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg text-sm flex items-start gap-2 shadow-sm font-medium"><span className="material-symbols-outlined text-[20px]">error</span><span>{error}</span></div>}
 
-      {/* Section 1: Update details */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-4">
-        <h3 className="text-base font-semibold text-white">General Information</h3>
-        <form onSubmit={handleUpdateUser} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Name</label>
-            <input
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Section 1: Update details */}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] space-y-4 h-fit">
+          <h3 className="text-lg font-bold text-[var(--color-primary)] border-b border-gray-100 pb-2 flex items-center gap-2">
+            <span className="material-symbols-outlined text-[var(--color-secondary)]">manage_accounts</span> General Information
+          </h3>
+          <form onSubmit={handleUpdateUser} className="space-y-4">
+            <InputField
+              label="Name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
               required
             />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Email</label>
-            <input
+            <InputField
+              label="Email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
               required
             />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Role</label>
-            <select
-              value={role}
-              disabled={isAdmin}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500 disabled:opacity-50"
-            >
-              <option value="ADMIN">ADMIN</option>
-              <option value="ACCOUNTANT">ACCOUNTANT</option>
-            </select>
-            {isAdmin && <span className="text-[11px] text-slate-400 block mt-1">Admins cannot change user roles.</span>}
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-lg text-sm transition-all cursor-pointer"
-          >
-            Save User Details
-          </button>
-        </form>
-      </div>
+            <div>
+              <label className="block text-xs font-semibold text-[var(--color-text)] uppercase tracking-wider mb-2">Role</label>
+              <select
+                value={role}
+                disabled={isAdmin}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-[var(--color-text)] text-sm focus:outline-none focus:border-[var(--color-secondary)] focus:ring-1 focus:ring-[var(--color-secondary)] disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed transition-all font-medium"
+              >
+                <option value="ADMIN">ADMIN</option>
+                <option value="ACCOUNTANT">ACCOUNTANT</option>
+              </select>
+              {isAdmin && <span className="text-xs text-[var(--color-accent)] font-medium block mt-2 flex items-start gap-1"><span className="material-symbols-outlined text-[14px]">info</span> Admins cannot change user roles.</span>}
+            </div>
+            <div className="pt-2 border-t border-gray-100">
+              <Button type="submit" variant="primary" className="w-full shadow-sm">
+                Save User Details
+              </Button>
+            </div>
+          </form>
+        </div>
 
-      {/* Section 2: Admin Password Override */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-4">
-        <h3 className="text-base font-semibold text-white">Reset User Password (Admin Override)</h3>
-        <form onSubmit={handleChangePassword} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">New Password</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="At least 6 characters"
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
-              required
-              minLength={6}
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-lg text-sm transition-all cursor-pointer"
-          >
-            Set Password
-          </button>
-        </form>
-      </div>
-
-      {/* Section 3: Status & Permanent Deletion */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-4">
-        <h3 className="text-base font-semibold text-white">Account Management Actions</h3>
-        <div className="flex items-center justify-between pt-2">
-          <div>
-            <span className="text-xs text-slate-400 block">Account Status</span>
-            <span
-              className={`inline-block mt-1 px-2.5 py-0.5 text-xs font-bold uppercase rounded ${
-                user?.isActive
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                  : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-              }`}
-            >
-              {user?.isActive ? 'Active' : 'Inactive'}
-            </span>
+        <div className="space-y-6">
+          {/* Section 2: Admin Password Override */}
+          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] space-y-4">
+            <h3 className="text-lg font-bold text-[var(--color-primary)] border-b border-gray-100 pb-2 flex items-center gap-2">
+               <span className="material-symbols-outlined text-[var(--color-secondary)]">password</span> Reset Password
+            </h3>
+            <p className="text-xs font-medium text-gray-500">(Admin Override)</p>
+            <form onSubmit={handleChangePassword} className="space-y-4">
+              <InputField
+                label="New Password"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="At least 6 characters"
+                required
+                minLength={6}
+              />
+              <Button type="submit" variant="secondary" className="w-full shadow-sm">
+                Force Reset Password
+              </Button>
+            </form>
           </div>
 
-          <div className="flex gap-2">
-            <button
-              onClick={handleToggleStatus}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-lg transition-all cursor-pointer"
-            >
-              {user?.isActive ? 'Deactivate User' : 'Activate User'}
-            </button>
-            <button
-              onClick={handleDeleteUser}
-              className="px-4 py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-semibold rounded-lg transition-all cursor-pointer"
-            >
-              Permanently Delete User
-            </button>
+          {/* Section 3: Status & Permanent Deletion */}
+          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-[0_4px_6px_-1px_rgba(11,37,69,0.05)] space-y-4">
+            <h3 className="text-lg font-bold text-[var(--color-primary)] border-b border-gray-100 pb-2 flex items-center gap-2">
+               <span className="material-symbols-outlined text-[var(--color-secondary)]">admin_panel_settings</span> Account Actions
+            </h3>
+            <div className="pt-2 space-y-6">
+              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-100">
+                <div>
+                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Current Status</span>
+                  <span
+                    className={`inline-block mt-2 px-3 py-1 text-xs font-bold uppercase rounded-full border ${
+                      user?.isActive
+                        ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
+                        : 'bg-red-100 text-red-700 border-red-200'
+                    }`}
+                  >
+                    {user?.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={handleToggleStatus}
+                >
+                  {user?.isActive ? 'Deactivate' : 'Activate'} User
+                </Button>
+              </div>
+
+              <div className="border-t border-gray-200 pt-4">
+                 <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wider">Danger Zone</p>
+                 <button
+                   onClick={() => setDeleteModalOpen(true)}
+                   className="w-full py-3 px-4 bg-white hover:bg-red-50 text-red-600 font-bold border-2 border-red-200 hover:border-red-500 rounded-lg transition-all cursor-pointer shadow-sm text-sm"
+                 >
+                   Permanently Delete User
+                 </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <Modal 
+        isOpen={deleteModalOpen} 
+        onClose={() => setDeleteModalOpen(false)} 
+        title="Permanently Delete User"
+        type="danger"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
+            <Button variant="danger" onClick={confirmDeleteUser}>Yes, Delete</Button>
+          </>
+        }
+      >
+        <p>Are you sure you want to permanently delete user <strong>{user?.email}</strong>?</p>
+        <p className="text-sm font-bold text-red-600 bg-red-50 p-3 rounded-lg border border-red-100 mt-4 flex items-start gap-2">
+          <span className="material-symbols-outlined text-[20px]">warning</span>
+          <span>Warning: This action is irreversible. The user will immediately lose access.</span>
+        </p>
+      </Modal>
     </div>
   );
 };
