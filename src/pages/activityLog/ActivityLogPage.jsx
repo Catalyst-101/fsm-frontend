@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAllLogs, reversePayment } from '../../api/activityLogs';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
+import AlertModal from '../../components/ui/AlertModal';
 
 const ActivityLogPage = () => {
   const [logs, setLogs] = useState([]);
@@ -59,17 +60,21 @@ const ActivityLogPage = () => {
     setConfirmModal({ isOpen: true, activity });
   };
 
+  const [alertState, setAlertState] = useState({ isOpen: false, title: '', message: '', type: 'info' });
+
   const executeReverse = async () => {
     if (!confirmModal.activity) return;
     try {
       await reversePayment(confirmModal.activity._id);
-      alert('Payment reversed successfully');
+      setAlertState({ isOpen: true, title: 'Success', message: 'Payment reversed successfully', type: 'success' });
       setConfirmModal({ isOpen: false, activity: null });
       fetchLogs(pagination.page);
     } catch (error) {
-      alert(error.response?.data?.message || 'Failed to reverse payment');
+      setAlertState({ isOpen: true, title: 'Error', message: error.response?.data?.message || 'Failed to reverse payment', type: 'error' });
     }
   };
+
+  const closeAlert = () => setAlertState({ ...alertState, isOpen: false });
 
   const viewDetails = (activity) => {
     setDetailsModal({ isOpen: true, activity });
@@ -254,7 +259,11 @@ const ActivityLogPage = () => {
         title="Activity Details"
         size="lg"
         footer={
-          <Button variant="secondary" onClick={() => setDetailsModal({ isOpen: false, activity: null })}>Close</Button>
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+            <Button variant="secondary" onClick={() => setDetailsModal({ isOpen: false, activity: null })}>
+              Close
+            </Button>
+          </div>
         }
       >
         <div className="space-y-6">
@@ -300,6 +309,14 @@ const ActivityLogPage = () => {
           )}
         </div>
       </Modal>
+
+      <AlertModal
+        isOpen={alertState.isOpen}
+        title={alertState.title}
+        message={alertState.message}
+        type={alertState.type}
+        onClose={closeAlert}
+      />
     </div>
   );
 };

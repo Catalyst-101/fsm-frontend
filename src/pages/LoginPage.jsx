@@ -41,7 +41,7 @@ const LoginPage = () => {
           {/* Header Section */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center mb-4">
-              <img src={logo} alt="Pen & Page Academia Logo" className="h-20 w-auto object-contain drop-shadow-sm" />
+              <img src={logo} alt="Pen & Page Academia Logo" className="h-20 w-20 object-cover rounded-full drop-shadow-sm border-2 border-gray-100" />
             </div>
             <h1 className="text-2xl font-bold text-[var(--color-primary)] leading-tight">Pen & Page Academia</h1>
             <p className="text-gray-500 font-semibold tracking-wider text-sm mt-1">(SCHOOL SECTION)</p>
