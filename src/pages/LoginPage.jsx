@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import InputField from '../components/ui/InputField';
 import Button from '../components/ui/Button';
 
+import logo from '../assets/images/logo.png';
+
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,11 +40,12 @@ const LoginPage = () => {
         <div className="p-8 pt-10">
           {/* Header Section */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-[var(--color-primary)] rounded-lg mb-4 shadow-sm">
-              <span className="material-symbols-outlined text-white" style={{ fontSize: '32px' }}>school</span>
+            <div className="inline-flex items-center justify-center mb-4">
+              <img src={logo} alt="Pen & Page Academia Logo" className="h-20 w-auto object-contain drop-shadow-sm" />
             </div>
-            <h1 className="text-2xl font-bold text-[var(--color-primary)] mb-2">Pen & Page Academia</h1>
-            <p className="text-gray-500 font-medium">Welcome Back</p>
+            <h1 className="text-2xl font-bold text-[var(--color-primary)] leading-tight">Pen & Page Academia</h1>
+            <p className="text-gray-500 font-semibold tracking-wider text-sm mt-1">(SCHOOL SECTION)</p>
+            <p className="text-[var(--color-secondary)] font-bold uppercase text-xs mt-3 tracking-widest bg-blue-50 py-1.5 px-3 rounded-full inline-block">Fee Management System</p>
           </div>
 
           {error && (

@@ -290,7 +290,7 @@ const CreateEditStudentPage = () => {
                     <option value="">-- Choose Existing Parent --</option>
                     {filteredParents.map((p) => (
                       <option key={p._id} value={p._id}>
-                        {p.name} (CNIC: {p.cnic}) - {p.phone}
+                        {p.name} (ID: {p.parentId}) - CNIC: {p.cnic} - {p.phone}
                       </option>
                     ))}
                   </select>

@@ -136,6 +136,7 @@ const ParentsPage = () => {
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
                   <th className="py-4 px-6 whitespace-nowrap">Name</th>
+                  <th className="py-4 px-6 whitespace-nowrap">Parent ID</th>
                   <th className="py-4 px-6 whitespace-nowrap">CNIC</th>
                   <th className="py-4 px-6 whitespace-nowrap">Phone</th>
                   <th className="py-4 px-6 whitespace-nowrap">Occupation</th>
@@ -145,7 +146,7 @@ const ParentsPage = () => {
               <tbody className="divide-y divide-gray-100 text-sm">
                 {parents.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="py-8 text-center text-gray-500 font-medium">
+                    <td colSpan="6" className="py-8 text-center text-gray-500 font-medium">
                       No parent records found.
                     </td>
                   </tr>
@@ -156,6 +157,7 @@ const ParentsPage = () => {
                         <div className="font-bold text-[var(--color-primary)]">{p.name}</div>
                         <div className="text-xs text-gray-500 font-medium">{p.email || 'No email'}</div>
                       </td>
+                      <td className="py-4 px-6 font-mono text-xs text-gray-800 font-bold">{p.parentId}</td>
                       <td className="py-4 px-6 font-mono text-xs text-gray-600">{p.cnic}</td>
                       <td className="py-4 px-6 text-gray-700 font-medium">{p.phone}</td>
                       <td className="py-4 px-6 text-gray-600">{p.occupation || '-'}</td>

@@ -112,6 +112,10 @@ const StudentDetailPage = () => {
                   <p className="text-sm text-[var(--color-primary)] font-bold mt-1">{student.parentId.name}</p>
                 </div>
                 <div>
+                  <p className="text-xs text-gray-500 font-medium uppercase">Parent ID</p>
+                  <p className="text-sm text-[var(--color-primary)] font-bold font-mono mt-1">{student.parentId.parentId}</p>
+                </div>
+                <div>
                   <p className="text-xs text-gray-500 font-medium uppercase">CNIC</p>
                   <p className="text-sm text-gray-800 font-semibold font-mono mt-1">{student.parentId.cnic}</p>
                 </div>

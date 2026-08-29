@@ -50,7 +50,7 @@ const DashboardPage = () => {
     }
   };
 
-  const handleExportExcel = async () => {
+  const handleExportData = async () => {
     try {
       const endpoint = selectedYear ? `/dashboard/export-fee-data?academicYearId=${selectedYear}` : '/dashboard/export-fee-data';
       const response = await api.get(endpoint, {
@@ -60,7 +60,7 @@ const DashboardPage = () => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'fee-data.xlsx');
+      link.setAttribute('download', 'collections-data.zip');
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -103,8 +103,8 @@ const DashboardPage = () => {
           </Link>
 
           {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
-            <Button variant="secondary" onClick={handleExportExcel} className="shadow-sm hover:shadow-md">
-              <span className="material-symbols-outlined text-sm">download</span> Export Excel
+            <Button variant="secondary" onClick={handleExportData} className="shadow-sm hover:shadow-md">
+              <span className="material-symbols-outlined text-sm">download</span> Export Data (ZIP)
             </Button>
           )}
         </div>

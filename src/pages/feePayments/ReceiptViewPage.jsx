@@ -154,7 +154,7 @@ const ReceiptCopy = ({ receipt, copyType }) => {
 
           <div className="info-row">
             <span>Parent / Guardian</span>
-            <strong>{parent?.name || 'N/A'}</strong>
+            <strong>{parent?.name || 'N/A'} {parent?.parentId ? <span className="text-[10px] font-mono text-gray-500">({parent.parentId})</span> : ''}</strong>
           </div>
 
           <div className="info-row">

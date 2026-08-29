@@ -250,7 +250,7 @@ const ParentFeeBillPage = () => {
               <option value="">-- Select Parent --</option>
               {parents.map(p => (
                 <option key={p._id} value={p._id}>
-                  {p.name} (CNIC: {p.cnic})
+                  {p.name} {p.parentId ? `(ID: ${p.parentId})` : ''} - CNIC: {p.cnic}
                 </option>
               ))}
             </select>
@@ -299,7 +299,7 @@ const ParentFeeBillPage = () => {
 
           <div className="mb-6 border-l-4 border-gray-800 pl-4">
             <p className="mb-1 text-xs uppercase tracking-wider text-gray-500 font-bold">Parent / Guardian</p>
-            <p className="font-bold text-xl text-gray-800">{billData.parent?.name}</p>
+            <p className="font-bold text-xl text-gray-800">{billData.parent?.name} {billData.parent?.parentId ? <span className="font-mono text-gray-600 text-lg">({billData.parent.parentId})</span> : ''}</p>
             <p className="text-gray-600 text-sm">CNIC: <span className="font-mono">{billData.parent?.cnic}</span> | Phone: {billData.parent?.phone}</p>
             <p className="text-gray-600 text-sm">Academic Year: {billData.academicYear?.name}</p>
           </div>

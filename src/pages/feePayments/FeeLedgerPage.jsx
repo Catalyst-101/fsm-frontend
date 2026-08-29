@@ -202,6 +202,7 @@ const FeeLedgerPage = () => {
       if (!groupsMap.has(pId)) {
         groupsMap.set(pId, {
           parentId: pId,
+          parentIdStr: item.parentIdStr || 'N/A',
           parentName: item.parentName,
           parentPhone: item.parentPhone,
           parentCnic: item.parentCnic,
@@ -560,7 +561,7 @@ const FeeLedgerPage = () => {
                               <div>
                                 <span className="text-white text-sm font-black uppercase tracking-wider">{group.parentName}</span>
                                 <span className="ml-3 text-[11px] text-blue-200 font-normal">
-                                  CNIC: <span className="font-mono text-white">{group.parentCnic}</span> | Phone: {group.parentPhone} | Children: <span className="font-black text-[var(--color-accent)]">{group.children.length}</span>
+                                  ID: <span className="font-mono text-white font-bold">{group.parentIdStr !== 'N/A' ? group.parentIdStr : 'N/A'}</span> | CNIC: <span className="font-mono text-white">{group.parentCnic}</span> | Phone: {group.parentPhone} | Children: <span className="font-black text-[var(--color-accent)]">{group.children.length}</span>
                                 </span>
                               </div>
                             </div>

@@ -140,7 +140,7 @@ const FeePaymentPage = () => {
               <option value="">-- Choose a Student --</option>
               {(students || []).map(s => (
                 <option key={s._id} value={s._id}>
-                  {s.name} | ID: {s.studentId || 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'}
+                  {s.name} | ID: {s.studentId || 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'} {s.parentId?.parentId ? `(ID: ${s.parentId.parentId})` : ''}
                 </option>
               ))}
             </select>
@@ -194,7 +194,7 @@ const FeePaymentPage = () => {
                   </div>
                   <div>
                     <span className="block text-gray-400 uppercase tracking-wider text-[10px] mb-0.5">Parent</span>
-                    {summary.student.parentId?.name || 'N/A'}
+                    {summary.student.parentId?.name || 'N/A'} {summary.student.parentId?.parentId ? <span className="font-mono text-gray-800 ml-1">({summary.student.parentId.parentId})</span> : ''}
                   </div>
                 </div>
               </div>

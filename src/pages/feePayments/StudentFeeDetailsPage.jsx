@@ -103,7 +103,7 @@ const StudentFeeDetailsPage = () => {
               <option value="">-- Select Student --</option>
               {(students || []).map(s => (
                 <option key={s._id} value={s._id}>
-                  {s.name} | ID: {s.studentId ? (typeof s.studentId === 'object' ? (s.studentId.studentId || Object.values(s.studentId)[0] || JSON.stringify(s.studentId)) : s.studentId) : 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'}
+                  {s.name} | ID: {s.studentId ? (typeof s.studentId === 'object' ? (s.studentId.studentId || Object.values(s.studentId)[0] || JSON.stringify(s.studentId)) : s.studentId) : 'N/A'} | Class: {s.grade}{s.section ? `-${s.section}` : ''} | Parent: {s.parentId?.name || 'N/A'} {s.parentId?.parentId ? `(ID: ${s.parentId.parentId})` : ''}
                 </option>
               ))}
             </select>
@@ -154,7 +154,7 @@ const StudentFeeDetailsPage = () => {
             </div>
             <div>
               <p className="text-[10px] text-blue-300 uppercase tracking-widest font-bold">Parent / Guardian</p>
-              <p className="text-lg font-bold">{summary.student.parentId?.name || 'N/A'}</p>
+              <p className="text-lg font-bold">{summary.student.parentId?.name || 'N/A'} {summary.student.parentId?.parentId ? <span className="text-sm font-mono opacity-80">({summary.student.parentId.parentId})</span> : ''}</p>
             </div>
           </div>
         </div>

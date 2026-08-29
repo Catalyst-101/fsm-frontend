@@ -44,6 +44,9 @@ const ParentDetailPage = () => {
             <p className="text-sm text-gray-500 font-mono mt-0.5 font-medium flex items-center gap-1">
               <span className="material-symbols-outlined text-[16px]">badge</span> {parent?.cnic}
             </p>
+            <p className="text-sm text-gray-800 font-bold font-mono mt-0.5 flex items-center gap-1">
+              <span className="material-symbols-outlined text-[16px]">tag</span> ID: {parent?.parentId}
+            </p>
           </div>
         </div>
         <div className="flex gap-3">
