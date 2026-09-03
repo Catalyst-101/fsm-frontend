@@ -111,7 +111,7 @@ const Layout = () => {
               </div>
               {user?.profilePicture ? (
                 <img
-                  src={user.profilePicture}
+                  src={user.profilePicture.startsWith('http') ? user.profilePicture : `${import.meta.env.VITE_API_URL}${user.profilePicture}`}
                   alt={user.name}
                   className="w-9 h-9 rounded-full object-cover border border-gray-200"
                 />

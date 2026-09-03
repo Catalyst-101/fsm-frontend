@@ -74,7 +74,7 @@ const ProfilePage = () => {
         <div className="relative">
           {user?.profilePicture ? (
             <img
-              src={user.profilePicture}
+              src={user.profilePicture.startsWith('http') ? user.profilePicture : `${import.meta.env.VITE_API_URL}${user.profilePicture}`}
               alt={user.name}
               className="w-24 h-24 rounded-full object-cover border-4 border-[var(--color-primary)] shadow-md"
             />
