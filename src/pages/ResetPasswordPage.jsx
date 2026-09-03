@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import InputField from '../components/ui/InputField';
 import Button from '../components/ui/Button';
@@ -7,22 +7,46 @@ import Button from '../components/ui/Button';
 const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token') || '';
+  const navigate = useNavigate();
 
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!token) {
+      setError('Invalid or missing password reset link.');
+    }
+  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
     setError('');
+
+    if (!token) {
+      setError('Invalid or missing password reset link.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       const res = await api.post('/auth/reset-password', { token, password });
       setMessage(res.data.message || 'Password has been reset successfully.');
+      
+      // Redirect to login after successful reset
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to reset password.');
+      setError(err.response?.data?.message || 'This password reset link is invalid or has expired.');
     } finally {
       setSubmitting(false);
     }
@@ -76,6 +100,17 @@ const ResetPasswordPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="At least 6 characters"
+            required
+            minLength={6}
+            icon="key"
+          />
+
+          <InputField
+            label="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Re-enter your new password"
             required
             minLength={6}
             icon="key"
